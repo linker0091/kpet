@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.BoardMapper">
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item="type" collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'T'.toString()">
+							title like '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'C'.toString()">
+							content like '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'W'.toString()">
+							user_id like '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim> 
+	</sql>
+	
+	<!-- 기본게시판 작업(댓글기능, 파일첨부기능 제외 )에서 시퀀스를 insert문에서 직접사용-->
+	<insert id="insert" parameterType="com.kpet.domain.BoardVO">
+		insert into board_tbl(bno, title, content, user_id)
+		values(seq_board_num.nextval, #{title}, #{content}, #{user_id})
+	</insert>
+	
+	<insert id="insertSelectKey" parameterType="com.kpet.domain.BoardVO">
+	
+		<selectKey keyProperty="bno" order="BEFORE" resultType="long">
+			select seq_board_num.nextval from dual
+		</selectKey>
+		
+		insert into board_tbl(bno, title, content, user_id)
+		values(#{bno}, #{title}, #{content}, #{user_id})
+	
+	</insert>
+	
+	<select id="getList" resultType="com.kpet.domain.BoardVO">
+		select bno, title, content, user_id, regdate, updateddate from board_tbl
+	</select>
+	
+	<!-- 
+	<select id="getListWithPaging" parameterType="com.doccomsa.domain.Criteria" resultType="com.doccomsa.domain.BoardVO">
+		<![CDATA[ 
+		select bno, title, content,user_id, regdate, updateddate
+		from (
+		    select /*+ index_desc(board_tbl pk_board) */ rownum rn, bno, title, content, user_id, regdate,updateddate
+		    from board_tbl
+		    where rownum <= (#{pageNum} * #{amount})
+		)
+		where rn > ((#{pageNum} - 1) * #{amount} )
+		]]>
+	</select>
+	 -->
+	 
+	<select id="getListWithPaging" parameterType="com.kpet.domain.Criteria" resultType="com.kpet.domain.BoardVO">
+		<![CDATA[ 
+		select bno, title, content,user_id, regdate, updateddate, replycnt
+		from (
+		    select /*+ index_desc(board_tbl pk_board) */ rownum rn, bno, title, content, user_id, regdate,updateddate, replycnt
+		    from board_tbl
+		    where 
+		]]>    
+		
+		<include refid="criteria"></include>
+
+		<![CDATA[     
+		    rownum <= (#{pageNum} * #{amount}) 
+		)
+		where rn > ((#{pageNum} - 1) * #{amount} )
+		]]>
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		select count(*) from board_tbl where
+		
+		<include refid="criteria"></include> 
+		
+		bno > 0
+		
+	</select>
+	
+	<select id="get" parameterType="Long" resultType="com.kpet.domain.BoardVO">
+		select bno, title, content, user_id, regdate, updateddate from board_tbl where bno = #{bno}
+	</select>
+	
+	<update id="update">
+		update board_tbl
+		set title = #{title}, content = #{content}, updatedDate = sysdate 
+		where bno = #{bno}
+	</update>
+	
+	<delete id="delete">
+		delete from board_tbl where bno = #{bno}
+	</delete>
+	
+	<update id="updateReplyCnt">
+		update board_tbl set replycnt = replycnt + #{amount} where bno = #{bno}
+	</update>
+</mapper>  

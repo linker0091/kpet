@@ -1,0 +1,44 @@
+@charset "UTF-8";
+
+#wrap { overflow: hidden; min-width: 1190px; width: 100%;}
+
+/* area */
+body { font-family: 'NanumSquareRound','Noto Sans KR',sans-serif;}
+
+
+/* 컨테이너 */
+.container { max-width: 1200px; margin: 0 auto; box-sizing: border-box; }
+
+/* contents */
+.title_area {  padding: 53px 0 40px; }
+.title_area h1 { font-size: 26px; color: #202020; font-weight: 400;  }
+
+/* */
+.register_box { }
+.register_box form { }
+.register_box form .info_title { }
+.register_box form .info_toptitle h3 { float: left; padding: 0px 0 7px; font-size: 16px; color: #2e2e2e; box-sizing: border-box;}
+.register_box form .info_toptitle p { float: right; }
+.register_box form .info_toptitle p span { color: red;}
+.register_box form .info_title p span { display: inline-block; color: red; vertical-align: middle; margin: 2px 0 0 3px; }
+.register_box form .base_info { }
+.register_box form .base_info .ht { height: 159px; }
+/* .register_box form .base_info:last-of-type .info_title { height: 94px; } */
+.register_box form .base_info .phone_input input { width: 10%; }
+.register_box form .base_info .info_box .space { display: inline-block; margin: 0 8px 0 0;}
+.register_box form .base_info:last-of-type .info_box input { width: 30%; }
+
+
+.register_box form .bor-top { border-top: 3px solid #000; }
+.register_box form .base_info > div { float: left; border-bottom: 1px solid #eee; padding: 12px 0 12px 18px; box-sizing: border-box; font-size: 14px; line-height: 34px;}
+.register_box form .base_info .info_title { background-color: #fafafa; width: 16.66%; text-align: left;}
+.register_box form .base_info .info_box { width: 83.33%; color: #888;}
+.register_box form .base_info .info_box input { padding: 0 10px; height: 34px; line-height: 34px; margin-right: 8px; box-sizing: border-box; border: 1px solid #e5e5e5; color: #353535; border-radius: 4px;}
+.register_box form .base_info .info_box .form-control3 { width: 51%; margin-top: 10px; }
+
+.register_box form .lining { margin-bottom: 10px; }
+.register_box form .lining .postn_srcbtn { border: 1px solid #adadad; color: #222; width: 92px; height: 36px; line-height: 33px; font-size: 14px; border-radius: 4px;}
+.register_box form .lining .postn_srcbtn:hover { background-color: #f3f3f3;} 
+
+.register_box form .btn_box { padding: 30px 0 10px; text-align: center; }
+.register_box form .btn_box button {  width: 200px; height: 49px; font-size: 15px; text-align: center; margin: 0 auto; background-color: #333; color: #fff; border-radius: 4px; word-spacing: -0.5px; }

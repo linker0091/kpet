@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.CartMapper">
+
+	<insert id="cartAdd">
+		<!-- 
+		INSERT INTO CART_TBL
+			(
+				cart_code, 
+				pro_num, 
+				user_id, 
+				cart_amount
+			)
+		VALUES
+			(
+				seq_cart_code.nextval, 
+				#{pro_num}, 
+				#{user_id}, 
+				#{cart_amount}
+			)
+		 -->
+		 
+		 MERGE INTO
+		 	cart_tbl c
+		 USING
+		 	dual
+		 ON 
+		 	(c.user_id = #{user_id} and c.pro_num = #{pro_num})
+		 WHEN MATCHED THEN
+		 	UPDATE
+		 	SET
+		 		c.cart_amount = c.cart_amount + #{cart_amount}
+		 WHEN NOT MATCHED THEN
+		 	INSERT 
+				(
+					cart_code, 
+					pro_num, 
+					user_id, 
+					cart_amount
+				)
+			VALUES
+				(
+					seq_cart_code.nextval, 
+					#{pro_num}, 
+					#{user_id}, 
+					#{cart_amount}
+				)
+		 
+		 	
+	</insert>
+	
+	<select id="cartList" resultType="com.kpet.domain.CartListVO">
+	
+		SELECT
+		  
+    		c.cart_code, 
+    		c.pro_num, 
+    		c.user_id, 
+    		c.cart_amount, 
+    		p.pro_name, 
+    		p.pro_price, 
+    		p.pro_discount,  
+    		p.pro_img, 
+    		p.pro_uploadpath
+
+		FROM 
+			cart_tbl c INNER JOIN product_tbl p
+		ON 
+			c.pro_num = p.pro_num
+		WHERE
+			c.user_id = #{user_id}
+	
+	</select>
+	
+	<select id="cartAmount" resultType="Integer">
+		SELECT 
+			count(*)
+		FROM 
+    		cart_tbl
+		WHERE
+    		user_id = #{user_id}
+	</select>
+	
+	<delete id="cartDel">
+	
+		DELETE FROM
+			cart_tbl
+		WHERE
+			cart_code = #{cart_code}
+	
+	</delete>
+	
+	<delete id="cartAllDel">
+	
+		DELETE FROM
+			cart_tbl
+		WHERE
+			user_id = #{user_id}
+	
+	</delete>
+	
+	<update id="cartAmountChange">
+	
+		UPDATE
+			cart_tbl
+		SET 
+			cart_amount = #{cart_amount}
+		WHERE
+			user_id = #{user_id}
+		AND
+			cart_code = #{cart_code}
+	
+	</update>
+	
+	<delete id="cartCheckDel">
+
+		DELETE FROM
+			cart_tbl
+		WHERE
+			pro_num = #{pro_num}
+		AND
+			cart_amount = #{cart_amount}
+			
+	</delete>
+	
+
+</mapper>  
+  

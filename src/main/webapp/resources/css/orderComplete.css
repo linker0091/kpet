@@ -1,0 +1,15 @@
+@charset "UTF-8";
+.sorting2 { text-align: center; }
+.state_txt { padding: 20px 0;}
+.rew_btn_style {     /* height: 20px; */
+    width: 100px;
+    color: #757575;
+    font-size: 15px;
+    padding: 1px;
+    box-sizing: border-box;
+    text-align: center;
+    border: 1px solid #000;
+    background-color: #ccc;
+     }
+     
+.order_title_txt { padding: 40px 0; font-size: 25px; }

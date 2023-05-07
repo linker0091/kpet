@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.AdminProuductMapper">
+
+	<insert id="product_isnert">
+	
+		INSERT INTO 
+			product_tbl
+			(
+				pro_num,
+				cate_code, 
+				cate_prtcode, 
+				cate_subprtcode,
+				pro_name, 
+				pro_price, 
+				pro_discount, 
+				pro_promo,
+				pro_tag,
+				pro_content,
+				pro_img,
+				pro_uploadpath,<!-- 추가 -->
+				pro_amount,
+				pro_purchase
+			)
+		VALUES
+			(
+				seq_product_num.nextval,
+				#{cate_code},
+				#{cate_prtcode},
+				#{cate_subprtcode},
+				#{pro_name},
+				#{pro_price},
+				#{pro_discount},
+				#{pro_promo},
+				#{pro_tag},  
+				#{pro_content},
+				#{pro_img},
+				#{pro_uploadpath},<!-- 추가 -->
+				#{pro_amount},
+				#{pro_purchase}
+			)
+	
+	</insert>
+	
+	<select id="mainCategory" resultType="com.kpet.domain.CategoryVO">
+	
+		SELECT 
+			cate_code, 
+			cate_prtcode,
+			cate_subprtcode,
+			cate_name 
+		FROM 
+			category_tbl 
+		WHERE 
+			cate_prtcode IS NULL
+	
+	</select>
+	
+	<select id="subCategory" resultType="com.kpet.domain.CategoryVO">
+	
+	  SELECT 
+         cate_code, 
+         cate_prtcode, 
+         cate_subprtcode, 
+         cate_name
+      FROM 
+         category_tbl 
+      WHERE 
+         cate_prtcode = #{cate_prtcode} 
+      AND 
+         cate_subprtcode IS NULL
+	
+	</select>
+	
+	<select id="lastsubCategory" resultType="com.kpet.domain.CategoryVO">
+	
+		 SELECT 
+         cate_code, 
+         cate_prtcode, 
+         cate_subprtcode, 
+         cate_name
+      FROM 
+         category_tbl 
+      WHERE 
+         cate_prtcode = #{cate_prtcode} 
+      AND 
+         cate_subprtcode = #{cate_subprtcode}
+         
+	</select>
+
+	
+	<sql id="criteria">
+		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
+			<foreach item="type" collection="typeArr">
+				<trim prefix="OR">
+					<choose>
+						<when test="type == 'N'.toString()">
+							pro_name like '%' || #{keyword} || '%'
+						</when>
+						<when test="type == 'P'.toString()">
+							pro_content like '%' || #{keyword} || '%'
+						</when>
+					</choose>
+				</trim>
+			</foreach>
+		</trim> 
+	</sql>
+	
+	<select id="getListWithPaging" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[ 
+		SELECT 
+			pro_num, 
+			cate_code,
+			cate_prtcode, 
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo,
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate 
+			
+		FROM (
+		        SELECT 
+		        	/*+ index_desc(product_tbl pk_product_tbl) */ 
+		        	rownum rn, 
+		        	pro_num, 
+					cate_code,
+					cate_prtcode, 
+					cate_subprtcode,
+					pro_name, 
+					pro_price, 
+					pro_discount, 
+					pro_promo,
+					pro_tag,
+					pro_content, 
+					pro_img,
+					pro_uploadpath, 
+					pro_amount, 
+					pro_purchase, 
+					pro_date, 
+					pro_updatedate
+				FROM 
+					product_tbl
+				WHERE 
+		]]>     
+		    
+		<include refid="criteria"></include>
+		
+		<![CDATA[     
+				    rownum <= (#{pageNum} * #{amount}) 
+				)
+		
+		WHERE 
+			rn > ((#{pageNum} - 1) * #{amount} )
+		]]>
+	
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			product_tbl 
+		WHERE
+		
+		<include refid="criteria"></include> 
+		
+		pro_num > 0
+		
+	</select>
+	
+	<select id="product_modify" resultType="com.kpet.domain.ProductVO">
+	
+		SELECT 
+	       	pro_num, 
+			cate_code,
+			cate_prtcode, 
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo,
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate
+		FROM 
+			product_tbl
+		WHERE
+			pro_num = #{pro_num}
+	
+	</select>
+	
+	<update id="product_modifyOk">
+	
+		UPDATE
+			product_tbl
+		SET
+	       	cate_code = #{cate_code}, 
+	       	cate_prtcode = #{cate_prtcode},
+	       	cate_subprtcode = #{cate_subprtcode}, 
+	       	pro_name = #{pro_name}, 
+	       	pro_price = #{pro_price}, 
+	       	pro_discount = #{pro_discount}, 
+	       	pro_promo = #{pro_promo},
+	       	pro_tag = #{pro_tag},
+	       	pro_content = #{pro_content},
+	       	pro_img = #{pro_img}, 
+	       	pro_uploadpath = #{pro_uploadpath}, 
+	       	pro_amount = #{pro_amount}, 
+	       	pro_purchase = #{pro_purchase}, 
+	       	pro_updatedate = SYSDATE
+		WHERE
+			pro_num = #{pro_num}
+	
+	</update>
+	
+	<delete id="product_delete">
+	
+		DELETE FROM
+			product_tbl
+		WHERE
+			pro_num = #{pro_num}
+			
+	</delete>
+	
+	<update id="product_rew_update">
+	
+		UPDATE 
+			product_tbl
+		SET 
+			pro_rewcount = ( SELECT 
+								count(*)
+		    				 FROM 
+		    				 	review_tbl
+		    				 WHERE 
+		    				 	pro_num = #{pro_num} ) , 
+		    				 	pro_rewrating = ( SELECT 
+		    				 						round(avg(rew_score),1)
+												  FROM 
+												  	review_tbl
+		    									  WHERE 
+		    									  	pro_num = #{pro_num} )
+		WHERE 
+			pro_num = #{pro_num}
+	
+	</update>
+	
+	 
+	 	<update id="product_rew_dlupdate">
+	
+		UPDATE 
+			product_tbl 
+		SET 
+			pro_rewcount = ( SELECT 
+								count(*) 
+							 FROM 
+							 	review_tbl 
+							 WHERE 
+							 	pro_num = ( SELECT 
+							 					pro_num 
+							 				FROM 
+							 					review_tbl 
+							 				WHERE 
+							 					rew_num = #{rew_num} )), 
+			pro_rewrating = ( SELECT 
+								avg(rew_score) 
+							FROM 
+								review_tbl 
+							WHERE 
+								pro_num = ( SELECT 
+												pro_num 
+											FROM 
+												review_tbl 
+											WHERE 
+												rew_num = #{rew_num})) 
+		WHERE 
+			pro_num = ( SELECT 
+							pro_num 
+						FROM 
+							review_tbl 
+						WHERE 
+							rew_num = #{rew_num})
+
+	
+	</update>
+
+</mapper>

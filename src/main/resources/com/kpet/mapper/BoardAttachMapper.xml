@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.BoardAttachMapper">
+
+	<insert id="insert">
+		insert into attach_tbl(uuid, uploadpath, filename, filetype, bno) 
+		values(#{uuid}, #{uploadPath}, #{fileName}, #{fileType}, #{bno})
+	</insert>
+	
+	<select id="findByBno" resultType="com.kpet.domain.BoardAttachVO">
+		select uuid, uploadpath, filename, filetype, bno from attach_tbl where bno = #{bno}
+	</select>
+	
+	<delete id="delete">
+		delete from attach_tbl where uuid = #{uuid}
+	</delete>
+	
+	<delete id="deleteAll">
+		delete from attach_tbl where bno = #{bno}
+	</delete>
+	
+	<select id="getOldFiles" resultType="com.kpet.domain.BoardAttachVO">
+		select uuid, uploadpath, filename, filetype, bno  from attach_tbl where uploadpath = to_char(sysdate -1, 'yyyy\mm\dd')
+	</select>
+
+</mapper>  

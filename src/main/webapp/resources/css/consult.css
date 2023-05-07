@@ -1,0 +1,104 @@
+@charset "UTF-8";
+
+.container { padding-top: 100px; }
+
+.consult_wrap {  }
+.consult_wrap .consult_box { position: relative; }
+.consult_wrap .consult_box button { 
+	position: absolute;
+	bottom: -51px;
+	right: 10px;
+	width:94px; height: 41px;
+    line-height: 41px;
+    padding: 0;
+    font-size: 14px;
+    background-color: #333;
+    border-radius:5px;
+    color:#fff; }
+.consult_wrap .consult_box p {    padding: 50px 0;
+    text-align: center;
+    color: #757575;
+    font-weight: bold;}
+.consult_wrap .consult_box .consult_list { margin-bottom: 24px; }
+.consult_wrap .consult_box .consult_list ul { display: block; width: 100%; font-size: 15px; border-bottom: 1px solid #e3e3e3;
+    color: #333; font-weight: 400; vertical-align: middle; min-height: 60px; line-height: 56px; }
+.consult_wrap .consult_box .consult_list ul li { float: left; text-align: center; min-width: 8%; font-size: 14px;}
+.consult_wrap .consult_box .consult_list ul li:nth-of-type(3) { width: 60%; }
+.consult_wrap .consult_box .consult_list ul li:last-of-type { min-width: 8%; max-width: 82%; }
+.consult_wrap .consult_box a { display: block; width: 100%; height: 60px; text-align: center; border-bottom: 1px solid #eee;}
+.consult_wrap .consult_box a:hover { background-color: #ccc; }
+.consult_wrap .consult_box > a > ul {   }
+.consult_wrap .consult_box a ul li { float: left; width: 8%; line-height: 60px; }
+.consult_wrap .consult_box a ul li:nth-of-type(3) { width: 60%; text-align: left; padding: 0 20px; }
+.consult_wrap .consult_box a ul li:last-of-type { width: 8%; }
+
+#cont_txt { text-align: left; }
+.consult_list:nth-of-type(2) { border-top: 3px solid #202020;}
+
+/* cstWrite Page Style */
+
+
+.consult_wrap .page_title { margin-bottom: 0;}
+.consult_wrap .consult_writebox { text-align: left; margin-bottom: 32px; }
+.consult_wrap .consult_writebox .title_box { height: 62px; line-height: 62px; box-sizing: border-box;}
+.consult_wrap .consult_writebox .title_box ul { border-bottom: 1px solid #e3e3e3; padding: 0 20px;} 
+.consult_wrap .consult_writebox .title_box ul li { float: left; width: 85%; }
+.consult_wrap .consult_writebox .title_box ul li:first-of-type { width: 15%; }
+.consult_wrap .consult_writebox .title_box ul li .consult_category { height: 24px; border: 1px solid #e5e5e5;
+background-image: url(/img/select.png);
+    background-repeat: no-repeat;
+    background-size: 11px 6px;
+    background-position: center right 8px;
+    padding-right: 30px;
+    border-color: #e5e5e5;
+    border-radius: 4px;
+    background-color: #fff;
+    min-width: 86px;
+    padding: 0 25px 0 8px;
+    cursor: pointer;
+ } 
+.consult_wrap .consult_writebox .title_box ul .inputTypeText { width: 35%; height: 36px; border: 1px solid #e3e3e3; line-height: 34px;}
+
+.consult_wrap .consult_writebox .write_inner { width: 100%; height: max-content; border-bottom: 1px solid #e3e3e3; padding: 26px 0; } 
+.consult_wrap .consult_writebox .write_inner li { display:inline-block; magin: 0 auto; text-align: center;
+    margin-bottom: 23px;}
+#cke_1_contents { height: 400px !important; }
+#previewImage { width: 200px; margin-left: 40px; }
+.btnstyle { width: 96px;     border-radius: 5px;background-color: #333;
+    color: #fff;     transition: all 0.3s;    word-break: keep-all;
+    word-wrap: break-word;padding: 6px 8px; display: inline-block;
+    box-sizing: border-box;font-size: 15px;
+    line-height: 18px;
+    font-weight: normal; }
+.right_btn { float: right; }
+.cst_cancel_btn { background-color: #fff; color: #000; border: 1px solid #d1d1d1; }
+.cst_listbtn  { background-color: #fff; color: #000; border: 1px solid #d1d1d1; }
+
+.file_input {     
+	padding: 0 10px;
+    height: 40px;
+    line-height: 34px;
+    margin-right: 8px;
+    font-size: 14px;
+    background-color: #fff;}
+
+/* cstRead Page Style */
+.consult_inner .consult_list ul li { color: #888; }
+.consult_inner .consult_list ul li:first-of-type { width: 10%; padding-left: 5px; margin-right: 20px; text-align: left; color: #000; }
+
+.consult_inner .consult_box .cst_listbtn { color: #000; background-color: #fff; left: 10px; }
+
+.cancle {     
+	display: inline-block;
+    position: absolute;
+    right: 10px;
+    bottom: -51px;
+}
+.consult_wrap .consult_box .cancle button { position: initial; display: inline-block; }
+
+
+
+
+
+
+

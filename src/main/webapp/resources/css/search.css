@@ -1,0 +1,118 @@
+@charset "UTF-8";
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 80px;
+    box-sizing: border-box;
+}
+
+.container .page_title { border-bottom: none; }
+
+.searchbox {
+    border: 3px solid #e9e9e9;
+    margin: 21px 0 20px;
+    padding: 45px 0;
+}
+.searchbox fieldset {
+    width: 486px;
+    margin: 0 auto;
+    padding: 0 47px;
+}
+
+.item {
+    margin: 13px 0 0;
+    line-height: 20px;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url(/img/select.png);
+    background-repeat: no-repeat;
+    background-size: 11px 6px;
+    background-position: center right 8px;
+    padding-right: 30px;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    background-color: #fff;
+    min-width: 86px;
+    padding: 0 25px 0 8px;
+}
+
+.item strong {
+    float: left;
+    width: 87px;
+    padding: 5px 10px 0 0;
+}
+.searchbox #search_type {
+	padding: 3px;
+    width: 92px;
+    border: 1px solid #e5e5e5;
+}
+option {
+    font-weight: normal;
+    display: block;
+    white-space: nowrap;
+    min-height: 1.2em;
+    padding: 0px 2px 1px;
+}
+.searchbox #keyword {
+    width: 205px;
+    display: inline-block;
+}
+.searchbox .item input {
+    padding: 5px 4px 5px 10px;
+    height: 28px;
+}
+
+input[type=text] {
+    height: 18px;
+    line-height: 20px;
+    padding: 2px 4px;
+    border: 1px solid #e5e5e5;
+    color: #353535;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.item:last-of-type { margin-left: 57px; }
+
+.item:last-of-type input { width: 141px; }
+
+.orderby li { display: inline-block; margin: 20px 5px 37px;
+		border: 1px solid #e5e5e5; padding: 7px; 
+		cursor: pointer;  }
+.orderby li:hover {
+    background-color: #f5f5f5;
+    color: #5600ff;}
+
+
+.searchbox button {
+	display: inline-block;
+    margin-top: 29px;
+    margin-left: 26px;
+    width: 94px;
+    height: 41px;
+    line-height: 41px;
+    padding: 0;
+    font-size: 14px;
+    background-color: #333;
+    border-radius: 5px;
+    color: #fff;
+}
+
+
+
+
+    
+   .orderby li { cursor: pointer; }
+    .orderby .orderby_color {     
+	background-color: #07b7ea;
+    color: #fff; 
+    }
+    
+    
+    
+    

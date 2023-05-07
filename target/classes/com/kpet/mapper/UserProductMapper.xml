@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.UserProductMapper">
+
+	<sql id="orderby">
+	  <choose>
+ 		 <when test="orderby == 'pro_date'">
+      	 ORDER BY pro_date DESC
+    	 </when>
+    	 <when test="orderby == 'pro_name'">
+      	 ORDER BY pro_name DESC
+    	 </when>
+    	 <when test="orderby == 'low'">
+      	 ORDER BY pro_discount ASC
+    	 </when>
+    	 <when test="orderby == 'high'">
+      	 ORDER BY pro_discount DESC
+    	 </when>
+    	 <when test="orderby == 'pro_rewcount'">
+      	 ORDER BY pro_rewcount DESC
+    	 </when>
+    	 
+    	 <otherwise>
+      	 ORDER BY pro_num DESC
+    	</otherwise>
+ 	 </choose>
+	</sql>
+
+	<sql id="condition">
+	  <where>
+	    <trim prefix="AND" prefixOverrides="AND">
+	      <if test="con.cate_prtcode > 0">
+	        AND cate_prtcode = #{con.cate_prtcode}
+	      </if>
+	      <if test="con.keyword != null">
+	        AND pro_name LIKE '%' || REPLACE(#{con.keyword}, '%', '') || '%'
+	      </if>
+	      <if test="con.price_min > 0">
+	        AND pro_discount >= #{con.price_min}
+	      </if>
+	      <if test="con.price_max > 0">
+	        AND #{con.price_max} >= pro_discount
+	      </if>
+	    </trim>
+	  </where>
+	</sql>
+
+	<select id="mainCategory" resultType="com.kpet.domain.CategoryVO">
+	
+		 SELECT
+         cate_code,
+         cate_prtcode, 
+         cate_subprtcode, 
+         cate_name
+      FROM 
+         category_tbl 
+      WHERE 
+         cate_prtcode IS NULL 
+      AND 
+         cate_subprtcode IS NULL
+	
+	</select>
+	
+	<select id="subCategory" resultType="com.kpet.domain.CategoryVO">
+	
+		 SELECT 
+         cate_code, 
+         cate_prtcode, 
+         cate_subprtcode, 
+         cate_name
+      FROM 
+         category_tbl 
+      WHERE 
+         cate_prtcode = #{cate_prtcode} 
+      AND 
+         cate_subprtcode IS NULL
+         
+	</select>
+	
+	<select id="lastsubCategory" resultType="com.kpet.domain.CategoryVO">
+	
+		 SELECT 
+         cate_code, 
+         cate_prtcode, 
+         cate_subprtcode, 
+         cate_name
+      FROM 
+         category_tbl 
+      WHERE 
+         cate_prtcode = #{cate_prtcode}
+      AND 
+         cate_subprtcode = #{cate_subprtcode}
+         
+	</select>
+	
+	
+	<select id="getListWithPaging" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[ 
+		SELECT 
+			pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate 
+			
+		FROM (
+		        SELECT 
+		        	/*+ index_desc(product_tbl pk_product_tbl) */ 
+		        	rownum rn, 
+		        	pro_num, 
+					cate_code,
+					cate_prtcode,
+					cate_subprtcode,
+					pro_name, 
+					pro_price, 
+					pro_discount, 
+					pro_promo, 
+					pro_tag,
+					pro_content, 
+					pro_img,
+					pro_uploadpath, 
+					pro_amount, 
+					pro_purchase, 
+					pro_date, 
+					pro_updatedate
+				FROM 
+					product_tbl
+				WHERE 
+					cate_prtcode = #{cate_prtcode}
+					AND
+					pro_purchase = 'Y'
+					AND
+				    rownum <= (#{cri.pageNum} * #{cri.amount}) 
+				)
+		
+		WHERE 
+			rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+		]]>
+	
+	</select>
+	
+	<select id="getLastListWithPaging" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[ 
+		SELECT 
+			pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate 
+			
+		FROM (
+		        SELECT 
+		        	/*+ index_desc(product_tbl pk_product_tbl) */ 
+		        	rownum rn, 
+		        	pro_num, 
+					cate_code,
+					cate_prtcode,
+					cate_subprtcode,
+					pro_name, 
+					pro_price, 
+					pro_discount, 
+					pro_promo, 
+					pro_tag,
+					pro_content, 
+					pro_img,
+					pro_uploadpath, 
+					pro_amount, 
+					pro_purchase, 
+					pro_date, 
+					pro_updatedate
+				FROM 
+					product_tbl
+				WHERE 
+					cate_prtcode = #{cate_prtcode}
+					AND
+					cate_subprtcode = #{cate_subprtcode}
+					AND
+				    rownum <= (#{cri.pageNum} * #{cri.amount}) 
+				)
+		
+		WHERE 
+			rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+		]]>
+	
+	</select>
+	
+	<select id="getFinallListWithPaging" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[ 
+		SELECT 
+			pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate 
+			
+		FROM (
+		        SELECT 
+		        	/*+ index_desc(product_tbl pk_product_tbl) */ 
+		        	rownum rn, 
+		        	pro_num, 
+					cate_code,
+					cate_prtcode,
+					cate_subprtcode,
+					pro_name, 
+					pro_price, 
+					pro_discount, 
+					pro_promo, 
+					pro_tag,
+					pro_content, 
+					pro_img,
+					pro_uploadpath, 
+					pro_amount, 
+					pro_purchase, 
+					pro_date, 
+					pro_updatedate
+				FROM 
+					product_tbl
+				WHERE 
+					cate_code = #{cate_code}
+					AND
+					cate_subprtcode = #{cate_subprtcode}
+					AND
+					cate_prtcode = #{cate_prtcode}
+					AND
+				    rownum <= (#{cri.pageNum} * #{cri.amount}) 
+				)
+		
+		WHERE 
+			rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+		]]>
+	
+	</select>
+	
+	<select id="getTotalCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			product_tbl 
+		WHERE
+			cate_prtcode = #{cate_prtcode}
+		
+	</select>
+	
+	<select id="getSubTotalCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			product_tbl 
+		WHERE
+			cate_prtcode = #{cate_prtcode}
+		AND
+			cate_subprtcode = #{cate_subprtcode}
+		
+	</select>
+	
+	<select id="getFinallSubTotalCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			product_tbl 
+		WHERE
+			cate_code = #{cate_code}
+		AND
+			cate_subprtcode = #{cate_subprtcode}
+		AND
+			cate_prtcode = #{cate_prtcode}
+		
+	</select>
+	
+	<select id="productDetail" resultType="com.kpet.domain.ProductVO">
+	
+		SELECT 
+        	pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_rewcount,
+			pro_rewrating,
+			pro_date, 
+			pro_updatedate
+		FROM 
+			product_tbl
+		WHERE 
+			pro_num = #{pro_num}
+	
+	</select>
+	
+		<select id="productListByCategory" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[ 
+		SELECT 
+        	pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_date, 
+			pro_updatedate
+		FROM 
+			product_tbl
+		WHERE 
+			cate_prtcode = #{cate_prtcode}
+		AND
+			rownum < 5
+	
+		]]>
+	
+	</select>
+	
+	<select id="productSearchList" resultType="com.kpet.domain.ProductVO">
+	
+		<![CDATA[
+		SELECT 
+        	pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_rewcount,
+			pro_rewrating,
+			pro_date, 
+			pro_updatedate
+		FROM (
+		  SELECT 
+		  	rownum rn, 
+        	pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_rewcount,
+			pro_rewrating,
+			pro_date, 
+			pro_updatedate
+		  FROM (
+		    SELECT 
+        	pro_num, 
+			cate_code,
+			cate_prtcode,
+			cate_subprtcode,
+			pro_name, 
+			pro_price, 
+			pro_discount, 
+			pro_promo, 
+			pro_tag,
+			pro_content, 
+			pro_img,
+			pro_uploadpath, 
+			pro_amount, 
+			pro_purchase, 
+			pro_rewcount,
+			pro_rewrating,
+			pro_date, 
+			pro_updatedate
+		    FROM 
+		    product_tbl
+		    ]]>
+
+	        <include refid="condition"></include>
+		    <include refid="orderby"></include>
+		    <![CDATA[
+		  ) r
+		  WHERE 
+		    ROWNUM <= #{cri.pageNum} * #{cri.amount}
+		)
+		WHERE 
+		  rn > ((#{cri.pageNum} - 1) * #{cri.amount})							
+			]]>
+	
+	</select>
+	
+		<select id="productSearchCount" resultType="int">
+		SELECT 
+			count(*) 
+		FROM 
+			product_tbl 
+			<include refid="condition"></include>
+	</select>
+	
+</mapper>  

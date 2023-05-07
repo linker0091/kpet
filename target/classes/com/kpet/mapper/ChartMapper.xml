@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.ChartMapper">
+
+	<select id="primaryChart" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			c.cate_name, 
+			sum(od.dt_ord_price * od.dt_ord_amount) as sales
+		FROM 
+			product_tbl p, detail_ord_tbl od, category_tbl c
+		WHERE 
+			p.pro_num = od.pro_num and p.cate_prtcode = c.cate_code
+		GROUP BY 
+			c.cate_name
+		ORDER BY 
+			c.cate_name
+	
+	</select>
+	
+			
+	<select id="secondaryChart" resultType="com.kpet.domain.ChartVO">
+	SELECT 
+			c.cate_name, 
+			sum(od.dt_ord_price * od.dt_ord_amount) as sales
+		FROM 
+			product_tbl p, detail_ord_tbl od, category_tbl c
+		WHERE 
+			p.pro_num = od.pro_num and p.cate_subprtcode = c.cate_code
+		GROUP BY 
+			c.cate_name
+	
+	</select>
+	
+	
+	
+	<select id="thirdlyChart" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			c.cate_name, 
+			sum(sales) sales
+		FROM 
+			category_tbl c
+		INNER JOIN 
+			(
+                SELECT 
+                	p.cate_code, 
+                	sum(od.dt_ord_price * od.dt_ord_amount) as sales
+				FROM 
+					product_tbl p, detail_ord_tbl od
+				WHERE 
+					p.pro_num = od.pro_num
+				GROUP BY 
+					p.cate_code
+            ) imsi
+		ON 
+			c.cate_code = imsi.cate_code
+		GROUP BY 
+			c.cate_name
+	
+	</select>
+	
+	<select id="salesByYearChart" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			sum(ord_price) totalprice, 
+			to_char(ord_regdate, 'YYYY') year
+		FROM 
+			order_tbl
+		GROUP BY 
+			to_char(ord_regdate, 'YYYY')
+		ORDER BY 
+			to_char(ord_regdate, 'YYYY')
+	
+	</select>
+	
+	
+	<select id="primaryChartByMonth" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			c.cate_name, 
+			<!--  to_char(o.ord_regdate, 'YYYY/MM'), --> 
+			sum(od.dt_ord_price * od.dt_ord_amount) as sales
+		FROM 
+			product_tbl p, 
+			detail_ord_tbl od, 
+			order_tbl o, 
+			category_tbl c
+		WHERE 
+			p.pro_num = od.pro_num 
+		AND 
+			p.cate_prtcode = c.cate_code 
+		AND 
+			o.ord_code = od.ord_code
+		AND 
+			to_char(o.ord_regdate, 'YYYY/MM')  = #{ord_date}
+		GROUP BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+		ORDER BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+	
+	</select>
+	
+	<select id="secondaryChartByMonth" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			c.cate_name, 
+			<!--  to_char(o.ord_regdate, 'YYYY/MM'), --> 
+			sum(od.dt_ord_price * od.dt_ord_amount) as sales
+		FROM 
+			product_tbl p, 
+			detail_ord_tbl od, 
+			order_tbl o, 
+			category_tbl c
+		WHERE 
+			p.pro_num = od.pro_num 
+		AND 
+			p.cate_subprtcode = c.cate_code
+		AND 
+			o.ord_code = od.ord_code
+		AND 
+			to_char(o.ord_regdate, 'YYYY/MM')  = #{ord_date}
+		GROUP BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+		ORDER BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+	
+	</select>
+	
+	<select id="thirdlyChartByMonth" resultType="com.kpet.domain.ChartVO">
+	
+		SELECT 
+			c.cate_name, 
+			<!--  to_char(o.ord_regdate, 'YYYY/MM'), --> 
+			sum(od.dt_ord_price * od.dt_ord_amount) as sales
+		FROM 
+			product_tbl p, 
+			detail_ord_tbl od, 
+			order_tbl o, 
+			category_tbl c
+		WHERE 
+			p.pro_num = od.pro_num 
+		AND 
+			p.cate_code = c.cate_code
+		AND 
+			o.ord_code = od.ord_code
+		AND 
+			to_char(o.ord_regdate, 'YYYY/MM')  = #{ord_date}
+		GROUP BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+		ORDER BY 
+			c.cate_name, to_char(o.ord_regdate, 'YYYY/MM')
+	
+	</select>
+	
+	<!-- 차트의 년도를 샐랙트에 담을 수 있도록 코드 추가* -->
+	<select id="getSalesYears" resultType="java.lang.String">
+	    SELECT DISTINCT 
+	    	to_char(ord_regdate, 'YYYY') year
+	    FROM 
+	    	order_tbl
+	</select>
+	
+
+</mapper>  

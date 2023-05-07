@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.OrderMapper">
+
+	<select id="directOrderInfo" resultType="com.kpet.domain.OrderInfoVO">
+	
+		SELECT 
+			pro_num,
+			pro_name, 
+			pro_img, 
+			pro_uploadpath,
+			pro_price * #{ord_amount} as orderprice
+		FROM 
+			product_tbl
+		WHERE 
+			pro_num = #{pro_num}
+	
+	</select>
+	
+	<select id="orderInfo" resultType="com.kpet.domain.OrderInfoVO">
+	
+		SELECT 
+			p.pro_num,
+			p.pro_name, 
+			p.pro_img, 
+			p.pro_uploadpath,
+			c.cart_amount, 
+			p.pro_price * c.cart_amount as orderprice
+		FROM 
+			cart_tbl c inner join product_tbl p
+		ON 
+			c.pro_num = p.pro_num
+		AND 
+			c.user_id = #{user_id}
+	
+	</select>
+	
+	   <!-- 장바구니 체크 주문하기 04/10* -->
+      <select id="checkOrderInfo" resultType="com.kpet.domain.OrderInfoVO">
+        SELECT 
+           c.cart_code,
+         p.pro_num,
+         p.pro_name, 
+         p.pro_img, 
+         p.pro_uploadpath,
+         c.cart_amount, 
+         p.pro_discount * c.cart_amount as orderprice
+      FROM 
+         cart_tbl c inner join product_tbl p
+      ON 
+         c.pro_num = p.pro_num
+      AND 
+         c.user_id = #{user_id}
+        AND 
+           c.cart_code = #{cart_code}
+ 
+   </select>
+	
+	<insert id="orderInsert" parameterType="com.kpet.domain.OrderVO">
+		<selectKey keyProperty="ord_code" order="BEFORE" resultType="Integer">
+			SELECT 
+				seq_order_code.nextval 
+			FROM 
+				dual
+		</selectKey>
+		
+		INSERT INTO 
+			order_tbl
+			(
+				ord_code, 
+        		user_id, 
+        		ord_name, 
+        		ord_postcode, 
+        		ord_addr_basic, 
+        		ord_addr_detail,
+        		ord_phone,
+        		ord_price,  
+        		ord_depositor,
+        		ord_message,
+        		ord_state
+			)
+		VALUES
+			(
+				#{ord_code},
+				#{user_id},
+				#{ord_name},
+				#{ord_postcode},
+				#{ord_addr_basic},
+				#{ord_addr_detail},
+				#{ord_phone},
+				#{ord_price},
+				#{ord_depositor},
+				#{ord_message},
+				#{ord_state}
+			)
+	
+	</insert>
+	
+	<insert id="orderDetailInsert" parameterType="com.kpet.domain.DetailOrder">
+				
+		INSERT INTO 
+			detail_ord_tbl
+			(
+				ord_code, 
+				pro_num, 
+				dt_ord_amount, 
+				dt_ord_price
+			)
+		VALUES
+			(
+				#{ord_code},
+				#{pro_num},
+				#{dt_ord_amount},
+				#{dt_ord_price}				
+			)
+	
+	</insert>
+	<!-- 
+	<select id="getUserOrderList" resultType="com.kpet.domain.OrderVO">
+	
+		SELECT 
+			ord_code, 
+        	user_id, 
+        	ord_name, 
+        	ord_postcode, 
+        	ord_addr_basic, 
+        	ord_addr_detail,
+        	ord_phone,
+        	ord_price,  
+        	ord_depositor,
+        	ord_message, 
+        	ord_state,
+        	ord_regdate 
+		FROM 
+			order_tbl
+		WHERE
+			user_id = #{user_id}
+			
+	</select>
+	-->
+	<select id="getTotalCount" resultType="int">
+			SELECT 
+				count(*) 
+			FROM 
+				order_tbl 
+			WHERE
+				user_id = #{user_id}
+	</select>
+	
+	<select id="userOrderListInfo" resultType="com.kpet.domain.UserOrderListInfo">
+	<!--  
+		SELECT 
+		    od.ord_code, 
+		    pr.pro_num,
+		    pr.pro_name,
+		    od.dt_ord_amount, 
+		    od.dt_ord_price,
+		    pr.pro_uploadpath, 
+		    pr.pro_img
+		FROM 
+		    detail_ord_tbl od		    
+		INNER JOIN
+			product_tbl pr 
+		ON 
+			od.pro_num = pr.pro_num
+		WHERE 
+		    od.ord_code IN (
+		        SELECT 
+		            ord_code
+		        FROM 
+		            order_tbl
+		        WHERE 
+		            user_id = #{user_id}
+    		)
+	-->
+	SELECT
+		o.ord_code, <!-- d -> o로 바꿈 -->
+		d.pro_num,	<!-- p -> d -->
+		p.pro_name,
+		d.dt_ord_amount, 
+		d.dt_ord_price,
+		p.pro_uploadpath, 
+		p.pro_img,
+		o.ord_state,
+        o.ord_regdate,
+        o.ord_price,
+        o.ord_name
+	FROM 
+		order_tbl o
+	JOIN 
+		detail_ord_tbl d
+  	ON 
+  		o.ord_code = d.ord_code
+	JOIN 
+		product_tbl p
+  	ON 
+  		d.pro_num = p.pro_num
+	WHERE 
+		o.user_id = #{user_id}
+	ORDER BY 
+		o.ord_code DESC
+	</select>
+	
+	<!-- //paging으로 수정 -->
+	<!-- 
+		<select id="userOrderListPaging" resultType="com.kpet.domain.UserOrderListInfo">
+	    <![CDATA[
+	SELECT 
+	    RN, 
+	    ORD_CODE, 
+	    PRO_NUM, 
+	    PRO_NAME, 
+	    DT_ORD_AMOUNT, 
+	    DT_ORD_PRICE, 
+	    PRO_UPLOADPATH, 
+	    PRO_IMG, 
+	    ORD_STATE, 
+	    ORD_REGDATE, 
+	    ORD_PRICE, 
+	    ORD_NAME
+	FROM (
+	    SELECT 
+	        rownum rn, 
+	        t.ord_code, 
+	        t.pro_num, 
+	        t.pro_name, 
+	        t.dt_ord_amount, 
+	        t.dt_ord_price, 
+	        t.pro_uploadpath, 
+	        t.pro_img, 
+	        t.ord_state, 
+	        t.ord_regdate, 
+	        t.ord_price, 
+	        t.ord_name 
+	    FROM (
+	        SELECT 
+	            /*+ index_asc(order_tbl pk_order_tbl) */
+	            o.ord_code, 
+	            d.pro_num, 
+	            p.pro_name, 
+	            d.dt_ord_amount, 
+	            d.dt_ord_price, 
+	            p.pro_uploadpath, 
+	            p.pro_img, 
+	            o.ord_state, 
+	            o.ord_regdate, 
+	            o.ord_price, 
+	            o.ord_name 
+	        FROM 
+	            order_tbl o 
+	        JOIN 
+	            detail_ord_tbl d 
+	        ON 
+	            o.ord_code = d.ord_code 
+	        JOIN 
+	            product_tbl p 
+	        ON 
+	            d.pro_num = p.pro_num 
+	        WHERE 
+	            o.user_id = #{user_id} 
+	        ORDER BY 
+	            d.ord_code DESC
+	    ) t 
+	    WHERE 
+	        rownum <= (#{cri.pageNum} * #{cri.amount})
+	) 
+	WHERE 
+	    rn > ((#{cri.pageNum} - 1) * #{cri.amount})
+
+	    ]]>		
+	</select>-->
+	
+	<select id="userOrderListPaging" resultType="com.kpet.domain.OrderVO">
+		<![CDATA[
+		    SELECT 
+	                rn,
+		            ord_code,
+		            ord_name,
+	                ord_price,
+	                ord_state,
+	                ord_regdate
+		    FROM (
+		        SELECT 
+		            /*+ index_desc(order_tbl pk_order_tbl) */
+	                rownum rn,
+		            ord_code,
+		            ord_name,
+	                ord_price,
+	                ord_state,
+	                ord_regdate
+		        FROM 
+		            order_tbl
+		        WHERE 
+		            user_id = #{user_id} 
+	        and
+		        rownum <= (#{cri.pageNum} * #{cri.amount})
+		) 
+		WHERE 
+		    rn > ((#{cri.pageNum} - 1) * #{cri.amount})
+      	]]>
+	</select>
+	
+
+</mapper>  

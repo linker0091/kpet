@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.UserMapper">
+
+	<insert id="join" parameterType="com.kpet.domain.UserVO">
+		
+		INSERT INTO user_tbl(
+			user_id, 
+			user_pw, 
+			user_name,
+			user_postcode,
+			user_addr,
+			user_deaddr, 
+			user_phone, 
+			user_email,
+			user_emailrec
+			)
+		VALUES(
+			#{user_id},
+			#{user_pw},
+			#{user_name},
+			#{user_postcode},
+			#{user_addr},
+			#{user_deaddr},
+			#{user_phone},
+			#{user_email},
+			#{user_emailrec}
+		)
+		
+	</insert>
+	
+	<select id="checkID" resultType="string">
+	
+		SELECT 
+			user_id 
+		FROM 
+			user_tbl
+		WHERE 
+			user_id = #{user_id}
+	
+	</select>
+	
+	<select id="login" resultType="com.kpet.domain.UserVO">
+	
+		SELECT
+			user_id, user_pw, user_name, user_email, user_postcode, user_addr, user_deaddr, user_phone, user_email, user_emailrec, user_regdate, user_updatedate, user_lastlogin
+		FROM
+			user_tbl
+		WHERE 
+			user_id = #{user_id}
+	
+	</select>
+	
+	<select id="searchPwByEmail" resultType="string">
+	
+		SELECT 
+			user_email 
+		FROM 
+			user_tbl
+		WHERE 
+			user_email = #{user_email}
+	
+	</select>
+	
+	<select id="searchIdByEmail" resultType="string">
+	
+		SELECT 
+			user_id 
+		FROM 
+			user_tbl
+		WHERE 
+			user_email = #{user_email}
+	
+	</select>
+	
+	<update id="changePw">
+	
+		UPDATE
+			user_tbl
+		SET 
+			user_pw = #{user_pw}
+		WHERE
+			user_email = #{user_email}
+	
+	</update>
+	
+	<select id="currentPwConfirm" resultType="string">
+	
+		SELECT 
+			user_pw 
+		FROM 
+			user_tbl
+		WHERE 
+			user_id = #{user_id} 
+	
+	</select>
+	
+	<update id="changeNewPw">
+	
+		UPDATE
+			user_tbl
+		SET 
+			user_pw = #{change_user_pw}
+		WHERE
+			user_id = #{user_id}
+	
+	</update>
+	
+	<update id="modify">
+	
+		UPDATE
+			user_tbl
+		SET
+			user_email = #{user_email}, 
+			user_postcode = #{user_postcode}, 
+			user_addr = #{user_addr}, 
+			user_deaddr = #{user_deaddr}, 
+			user_phone = #{user_phone},
+			user_emailrec = #{user_emailrec},
+			user_updatedate = sysdate
+			
+		WHERE
+			user_id = #{user_id}
+	
+	</update>
+	
+	<delete id="regDelete">
+	
+		DELETE FROM
+			user_tbl
+		WHERE
+			user_id = #{user_id}
+	
+	
+	</delete>
+
+<!--  
+	<select id="conSultList" resultType="com.kpet.domain.ConsultVO">
+		select 
+			cst_num, cst_type, cst_title, user_id, cst_content, cst_answer, cst_regdate, cst_updatedate
+		FROM 
+			consult_tbl
+		WHERE 
+			user_id = #{user_id}
+	</select>
+	-->	
+	
+		<!-- //paging으로 수정 04/08* -->
+	<select id="getConSultPaging" resultType="com.kpet.domain.ConsultVO">
+	  
+	    <![CDATA[
+	    select 
+	    	rn,
+	        cst_num, 
+	        cst_type, 
+	        cst_title, 
+	        user_id, 
+	        cst_content, 
+	        cst_answer, 
+	        cst_regdate, 
+	        cst_updatedate
+	    from (
+	    select /*+ index_desc(consult_tbl pk_consult_tbl) */ 
+	        rownum rn, 
+	        cst_num, 
+	        cst_type, 
+	        cst_title, 
+	        user_id, 
+	        cst_content, 
+	        cst_answer, 
+	        cst_regdate, 
+	        cst_updatedate
+	    from 
+	        consult_tbl
+	    where 
+	        user_id = #{user_id}
+	    and 
+	        rownum <= (#{cri.pageNum} * #{cri.amount}) 
+	    )
+	    where 
+	        rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+	    ]]>
+	    
+	</select>	
+
+	
+	<select id="getTotalCount" resultType="int">
+
+		select 
+			count(*) 
+		from 
+			consult_tbl	
+		where 
+	      	user_id = #{user_id}	
+	</select>
+	
+	<insert id="writeIsnert" parameterType="com.kpet.domain.ConsultVO">
+	
+		INSERT INTO consult_tbl(
+			cst_num, 
+			cst_type, 
+			cst_title,
+			user_id,
+			cst_content,
+			cst_img, 
+			cst_uploadpath
+			)
+		VALUES(
+			SEQ_CST_NUM.nextval,
+			#{cst_type},
+			#{cst_title},
+			#{user_id},
+			#{cst_content},
+			#{cst_img},
+			#{cst_uploadpath}
+		)
+			
+	</insert>
+	
+	<select id="getConSult" resultType="com.kpet.domain.ConsultVO">
+		select 
+			cst_num,
+			cst_type,
+			cst_title,
+			user_id,
+			cst_content,
+			cst_answer,
+			cst_regdate,
+			cst_img,
+			cst_uploadpath,
+			cst_updatedate
+		FROM 
+			consult_tbl
+		WHERE 
+			cst_num = #{cst_num}
+	</select>
+	
+	<update id="updateCstAnswer" parameterType="com.kpet.domain.ConsultVO">
+		
+		UPDATE
+			consult_tbl
+		SET 
+			cst_answer = 'Y'
+		WHERE
+			cst_num = #{cst_num}
+	
+	</update>
+	
+	<!-- 코드 수정 04/09* -->
+	<update id="cstModify" parameterType="com.kpet.domain.ConsultVO">
+		
+		UPDATE
+			consult_tbl
+		SET 
+			cst_type = #{cst_type}, 
+			cst_title = #{cst_title},
+			cst_content = #{cst_content},
+			cst_img = #{cst_img},
+			cst_uploadpath = #{cst_uploadpath},
+			cst_updatedate = SYSDATE
+		WHERE
+			cst_num = #{cst_num}
+			
+	</update>
+	
+	<delete id="ansRemove">
+		
+		DELETE FROM
+			answer_tbl
+		WHERE
+			cst_num = #{cst_num}
+	</delete>
+	
+	<delete id="cstRemove">
+		
+		DELETE FROM
+			consult_tbl
+		WHERE
+			cst_num = #{cst_num}
+	</delete>
+	
+
+</mapper>  

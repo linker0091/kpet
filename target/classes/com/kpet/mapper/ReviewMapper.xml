@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.ReviewMapper">
+
+	<sql id="orderby">
+	  <choose>
+ 		 <when test="orderby == 'regdate'">
+      	 ORDER BY rew_regdate DESC
+    	 </when>
+    	 <when test="orderby == 'score'">
+      	 ORDER BY rew_score DESC
+    	 </when>
+    	 <otherwise>
+      	 ORDER BY rew_num DESC
+    	</otherwise>
+ 	 </choose>
+	</sql>
+	
+	
+	<sql id="condition">
+	  <where>
+	    <trim prefix="AND" prefixOverrides="AND">
+	      <if test="con.cate_prtcode > 0">
+	        AND cate_prtcode = #{con.cate_prtcode}
+	      </if>
+	      <if test="con.keyword != null">
+	        AND (pro_name like '%' || #{con.keyword} || '%' OR rew_content like '%' || #{con.keyword} || '%')
+	      </if>
+	      <if test="con.scores != null and con.scores.length > 0">
+	        AND ( <foreach item="score" collection="con.scores" separator=" OR ">
+	          rew_score = #{score}
+	        </foreach>)
+	      </if>
+	    </trim>
+	  </where>
+	</sql>
+		
+
+	<select id="getReviewListWithPaging" resultType="com.kpet.domain.ReviewVO">
+	
+		<![CDATA[ 
+		SELECT 
+			rew_num, 
+		    user_id,
+		    ord_code, 
+		    pro_num, 
+		    rew_content, 
+		    rew_score, 
+		    rew_img, 
+		    rew_uploadpath, 
+		    rew_regdate 
+		FROM (
+		        SELECT 
+		        	/*+ index_desc(review_tbl pk_review_tbl) */ 
+		        	rownum rn, 
+		        	rew_num, 
+		        	user_id, 
+		        	ord_code,
+		        	pro_num, 
+		        	rew_content, 
+		        	rew_score, 
+		       		rew_img, 
+		    		rew_uploadpath, 
+		        	rew_regdate
+				FROM 
+					review_tbl
+				WHERE 
+					pro_num = #{pro_num}
+					AND
+				    rownum <= (#{cri.pageNum} * #{cri.amount}) 
+				)
+		
+		WHERE 
+			rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+		]]>
+	
+	</select>
+
+	<select id="getAllReview" resultType="com.kpet.domain.ReviewAllList">
+
+	SELECT 
+	  rew_num, 
+	  user_id, 
+	  ord_code,
+	  pro_num, 
+	  rew_content, 
+	  rew_score, 
+	  rew_img, 
+	  rew_uploadpath, 
+	  rew_regdate, 
+	  pro_name, 
+	  pro_img, 
+	  pro_uploadpath, 
+	  pro_rewcount, 
+	  pro_rewrating
+	FROM 
+	  (
+	    SELECT 
+	      r.rew_num, 
+	      r.user_id, 
+	      r.ord_code,
+	      r.pro_num, 
+	      r.rew_content, 
+	      r.rew_score, 
+	      r.rew_img, 
+	      r.rew_uploadpath, 
+	      r.rew_regdate, 
+	      p.pro_name, 
+	      p.pro_img, 
+	      p.pro_uploadpath, 
+	      p.pro_rewcount, 
+	      p.pro_rewrating
+	    FROM 
+	      review_tbl r JOIN product_tbl p ON r.pro_num = p.pro_num
+	       WHERE p.pro_num = #{pro_num}
+   		   ORDER BY r.rew_regdate DESC
+	  )		
+	
+	
+	</select>
+
+
+		<select id="getTotalCount" resultType="int">
+			
+			SELECT 
+				count(*) 
+			FROM 
+				review_tbl 
+			WHERE
+				pro_num = #{pro_num}
+			
+		</select>
+
+	<insert id="reviewInsert">
+	
+		INSERT INTO 
+			review_tbl
+			(
+				rew_num, 
+				user_id, 
+				ord_code, 
+				pro_num, 
+				rew_content, 
+				rew_score, 
+				rew_img, 
+		    	rew_uploadpath 
+			)
+		VALUES
+			  (
+			  	SEQ_REVIEW_NUM.NEXTVAL,
+			  	#{user_id}, 
+			  	#{ord_code}, 
+			  	#{pro_num}, 
+			  	#{rew_content}, 
+			  	#{rew_score},
+			  	#{rew_img},
+			  	#{rew_uploadpath}
+			  )
+
+	
+	</insert>
+	
+	<update id="reviewModify">
+	
+		UPDATE
+			review_tbl
+		SET
+			rew_content = #{rew_content},
+			rew_score = #{rew_score},
+			rew_img = #{rew_img},
+			rew_uploadpath = #{rew_uploadpath}
+		WHERE
+			rew_num = #{rew_num}
+	
+	</update>
+	
+	<delete id="reviewDel">
+	
+		DELETE FROM
+			review_tbl
+		WHERE
+			rew_num = #{rew_num}	
+	
+	</delete>
+		
+	<select id="getAllReviewPaging" resultType="com.kpet.domain.ReviewAllList">
+		<![CDATA[
+		SELECT 
+			rew_num, 
+		    user_id, 
+		    ord_code,
+		    pro_num, 
+		    rew_content, 
+		    rew_score, 
+		    rew_img, 
+		    rew_uploadpath, 
+		    rew_regdate, 
+		    pro_name, 
+		    pro_img, 
+		    pro_uploadpath, 
+		    pro_rewcount, 
+		    pro_rewrating
+		FROM (
+		  SELECT 
+		    rew_num, 
+		    user_id, 
+		    ord_code,
+		    pro_num, 
+		    rew_content, 
+		    rew_score, 
+		    rew_img, 
+		    rew_uploadpath, 
+		    rew_regdate, 
+		    pro_name, 
+		    pro_img, 
+		    pro_uploadpath, 
+		    pro_rewcount, 
+		    pro_rewrating, 
+		    ROWNUM AS rn
+		  FROM (
+		    SELECT 
+		      r.rew_num, 
+		      r.user_id, 
+		      r.ord_code,
+		      r.pro_num, 
+		      r.rew_content, 
+		      r.rew_score, 
+		      r.rew_img, 
+		      r.rew_uploadpath, 
+		      r.rew_regdate, 
+		      p.pro_name, 
+		      p.pro_img, 
+		      p.pro_uploadpath, 
+		      p.pro_rewcount, 
+		      p.pro_rewrating
+		    FROM 
+		      review_tbl r JOIN product_tbl p ON r.pro_num = p.pro_num
+		    ]]>
+		    <include refid="orderby"></include>
+		    <![CDATA[
+		  ) r
+		  WHERE 
+		    ROWNUM <= #{cri.pageNum} * #{cri.amount}
+		)
+		WHERE 
+		  rn > ((#{cri.pageNum} - 1) * #{cri.amount})							
+			]]>
+	</select>
+	
+	
+	<select id="getAllTotalCount" resultType="int">
+		
+		SELECT 
+			count(*) 
+		FROM 
+			review_tbl 
+		
+	</select>
+	 
+		<select id="getReviewCriteriaPaging" resultType="com.kpet.domain.ReviewAllList">
+	  <![CDATA[
+	  SELECT 
+	    rew_num, 
+	    user_id, 
+	    ord_code,
+	    pro_num, 
+	    rew_content, 
+	    rew_score, 
+	    rew_img, 
+	    rew_uploadpath, 
+	    rew_regdate, 
+	    pro_name, 
+	    pro_img, 
+	    pro_uploadpath, 
+	    pro_rewcount, 
+	    pro_rewrating
+	  FROM (
+	    SELECT 
+	      rew_num, 
+	      user_id, 
+	      ord_code,
+	      pro_num, 
+	      rew_content, 
+	      rew_score, 
+	      rew_img, 
+	      rew_uploadpath, 
+	      rew_regdate, 
+	      pro_name, 
+	      pro_img, 
+	      pro_uploadpath, 
+	      pro_rewcount, 
+	      pro_rewrating, 
+	      ROWNUM AS rn
+	    FROM (
+	      SELECT 
+	        r.rew_num, 
+	        r.user_id, 
+	        r.ord_code,
+	        r.pro_num, 
+	        r.rew_content, 
+	        r.rew_score, 
+	        r.rew_img, 
+	        r.rew_uploadpath, 
+	        r.rew_regdate, 
+	        p.pro_name, 
+	        p.pro_img, 
+	        p.pro_uploadpath, 
+	        p.pro_rewcount, 
+	        p.pro_rewrating
+	      FROM 
+	        review_tbl r JOIN product_tbl p ON r.pro_num = p.pro_num
+	        ]]> 
+	      <include refid="condition"></include>
+	      <include refid="orderby"></include>
+	      <![CDATA[
+	    ) r
+	    WHERE 
+	      ROWNUM <= #{cri.pageNum} * #{cri.amount}
+	  )
+	  WHERE 
+	    rn > ((#{cri.pageNum} - 1) * #{cri.amount})          
+	  ]]>
+	</select> 
+	
+	<select id="getCriteriaCount" resultType="int">
+		
+		SELECT 
+			count(*) 
+		FROM 
+		     review_tbl r JOIN product_tbl p ON r.pro_num = p.pro_num
+		     
+		<include refid="condition"></include>
+		
+	</select>
+	
+	
+		<select id="getReview" resultType="com.kpet.domain.ReviewVO">
+	
+			        SELECT 
+		        	rew_num, 
+		        	user_id, 
+		        	ord_code,
+		        	pro_num, 
+		        	rew_content, 
+		        	rew_score, 
+		       		rew_img, 
+		    		rew_uploadpath, 
+		        	rew_regdate
+				FROM 
+					review_tbl
+				WHERE 
+					rew_num = #{rew_num}
+	
+		</select>
+		
+				<select id="userReview" resultType="com.kpet.domain.ReviewVO">
+	
+			        SELECT 
+		        	rew_num, 
+		        	user_id, 
+		        	ord_code, 
+		        	pro_num, 
+		        	rew_content, 
+		        	rew_score, 
+		       		rew_img, 
+		    		rew_uploadpath, 
+		        	rew_regdate
+				FROM 
+					review_tbl
+				WHERE 
+					user_id = #{user_id}
+	
+		</select>
+		
+		
+		<select id="getOrdReview" resultType="com.kpet.domain.ReviewVO">
+	 
+			        SELECT 
+		        	rew_num, 
+		        	user_id, 
+		        	ord_code,
+		        	pro_num, 
+		        	rew_content, 
+		        	rew_score, 
+		       		rew_img, 
+		    		rew_uploadpath, 
+		        	rew_regdate
+				FROM 
+					review_tbl
+				WHERE 
+					ord_code = #{ord_code}
+				AND
+					pro_num = #{pro_num}
+	
+		</select>
+		
+		<delete id="review_deleteAll">
+	
+			DELETE FROM
+				review_tbl
+			WHERE
+				pro_num = #{pro_num}
+			
+		</delete>
+
+</mapper>  
