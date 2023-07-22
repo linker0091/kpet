@@ -1,170 +1,90 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ include file="/WEB-INF/views/user/include/plugin_js.jsp" %>
+<%@ include file="/WEB-INF/views/user/include/plugin_js.jsp"%>
 <link href="/css/reset.css" rel="stylesheet" />
-<link href="/css/main_style.css" rel="stylesheet" /> 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="/css/main_style.css" rel="stylesheet" />
+<link
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet">
 
 <style>
+.depth3 {
+	display: block;
+	width: 400px;
+	margin-top: 50px;
+}
 
-    .depth3 { display: block; width: 400px; margin-top: 50px;}
-    .depth2_subbox { display: block; width: 400px; margin-bottom: 10px; }
+.depth2_subbox {
+	display: block;
+	width: 400px;
+	margin-bottom: 10px;
+}
 </style>
 
- 		<div class="wrap_gnb">
-            <div class="container">
-                
-            </div>
-        </div>
- <!-- Header-->
-         <header id="header">
-            <div class="header_top">
-                <div class="container">
-                    <h1>
-                        <a href="/">KPET</a>
-                    </h1>
-                    <div class="side_menu clearfix">
-                        <ul class="clearfix">
-                        	
-                        	<!-- 로그인 이전상태 표시 -->
-    						<c:if test="${sessionScope.loginStatus == null }">
-    	    					<li><a href="/user/login">로그인</a></li>
-                            	<li><a href="/user/join">회원가입</a></li>
-    						</c:if>
-    						<!-- 로그인 이후상태 표시 -->
-						    <c:if test="${sessionScope.loginStatus != null }">
-						    	<li><a href="/user/logout">로그아웃</a></li>
-                            	<li><a href="/user/modify">회원정보 수정</a></li>
-                            	<li><a href="/user/mypage">마이페이지</a></li>
-    						</c:if>
-                            <li><a href="#">고객센터</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="header_bottom">
-                <div class="container">
-                    <div class="header_gnb">
-                        <ul class="clearfix">
-                        	<c:forEach items="${userCategory}" var="categoryVO">
-		  						<li class="nav-item dropdown">
-		  						<!-- 
-		    						1차<a class="nav-link" data-toggle="dropdown" href="${categoryVO.cate_code }" role="button">${categoryVO.cate_name }</a>
-		   								2차 <div class="subCategory drop" id="subCategory_${categoryVO.cate_code }"></div>
-		   								 <a class="nav-link" data-toggle="dropdown" href="${categoryVO.cate_code }" role="button">${categoryVO.cate_name }</a>
-		   								3차  <div class="lastCategory" id="lastCategory_${categoryVO.cate_code }"></div>
-		   								  -->
-		   								 <!-- css 구조 맞추기 -->
-		   						    <a class="nav-link category_menu" data-toggle="dropdown" href="${categoryVO.cate_code }" role="button">${categoryVO.cate_name }</a>
-		   						</li>
-                                <div class="drop clearfix">
-                                    <div class="depth2">
-                                        <ul class="subCategory depth2_subbox" id="subCategory_${categoryVO.cate_code }">
-                                            
-                                                <!-- <ul class='depth3' id='lastsubCategory_${categoryVO.cate_code }'>
-                                               
-                                                </ul> -->
-                                        </ul>
-                                    </div>
-                                    <div class="depth3">
-                                        <ul class='depth3_subbox' id='lastsubCategory_${categoryVO.cate_code }'>
-                                            
-                                        </ul>
-                                    </div>
-                                </div>
-	  						</c:forEach>
-	  						<!-- 
-                            <li>
-                                <a href="#">고양이</a>
-                                <div class="drop clearfix">
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">사료</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">HG사료</a></li>
-                                                    <li><a href="#">내추럴(유기농원료)</a></li>
-                                                    <li><a href="#">베스트(종합영양)</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">간식</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">통살간식</a></li>
-                                                    <li><a href="#">심쿵츄르</a></li>
-                                                    <li><a href="#">댕냥스틱</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">배변/위생</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">벤토나이트 모레</a></li>
-                                                    <li><a href="#">두부모레</a></li>
-                                                    <li><a href="#">천연탈취제</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a href="#">강아지</a>
-                                <div class="drop clearfix">
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">사료</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">네추럴(유기농인증)</a></li>
-                                                    <li><a href="#">베스트</a></li>
-                                                    <li><a href="#">대형견</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">간식</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">통살간식</a></li>
-                                                    <li><a href="#">댕냥스틱</a></li>
-                                                    <li><a href="#">수제/육포간식</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="depth2">
-                                        <ul>
-                                            <li>
-                                                <a href="#">배변/위생</a>
-                                                <ul class="depth3">
-                                                    <li><a href="#">배변패드</a></li>
-                                                    <li><a href="#">탈취제</a></li>
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </li> 
-                             -->
-                             <!--  구조 맞추기 끝 -->
-                            <li><a href="#">리얼리뷰</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </header>
- <script>
+<div class="wrap_gnb">
+	<div class="container"></div>
+</div>
+
+<!-- Header-->
+<header id="header">
+	<div class="header_top">
+		<div class="container">
+			<h1>
+				<a href="/">KPET</a>
+			</h1>
+			<div class="side_menu clearfix">
+				<ul class="clearfix">
+					<!-- 로그인 이전상태 표시 -->
+					<c:if test="${sessionScope.loginStatus == null }">
+						<li><a href="/user/login">로그인</a></li>
+						<li><a href="/user/join">회원가입</a></li>
+					</c:if>
+					<!-- 로그인 이후상태 표시 -->
+					<c:if test="${sessionScope.loginStatus != null }">
+						<li><a href="/user/logout">로그아웃</a></li>
+						<li><a href="/user/modify">회원정보 수정</a></li>
+						<li><a href="/user/mypage">마이페이지</a></li>
+					</c:if>
+					<li><a href="#">고객센터</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="header_bottom">
+		<div class="container">
+			<div class="header_gnb">
+				<ul class="clearfix">
+					<c:forEach items="${userCategory}" var="categoryVO">
+						<li class="nav-item dropdown">
+							<!-- css 구조 맞추기 --> <a class="nav-link category_menu"
+							data-toggle="dropdown" href="${categoryVO.cate_code }"
+							role="button">${categoryVO.cate_name }</a>
+						</li>
+						<div class="drop clearfix">
+							<div class="depth2">
+								<ul class="subCategory depth2_subbox"
+									id="subCategory_${categoryVO.cate_code }">
+								</ul>
+							</div>
+							<div class="depth3">
+								<ul class='depth3_subbox'
+									id='lastsubCategory_${categoryVO.cate_code }'>
+								</ul>
+							</div>
+						</div>
+					</c:forEach>
+
+					<!--  구조 맞추기 끝 -->
+					<li><a href="#">리얼리뷰</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</header>
+
+<script>
 	$(function(){
 	  
 	  //1차 카테고리메뉴 클릭시

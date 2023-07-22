@@ -1,215 +1,231 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-    <title>Pricing example · Bootstrap v4.6</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author"
+	content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+<meta name="generator" content="Hugo 0.88.1">
+<title>Pricing example · Bootstrap v4.6</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/4.6/examples/pricing/">
+<link rel="canonical"
+	href="https://getbootstrap.com/docs/4.6/examples/pricing/">
 
-    
+<!-- Bootstrap core CSS -->
+<!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+<!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/4.6/dist/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="/resources/css/bootstrap.min.css">
 
-    <!-- Bootstrap core CSS -->
-    
-    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
-    <!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/4.6/dist/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
-    
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-      }
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-    </style>
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
 
-    
-    <!-- Custom styles for this template -->
-    <link href="pricing.css" rel="stylesheet">
-  </head>
+.row .container {
+	padding: 128px 0 72px;
+}
 
-  <body>
-    
-<%@include file="/WEB-INF/views/user/include/header.jsp" %>
+.row .container h3 {
+	width: 80%;
+	font-size: 30px;
+	margin-bottom: 30px;
+	margin: 0 auto 52px;
+}
 
-<div class="container">
+.cart_table {
+	width: 80%;
+	margin: 0 auto;
+}
 
-  <div class="row">
-  	<div class="col-sm-12">
-  	<h4>장바구니</h4>
-  	</div>
-  </div>
-  <div class="row">
-	<div class="col-sm-12">
-		<table id="example2"
-			class="table table-bordered table-hover dataTable"
-			role="grid" aria-describedby="example2_info">
-			<thead>
-				<tr role="row">
-					<th class="sorting" tabindex="0" aria-controls="example2"
-						rowspan="1" colspan="1"
-						aria-label="Browser: activate to sort column ascending">상품이미지</th>
-					<th class="sorting" tabindex="0" aria-controls="example2"
-						rowspan="1" colspan="1"
-						aria-label="Browser: activate to sort column ascending">상품명</th>
-					<th class="sorting" tabindex="0" aria-controls="example2"
-						rowspan="1" colspan="1"
-						aria-label="Platform(s): activate to sort column ascending">판매가</th>
-					<th class="sorting" tabindex="0" aria-controls="example2"
-						rowspan="1" colspan="1"
-						aria-label="Engine version: activate to sort column ascending">수량</th>
-					<th class="sorting" tabindex="0" aria-controls="example2"
-						rowspan="1" colspan="1"
-						aria-label="Engine version: activate to sort column ascending">합계</th>
-					<th><input type="checkbox" id="checkAll" name="checkAll"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:if test="${empty cartList}">
-					<tr role="row"
-						class="<c:if test="${status.count % 2 == 0 }">odd</c:if><c:if test="${status.count % 2 != 0 }">even</c:if>">
-						<td colspan="6">장바구니가 비워져있습니다.</td>
-					</tr>
-				</c:if>
-				
-				
-				<c:if test="${not empty cartList}">
-				<c:forEach items="${cartList }" var="cartListVO" varStatus="status">
-					<tr role="row"
-						class="<c:if test="${status.count % 2 == 0 }">odd</c:if><c:if test="${status.count % 2 != 0 }">even</c:if>">
-						<td>
-							<a class="move" href="<c:out value="${cartListVO.pro_num }"></c:out>">
-								<img name="proudctImage" src="/cart/displayFile?fileName=s_<c:out value="${cartListVO.pro_img }"></c:out>&uploadPath=<c:out value="${cartListVO.pro_uploadpath }"></c:out>">
-							</a>
-						</td>
-						<td>
-							<input type="text" value='<c:out value="${cartListVO.pro_name }"></c:out>' readonly>
-						</td>
-						<td>
-							<span class="pro_discount"><c:out value="${cartListVO.pro_discount }"></c:out></span>
-							<input type="hidden" name="" value="<c:out value="${cartListVO.pro_discount }"></c:out>">
-						</td>
-						<td>
-							<input type="number" name="cart_amount" data-code="${cartListVO.cart_code }" value='<c:out value="${cartListVO.cart_amount }"></c:out>'>
-							<input type="button" class="mfy" id="mfy" value="수정">
-						</td>
-						<td>
-								<span class="sum_price"><c:out value="${cartListVO.pro_discount * cartListVO.cart_amount }"></c:out></span>
-						</td>
-						<td><input type="checkbox" class="check" value="<c:out value="${cartListVO.cart_code }" />"></td>
-					</tr>
-				</c:forEach>
-					<tr>
-						<td colspan="6">합계 : <span id="cart_total_price"></span></td>
-					</tr>
-					<tr>
-						<td colspan="6">
-							<input type="button" id="btnOrderAdd" value="주문하기">
-							<input type="button" id="btnCartAllDelete" value="장바구니비우기">
-							<input type="button" id="btnCheckDelete" value="선택삭제">
-						</td>
-					</tr>
-				</c:if>
-			</tbody>
+#example2 td {
+	vertical-align: middle;
+}
 
-		</table>
+.mfy_btn {
+	margin: 10px;
+}
+</style>
+
+<!-- Custom styles for this template -->
+<link href="pricing.css" rel="stylesheet">
+</head>
+
+<body>
+
+	<%@include file="/WEB-INF/views/user/include/header.jsp"%>
+	<div class="row">
+		<div class="container">
+			<h3>장바구니</h3>
+			<div class="cart_table">
+				<div class="col-sm-12">
+					<table id="example2"
+						class="table table-bordered table-hover dataTable" role="grid"
+						aria-describedby="example2_info">
+						<thead>
+							<tr role="row">
+								<th><input type="checkbox" id="checkAll" name="checkAll"></th>
+								<th class="sorting" tabindex="0" aria-controls="example2"
+									rowspan="1" colspan="1"
+									aria-label="Browser: activate to sort column ascending">상품이미지</th>
+								<th class="sorting" tabindex="0" aria-controls="example2"
+									rowspan="1" colspan="1"
+									aria-label="Browser: activate to sort column ascending">상품명</th>
+								<th class="sorting" tabindex="0" aria-controls="example2"
+									rowspan="1" colspan="1"
+									aria-label="Platform(s): activate to sort column ascending">판매가</th>
+								<th class="sorting" tabindex="0" aria-controls="example2"
+									rowspan="1" colspan="1"
+									aria-label="Engine version: activate to sort column ascending">수량</th>
+								<th class="sorting" tabindex="0" aria-controls="example2"
+									rowspan="1" colspan="1"
+									aria-label="Engine version: activate to sort column ascending">합계</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:if test="${empty cartList}">
+								<tr role="row"
+									class="<c:if test="${status.count % 2 == 0 }">odd</c:if><c:if test="${status.count % 2 != 0 }">even</c:if>">
+									<td colspan="6">장바구니가 비워져있습니다.</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty cartList}">
+								<c:forEach items="${cartList }" var="cartListVO"
+									varStatus="status">
+									<tr role="row"
+										class="<c:if test="${status.count % 2 == 0 }">odd</c:if><c:if test="${status.count % 2 != 0 }">even</c:if>">
+										<td style="width: 5%;"><input type="checkbox"
+											class="check"
+											value="<c:out value="${cartListVO.cart_code }" />"></td>
+										<td style="width: 20%;"><a href="${cartListVO.pro_num }"
+											class="proDetail"> <img name="proudctImage"
+												src="/cart/displayFile?fileName=s_<c:out value="${cartListVO.pro_img }"></c:out>&uploadPath=<c:out value="${cartListVO.pro_uploadpath }"></c:out>">
+										</a></td>
+										<td style="width: 20%;"><a href="${cartListVO.pro_num }"
+											class="proDetail"> <span><c:out
+														value="${cartListVO.pro_name }"></c:out></span>
+										</a></td>
+										<c:if test="${cartListVO.pro_amount != 0}">
+											<td style="width: 20%;"><span class="pro_discount"><c:out
+														value="${cartListVO.pro_discount }"></c:out></span></td>
+											<td style="width: 15%;"><input type="number"
+												class="form-control" style="width: 80%;" name="cart_amount"
+												data-code="${cartListVO.cart_code }"
+												value='<c:out value="${cartListVO.cart_amount }"></c:out>'>
+												<input type="hidden" class="pro-amount" name="pro_amount"
+												value="<c:out value="${cartListVO.pro_amount }"></c:out>">
+												<input type="button" class="mfy mfy_btn" id="mfy" value="수정">
+											</td>
+											<td style="width: 20%;"><span class="sum_price"><c:out
+														value="${cartListVO.pro_discount * cartListVO.cart_amount }"></c:out></span>
+											</td>
+										</c:if>
+										<c:if test="${cartListVO.pro_amount == 0}">
+											<td colspan="3"><span class="pro_amount"
+												data-amount="${cartListVO.pro_amount }"
+												style="color: #007bff; font-weight: bold;">품절 되어 주문할
+													수 없습니다.</span></td>
+										</c:if>
+									</tr>
+								</c:forEach>
+								<tr>
+									<td colspan="6">합계 : <span id="cart_total_price"></span></td>
+								</tr>
+								<tr>
+									<td colspan="6"><input type="button" id="btnOrderAdd"
+										class="btn btn-outline-success" value="주문하기"> <input
+										type="button" id="btnCartAllDelete" class="btn btn-light"
+										value="장바구니비우기"> <input type="button"
+										id="btnCheckDelete" class="btn btn-dark" value="선택삭제">
+									</td>
+								</tr>
+							</c:if>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
-	</div>
+	<%@include file="/WEB-INF/views/user/include/footer.jsp"%>
 
-    </div>
-      <%@include file="/WEB-INF/views/user/include/footer.jsp" %>
-   	
-    <script>
+	<script>
 
 		$(function(){
-			
+
 			let isCheck = true;
-			/*전체선택 체크박스 클릭*/
+			/* 전체 선택 체크박스 클릭 */
 			$("#checkAll").on("click", function(){
-				$(".check").prop("checked", this.checked);
-
-				isCheck = this.checked;
+			  let isCheck = this.checked;
+			  $(".check").each(function(){
+			    if($(this).closest("tr").find(".pro-amount").val() > 0) { /* 수정된 부분 */
+			      $(this).prop("checked", isCheck);
+			    }
+			  });
 			});
 
-			// 데이터행 체크박스 클릭
-			$(".check").on("click", function(){
-				
-				$("#checkAll").prop("checked", this.checked);
-
-					$(".check").each(function(){
-					if(!$(this).is(":checked")) {		// 체크박스중 하나라도 해제된 상태라면  false
-						$("#checkAll").prop("checked", false);
-					}
-
-				});
+			/* 각각의 체크박스가 클릭되었을 때 */
+			$(".check").on("click", function() {
+			  /* 전체 선택 체크박스를 체크 또는 체크 해제 */
+			  let allChecked = true;
+			  $(".check").each(function(){
+			    if ($(this).closest("tr").find(".pro-amount").val() > 0 && !$(this).prop("checked")) { /* 수정된 부분 */
+			      allChecked = false;
+			      return false; /* break */
+			    }
+			  });
+			  $("#checkAll").prop("checked", allChecked);
 			});
-			
+		
 			
 			cartTotalPrice();
 
 			// 장바구니 수량변경을 클릭
-			$("input[name='cart_amount']").on("change", function(){
+			$("input[name='cart_amount']").on("change", function() {
+			  let maxValue = $("input[name='pro_amount']").val();
+			  let currentValue = parseInt($(this).val());
 
-				
-				let pro_discount = $(this).parent().parent().find("td span.pro_discount").text();
-				let sum_price = pro_discount * $(this).val();
+			  if (currentValue > maxValue) {
+			    alert("선택 가능한 수량은 " + maxValue + "개 입니다.");
+			    $(this).val(maxValue);
+			    currentValue = parseInt(maxValue);
+			  } else if (currentValue <= 1) {
+			    alert("선택 가능한 최소 수량은 1개 입니다.");
+			    $(this).val(1);
+			    currentValue = 1;
+			  }
 
-				$(this).parent().parent().find("td span.sum_price").text(sum_price);
-				
-				cartTotalPrice();
+			  let pro_discount = $(this).parent().parent().find("td span.pro_discount").text();
+			  let sum_price = pro_discount * currentValue;
 
+			  $(this).parent().parent().find("td span.sum_price").text(sum_price);
+
+			  cartTotalPrice();
 			});
-			
-			/*
-	        //장바구니 담기
-	        $("button[name='btnCartAdd']").on("click", function(){
-	            
-	            let pro_num = $(this).parents("div.card-body").find("input[name='pro_num']").val();
-	            
-	           // console.log("상품코드" + pro_num);
 
-	           $.ajax({
-	              url: '/cart/cartAdd',
-	              type: 'post',
-	              dataType: 'text',
-	              data: {pro_num: pro_num, cart_amount : 1},
-	              success: function(data) {
-	                if(data == "success") {
-	                  if(confirm("장바구니에 추가되었습니다.\n 지금 확인하겠습니까?")){
-	                    location.href = "/cart/cartList";
-	                  }else{
-	                      location.reload();
-	                  };
-	                }
-	              }
-	           });
-	        });
-			
-			*/
-			
 			
 			//장바구니 수량변경 수정버튼 클릭
 		 	$(document).on("click", ".mfy", function(){
 		        let row = $(this).closest('tr');
 		        let cart_amount = row.find('input[name="cart_amount"]').val();
 		        let cart_code = row.find('input[name="cart_amount"]').data("code");
+		        
 		        console.log("cart_amount: " + cart_amount);
 		        console.log("cart_code: " + cart_code);
 		        $.ajax({
@@ -295,32 +311,38 @@
 
 		}
 
-		//주문하기
-		$("#btnOrderAdd").on("click", function(){
-				
-			location.href = "/order/orderInfo?type=cart_order";
-		});
-		
 	      //장바구니 선택 주문 *
 	      $("#btnOrderAdd").on("click", function(){
-	         if($(".check:checked").length == 0){
+	         if($(".check:checked").length == 0 ){
 	            console.log("cart 전체주문" + $(".check:checked").length);
-	            location.href = "/order/orderInfo?type=cart_order";
-	         }
+	            alert("상품을 선택해주세요.");
+	     		 return false;
+	         }    		
 	         
 	         let cart_codeArr = [];   
 	         
 	         //선택된 체크박스 일 경우
 	         $(".check:checked").each(function(){
-	            let cart_code = $(this).val();
-	            cart_codeArr.push(cart_code);   
-	         
-	          console.log("cart 선택 주문 : " + cart_codeArr);
-
-	         location.href = "/order/orderInfo?type=check_order&cart_codeArr="+cart_codeArr;
+	        	 
+	             let pro_amount = parseInt($(this).closest("tr").find(".pro_amount").data("amount"));
+	             //상품 재고가 0인 경우
+	             if (pro_amount === 0) {
+	            	 //$('input:checked').prop('checked', false);
+	            	  $(this).prop("checked", false);
+	          		 alert("현재 상품이 품절되어 주문할 수가 없습니다.")
+	          		 return false;
+	             }
+	             
+	           	  //체크 된 데이터 값을 가져와 배열에 넣는다.
+	               if (pro_amount != 0 && $(this).is(":checked")) {
+	                 let cart_code = $(this).val();
+	                 cart_codeArr.push(cart_code);
+	                 location.href = "/order/orderInfo?type=check_order&cart_codeArr=" + cart_codeArr;      
+	               }
 	         })
+
 	      });
-		
+
 		//상품클릭
 		$(".move").on("click", function(e){
 	      	e.preventDefault();
@@ -332,7 +354,14 @@
 	        actionForm.attr("action", "/product/productDetail");
 	        actionForm.submit();
 		    });
-
+		
+		 //상품 상세페이지 이동
+	    $("a.proDetail").on("click", function(e){
+	      e.preventDefault();
+	        let pro_num = $(this).attr("href");
+			location.href= "/product/productDetail?pro_num=" + pro_num;
+	    });
+		 
 	</script>
-  </body>
+</body>
 </html>

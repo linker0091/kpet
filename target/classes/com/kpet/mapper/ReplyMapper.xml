@@ -8,10 +8,6 @@
 		insert into reply_tbl(rno, bno, reply, user_id) values(SEQ_REPLY_NUM.nextval,#{bno}, #{reply}, #{user_id} )
 	</insert>
 	
-	<select id="read" resultType="com.kpet.domain.ReplyVO">
-		select * from reply_tbl where rno = #{rno}
-	</select>
-	
 	<update id="update">
 		update reply_tbl set reply = #{reply}, updatedate = sysdate
 		where rno = #{rno}

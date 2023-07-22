@@ -10,5 +10,6 @@ public class OrderInfoVO {
 	private String pro_img;
 	private String pro_uploadpath;
 	private int cart_amount;
+	private int pro_discount;
 	private int orderprice;
 }

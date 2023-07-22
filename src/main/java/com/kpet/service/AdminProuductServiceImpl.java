@@ -77,6 +77,7 @@ public class AdminProuductServiceImpl implements AdminProuductService {
 	@Override
 	public int product_delete(Integer pro_num) {
 		// TODO Auto-generated method stub
+		//리뷰 삭제
 		rew_mapper.review_deleteAll(pro_num);
 		return mapper.product_delete(pro_num);
 	}
@@ -93,8 +94,4 @@ public class AdminProuductServiceImpl implements AdminProuductService {
 		return mapper.product_rew_dlupdate(rew_num);
 	}
 
-	
-	
-
-	
 }

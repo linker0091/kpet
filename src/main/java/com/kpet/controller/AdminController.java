@@ -1,5 +1,6 @@
 package com.kpet.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kpet.domain.AdminVO;
-import com.kpet.domain.Criteria;
 import com.kpet.service.AdminService;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +40,7 @@ public class AdminController {
 		
 	}
 	
-	
+/*	
 	// 관리자 로그인 인증
 	@PostMapping("/logon")
 	public String adLoginOk(String ad_id, String ad_pw, HttpSession session, RedirectAttributes rttr) {
@@ -54,7 +53,7 @@ public class AdminController {
 		String redirectUrl = "";
 		
 		AdminVO vo = service.adminLogin(ad_id);
-		
+		log.info("관리자 vo: " + vo);
 		//아이디가 존재한다면
 		if(!StringUtils.isEmpty(vo)) {
 			
@@ -75,6 +74,47 @@ public class AdminController {
 		
 		return "redirect:" + redirectUrl;
 	}
+*/
+	// 관리자 로그인 인증
+	@PostMapping("/logon")
+	public String adLoginOk(String ad_id, String ad_pw, HttpSession session, RedirectAttributes rttr) {
+		
+		log.info("관리자 아이디: " + ad_id);
+		log.info("관리자 비번: " + ad_pw);
+		
+		String redirectUrl = "";
+		AdminVO vo = service.adminLogin(ad_id);
+		
+		log.info("관리자 vo: " + vo);
+		
+		//아이디가 존재한다면
+		if(!StringUtils.isEmpty(vo)) {
+			
+			// 비밀번호가 일치한다면(즉 인증성공)
+			if(cryptPassEnc.matches(ad_pw, vo.getAd_pw())) {
+			
+				session.setAttribute("adminStatus", vo);
+				
+				Date ad_lastlogin = new Date();
+				log.info("user_lastlogin: " + ad_lastlogin);
+				// 마지막 로그인 시간 업데이트
+	            service.updateLastlogin(ad_lastlogin,ad_id); // 사용자 정보 업데이트 메서드 호출
+				
+				
+				redirectUrl = "/admin/main";
+				
+			}else {	// 비밀번호가 틀린 경우
+				redirectUrl = "/admin/logon";
+				rttr.addFlashAttribute("msg", "failPw");
+			}
+			
+		}else {		// 아이디가 틀린 경우
+			redirectUrl = "/admin/logon";
+			rttr.addFlashAttribute("msg", "failId");
+		}
+		
+		return "redirect:" + redirectUrl;
+	}	
 	
 	//관리자 로그온 후에 보여줄 메뉴페이지
 	@GetMapping("/main")
@@ -83,13 +123,13 @@ public class AdminController {
 	}
 	
 	//관리자회원 추가 폼
-	@GetMapping("/adminRegister")
+	@GetMapping("/adRegister")
 	public void adminRegister() {
 		
 	}
 	
 	//관리자회원 저장
-	@PostMapping("/adminRegister")
+	@PostMapping("/adRegister")
 	public String adminRegister(AdminVO vo, RedirectAttributes rttr) {
 		
 		vo.setAd_pw(cryptPassEnc.encode(vo.getAd_pw()));
@@ -102,18 +142,20 @@ public class AdminController {
 			rttr.addFlashAttribute("msg", "fail");
 		}
 		
-		return "redirect:/admin/adminRegister";
+		return "redirect:/admin/adRegister";
 	}
 	
 	//로그아웃
 	@GetMapping("/logout")
 	public String logout(HttpSession session, RedirectAttributes rttr) {
 		
+		//세션 삭제
 		session.invalidate();
 		
 		return "redirect:/admin/logon";
 	}
 	
+	//관리자 관리 페이지
 	@GetMapping("/adManagement")
 	public void adManagement(Model model) {
 		List<AdminVO> AdminList = service.getAdminList();
@@ -148,8 +190,6 @@ public class AdminController {
 			entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
 		}
 		
-		
-		
 		return entity;
 	}	
 	
@@ -168,6 +208,7 @@ public class AdminController {
 		try {
 			
 			for(int i=0; i < ad_idArr.size(); i++) {
+				//관리자 직책 변경
 				service.adPosition_modify(ad_idArr.get(i), ad_positionArr.get(i));
 			}
 

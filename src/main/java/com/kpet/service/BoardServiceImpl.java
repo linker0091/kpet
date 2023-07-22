@@ -82,8 +82,6 @@ public class BoardServiceImpl implements BoardService {
 		// 기존게시물 수정작업
 		boolean modifyResult = mapper.update(board) == 1;
 		
-		
-		
 		//2)신규파일 추가---> 결과적으로 수정의 의미가 된다.
 		if(modifyResult && board.getAttachList() != null && board.getAttachList().size() >= 0) {
 			
@@ -93,10 +91,7 @@ public class BoardServiceImpl implements BoardService {
 				attachMapper.insert(attach);
 				
 			});
-		
 		}
-
-		
 	}
 
 	//게시물삭제.

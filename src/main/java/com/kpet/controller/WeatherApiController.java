@@ -38,6 +38,7 @@ import lombok.extern.log4j.Log4j;
 @Controller
 public class WeatherApiController {
 	
+	//도시별 날씨
 	@GetMapping("/cityWeather")
 	public void getVilageFcst(Model model,HttpSession session) {
 	   
@@ -240,10 +241,9 @@ public class WeatherApiController {
 		return list;
 	}
 	
-    // 매 30분마다 실행
+    // 매 40분마다 실행
     @Scheduled(cron = "0 0/40 * * * ?")
     public void scheduledTask() {
         log.info("스케쥴링 테스트");
-        // 스케쥴링 실행 시 동작할 코드
     }
 }

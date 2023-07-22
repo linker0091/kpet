@@ -32,14 +32,14 @@ import lombok.extern.log4j.Log4j;
 @RequestMapping("/product/*")
 @Controller
 public class UserProductController {
-	
+	//상품이미지 업로드 폴더
 	@Resource(name = "uploadFolder")
 	String uploadFolder; // d:\\dev\\upload */
 
 	@Inject // 필드주입
 	private UserProductService service;
 	
-	// 2차카테고리 정보  ajax  $.getJson(url 로 호출
+	// 2차카테고리 정보  
 	@ResponseBody
 	@GetMapping(value = "subCategory/{mainCategoryCode}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<CategoryVO>> subCategory(@PathVariable("mainCategoryCode") Integer cate_prtcode){
@@ -48,13 +48,9 @@ public class UserProductController {
 		
 		ResponseEntity<List<CategoryVO>> entity = null;
 		
-		//if (cate_subprtcode == 44444)	{
-			// cate_subprtcode = null;
 			entity = new ResponseEntity<List<CategoryVO>>(service.subCategory(cate_prtcode), HttpStatus.OK);
 			log.info("서브코드 4 cate_prtcode: " + cate_prtcode);
 			log.info(entity);
-			//log.info("서브코드 4 cate_subprtcode: " + cate_subprtcode);
-		//}
 		
 		return entity;
 	}
@@ -77,53 +73,16 @@ public class UserProductController {
 				
 				log.info("넘기는 데이타 cate_subprtcode: " + entity);
 				
-			
 			return entity;
 		}
 	
-	
-	
-	
 	// 메인에서 카테고리별 상품리스트
 	@GetMapping("/productMain")
-	public void productMain(@RequestParam(value="cate_prtcode", required = false)Integer cate_prtcode, Criteria cri, Model model) {
-		cate_prtcode = 1;
-		List<ProductVO> list = service.getListWithPaging(cate_prtcode, cri);
-		
-		for(int i=0; i<list.size(); i++) {
-			ProductVO vo = list.get(i);
-			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-		}
-		//top:1, pants:2 shirts:3
-		/*
-		List<ProductVO> catList = service.productListByCategory(1);
-		// 슬래시로 바꾸는 구문.
-		for(int i=0; i<catList.size(); i++) {
-			ProductVO vo = catList.get(i);
-			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-		}
-		List<ProductVO> dogList = service.productListByCategory(2);
-		// 슬래시로 바꾸는 구문.
-		for(int i=0; i<dogList.size(); i++) {
-			ProductVO vo = dogList.get(i);
-			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-		}
-		List<ProductVO> shirtsList = service.productListByCategory(3);
-		// 슬래시로 바꾸는 구문.
-		for(int i=0; i<shirtsList.size(); i++) {
-			ProductVO vo = shirtsList.get(i);
-			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-		}
-		
-		model.addAttribute("catProductList", catList);
-		model.addAttribute("dogProductList", dogList);
-		*/
-		model.addAttribute("list", list);
+	public void productMain(@RequestParam(value="cate_prtcode", required = false)Integer cate_prtcode) {
 		
 	}
 	
-	
-	
+	//탭 클릭
 	//탭메뉴 클릭시 ajax요청 post ResponseEntity<String>   + get방식  jsp따로 요청주소 필요
 	@ResponseBody
 	@PostMapping("/tabClick")
@@ -141,11 +100,13 @@ public class UserProductController {
 		
 	}
 	
+	//메인 탭 상품 리스트
 	@GetMapping("/tabProduct")
 	public String tabProduct(@RequestParam(value="cate_prtcode", required = false)Integer cate_prtcode, Criteria cri, Model model) {
 		if(cate_prtcode == null ) { cate_prtcode = 1; };
 		log.info("cate_prtcode 값: " + cate_prtcode);
 		
+		//탭에 따른 상품 리스트
 		List<ProductVO> list = service.getListWithPaging(cate_prtcode, cri);
 		
 		for(int i=0; i<list.size(); i++) {
@@ -157,12 +118,11 @@ public class UserProductController {
 		return "/product/tabProduct";
 	}
 	
-	
-	// 1차카테고리에 해당하는 상품리스트
+	//카테고리별 상품리스트
 	@GetMapping("/productList")
 	public void productList(@ModelAttribute("cri") Criteria cri, @RequestParam(value="cate_code", required = false) Integer cate_code, @ModelAttribute("cate_prtcode") Integer cate_prtcode, @RequestParam(value="cate_subprtcode",  required = false) Integer cate_subprtcode, Model model) {
 		
-		cri.setAmount(3);
+		cri.setAmount(8);
 		
 		log.info("컨트롤러cri" + cri);
 		
@@ -175,21 +135,25 @@ public class UserProductController {
 			total = service.getTotalCount(cate_prtcode);
 			log.info("1차카테고리 총상품개수total: " + total);
 			model.addAttribute("cateType", "firstCate");
-		}else if(cate_code == null ) { //2차 카테에 해당 상품리스트
+		}
+		//2차 카테 해당 상품리스트
+		else if(cate_code == null ) { //2차 카테에 해당 상품리스트
 			list = service.getLastListWithPaging(cate_prtcode, cate_subprtcode, cri);
 			total = service.getSubTotalCount(cate_prtcode, cate_subprtcode);
 			log.info("2차카테고리 총상품개수total: " + total);
 			model.addAttribute("cate_subprtcode", cate_subprtcode);
 			model.addAttribute("cateType", "secondCate");
-		}else if(cate_prtcode != null && cate_subprtcode != null && cate_code != null) {		//3차 카테에 해당 상품리스트
+		}
+		//3차 카테 해당 상품리스트
+		else if(cate_prtcode != null && cate_subprtcode != null && cate_code != null) {		//3차 카테에 해당 상품리스트
 			list = service.getFinallListWithPaging(cate_code, cate_prtcode, cate_subprtcode, cri);
 			total = service.getFinallSubTotalCount(cate_code, cate_prtcode, cate_subprtcode);
 			log.info("3차카테고리 총상품개수total: " + total);
 			model.addAttribute("cate_subprtcode", cate_subprtcode);
+			
 			model.addAttribute("cate_code", cate_code);
 			model.addAttribute("cateType", "thirdCate");
 		};
-		
 		
 		// 슬래시를 역슬래시로 바꾸는 구문.
 		for(int i=0; i<list.size(); i++) {
@@ -197,10 +161,7 @@ public class UserProductController {
 			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
 		}
 		
-		
-		
 		log.info("total: " + total);
-		
 		
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
 		model.addAttribute("productList", list);
@@ -208,67 +169,10 @@ public class UserProductController {
 
 	}
 	
-	// 2차카테고리에 해당하는 상품리스트
-		@GetMapping("/productSubList")
-		public void productSubList(@ModelAttribute("cri") Criteria cri, @ModelAttribute("cate_prtcode") Integer cate_prtcode, @ModelAttribute("cate_subprtcode") Integer cate_subprtcode, Model model) {
-			
-			cri.setAmount(3);
-			
-			log.info("컨트롤러cri" + cri);
-						
-			List<ProductVO> list = service.getLastListWithPaging(cate_prtcode, cate_subprtcode, cri);
-			
-			// 슬래시를 역슬래시로 바꾸는 구문.
-			for(int i=0; i<list.size(); i++) {
-				ProductVO vo = list.get(i);
-				vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-			}
-			
-			int total = service.getSubTotalCount(cate_prtcode, cate_subprtcode);
-			log.info("total: " + total);
-			
-			
-			model.addAttribute("subPageMaker", new PageDTO(cri, total));
-			model.addAttribute("subProductList", list);
-			
-			log.info("받아오는값 list: " + list);
-
-		}
-		
-		// 3차카테고리에 해당하는 상품리스트
-				@GetMapping("/productFinallSubList")
-				public void ProductFinallSubList(@ModelAttribute("cri") Criteria cri, @ModelAttribute("cate_code") Integer cate_code, @ModelAttribute("cate_prtcode") Integer cate_prtcode, @ModelAttribute("cate_subprtcode") Integer cate_subprtcode, Model model) {
-					
-					cri.setAmount(3);
-					
-					log.info("컨트롤러cri" + cri);
-								
-					List<ProductVO> list = service.getFinallListWithPaging(cate_code, cate_prtcode, cate_subprtcode, cri);
-					
-					// 슬래시를 역슬래시로 바꾸는 구문.
-					for(int i=0; i<list.size(); i++) {
-						ProductVO vo = list.get(i);
-						vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-					}
-					
-					int total = service.getFinallSubTotalCount(cate_code, cate_prtcode, cate_subprtcode);
-					log.info("total: " + total);
-					
-					
-					model.addAttribute("lastPageMaker", new PageDTO(cri, total));
-					model.addAttribute("lastProductList", list);
-					
-					log.info("받아오는값 list: " + list);
-
-				}
-		
-	
 	//상품상세설명
-	// 파라미터가 참조형일 경우에 값을 파라미터에 제공하지 않으면, 기본생성자 메서드가 자동으로 호출된다.
-	// @RequestParam 사용시 파라미터값을 제공해야 한다. @RequestParam 사용하지않으면, 참조형일 경우에는 에러가 발생되지 않는다.
 	@GetMapping("/productDetail")
-	public void productDetail(@RequestParam(value = "type", defaultValue = "Y") String type, @RequestParam(value = "cateType", defaultValue = "firstCate") String cateType, @ModelAttribute("cri") Criteria cri, @ModelAttribute("cate_code") Integer cate_code, @RequestParam("pro_num") Integer pro_num, Model model) {
-		
+	public void productDetail(@RequestParam(value = "type", defaultValue = "Y") String type, @RequestParam(value = "cateType", defaultValue = "firstCate") String cateType, @ModelAttribute("cri") Criteria cri, @RequestParam(value="cate_code", required = false) Integer cate_code, @RequestParam("pro_num") Integer pro_num, Model model) {
+
 		ProductVO vo = service.productDetail(pro_num);
 		vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
 		
@@ -286,7 +190,6 @@ public class UserProductController {
 	@GetMapping("/productSearchList")
 	public void productSearchList(@ModelAttribute("orderby") String orderby, @ModelAttribute("con") Condition con, @ModelAttribute("cri") Criteria cri, Model model) {
 		
-		
 		//1차카테고리 정보
 		model.addAttribute("mainCategory", service.mainCategory());
 		
@@ -300,7 +203,7 @@ public class UserProductController {
 		list = service.productSearchList(orderby,con,cri);
 
 		total = service.productSearchCount(con,cri);
-		//}
+
 		// 슬래시를 역슬래시로 바꾸는 구문.
 		for(int i=0; i<list.size(); i++) {
 			ProductVO vo = list.get(i);
@@ -327,9 +230,4 @@ public class UserProductController {
 		return entity;
 	}
 	
-	//search page
-	@GetMapping("/search") 
-	public void search() {
-		
-	}
 }

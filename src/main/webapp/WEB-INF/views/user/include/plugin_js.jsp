@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 
 <!-- jQuery 3 -->
 <script src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -9,9 +9,6 @@
 <script src="/dist/js/adminlte.min.js"></script>
 <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
 
-
-
-
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
-     Both of these plugins are recommended to enhance the
-     user experience. -->
+      Both of these plugins are recommended to enhance the
+      user experience. -->

@@ -230,43 +230,4 @@ public class ChartController {
 	    return mv;
 	}
 	
-	@ResponseBody
-	@GetMapping(value = "/monthlyOrder2", produces = "application/text; charset=utf8")
-	public ResponseEntity<String> monthlyOrderChart2(@RequestParam(value = "ord_date", required = false) String ord_date) throws Exception{
-		
-		ResponseEntity<String> entity = null;
-		
-		log.info(ord_date);
-		//Timestamp currentDate = new Timestamp(System.currentTimeMillis());
-		
-		if(StringUtils.isEmpty(ord_date)) {
-			Date now = new Date();
-					
-			SimpleDateFormat format = new SimpleDateFormat("yyyy/MM");
-			ord_date = format.format(now);  // 2022/04
-		}
-		
-		List<ChartVO> month_list = service.primaryChartByMonth(ord_date);
-		
-		String monthData = "";
-		
-		if(month_list.size() != 0) monthData = "[['1차 카테고리', '년월매출'],";
-
-		int i = 0;
-		for(ChartVO vo : month_list) {
-			monthData += "['" + vo.getCate_name() + "'," + vo.getSales() + "]";
-			i++;
-			// 마지막 데이타 작업시 콤마(,)는 추가하지않는다.
-			if(i < month_list.size()) monthData += ",";	
-		}
-
-		monthData += "]";
-		
-		log.info(monthData);
-		
-		
-		entity = new ResponseEntity<String>(monthData, HttpStatus.OK);
-		
-		return entity;
-	}
 }

@@ -1,5 +1,6 @@
 package com.kpet.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,12 @@ public class AdminServiceImpl implements AdminService {
 		// TODO Auto-generated method stub
 		mapper.adPosition_modify(ad_id, ad_position);
 		
+	}
+
+	@Override
+	public int updateLastlogin(Date ad_lastlogin, String ad_id) {
+		// TODO Auto-generated method stub
+		return mapper.updateLastlogin(ad_lastlogin, ad_id);
 	}
 
 	

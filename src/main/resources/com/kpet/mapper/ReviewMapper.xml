@@ -77,7 +77,32 @@
 		]]>
 	
 	</select>
+	
+	<select id="getReviewImg" resultType="com.kpet.domain.ReviewAllList">
 
+	SELECT 
+	  rew_num, 
+	  pro_num, 
+	  rew_img, 
+	  rew_uploadpath,
+	  rew_regdate 
+	FROM 
+	  (
+	    SELECT 
+	      r.rew_num, 
+	      r.pro_num, 
+	      r.rew_img, 
+	      r.rew_uploadpath, 
+	      rew_regdate 
+	    FROM 
+	      review_tbl r JOIN product_tbl p ON r.pro_num = p.pro_num
+	       WHERE p.pro_num = #{pro_num}
+	       AND r.rew_img IS NOT NULL
+   		   ORDER BY r.rew_regdate DESC
+	  )		
+	
+	</select>
+	
 	<select id="getAllReview" resultType="com.kpet.domain.ReviewAllList">
 
 	SELECT 
@@ -118,11 +143,9 @@
    		   ORDER BY r.rew_regdate DESC
 	  )		
 	
-	
 	</select>
-
-
-		<select id="getTotalCount" resultType="int">
+	
+	<select id="getTotalCount" resultType="int">
 			
 			SELECT 
 				count(*) 
@@ -131,8 +154,8 @@
 			WHERE
 				pro_num = #{pro_num}
 			
-		</select>
-
+	</select>
+	
 	<insert id="reviewInsert">
 	
 		INSERT INTO 
@@ -159,7 +182,6 @@
 			  	#{rew_uploadpath}
 			  )
 
-	
 	</insert>
 	
 	<update id="reviewModify">
@@ -335,7 +357,6 @@
 		
 	</select>
 	
-	
 		<select id="getReview" resultType="com.kpet.domain.ReviewVO">
 	
 			        SELECT 
@@ -355,7 +376,7 @@
 	
 		</select>
 		
-				<select id="userReview" resultType="com.kpet.domain.ReviewVO">
+		<select id="userReview" resultType="com.kpet.domain.ReviewVO">
 	
 			        SELECT 
 		        	rew_num, 
@@ -373,7 +394,6 @@
 					user_id = #{user_id}
 	
 		</select>
-		
 		
 		<select id="getOrdReview" resultType="com.kpet.domain.ReviewVO">
 	 

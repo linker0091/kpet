@@ -13,26 +13,21 @@ import com.kpet.domain.UserOrderListInfo;
 
 public interface OrderMapper {
 
-	public List<OrderInfoVO> orderInfo(String user_id);
-	
 	public List<OrderInfoVO> directOrderInfo(@Param("pro_num") Integer pro_num, @Param("ord_amount") Integer ord_amount);
 	
-	// 장바구니 체크 주문하기*
+	// 장바구니 체크 주문하기
 	public OrderInfoVO checkOrderInfo(@Param("cart_code") Integer cart_code, @Param("user_id") String user_id);
 	
 	public void orderInsert(OrderVO vo);
 	
 	public void orderDetailInsert(DetailOrder vo);
 	
-	/*일반 주문목록*/
-	/*
-	public List<OrderVO> getUserOrderList(String user_id);
-	*/
 	public List<UserOrderListInfo> userOrderListInfo(String user_id);
 	
 	public int getTotalCount(String user_id);
 	
 	public List<OrderVO> userOrderListPaging(@Param("cri") Criteria cri, @Param("user_id") String user_id);
 	
-	
+	public int ordStateCount(@Param("user_id") String user_id, @Param("ord_state") String ord_state, @Param("threeMonthsDate") String threeMonthsDate);
+
 }

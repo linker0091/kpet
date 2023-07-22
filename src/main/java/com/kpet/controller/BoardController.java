@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,47 +45,39 @@ import lombok.extern.log4j.Log4j;
 import net.coobird.thumbnailator.Thumbnailator;
 
 @Log4j
-@RequestMapping("/board/*")  // /board 로 시작하는 주소는 BoardController클래스가 요청을 담당하는 의미.
+@RequestMapping("/board/*")
 @Controller
 @AllArgsConstructor
 public class BoardController {
-
-	//private static final Logger logger = LoggerFactory.getLogger(BoardController.class);
 	
 	// 생성자를 이용한 주입 : @AllArgsConstructor
-	private BoardService service;
-	
+	private BoardService service;	
 	
 	//게시판 글쓰기 폼
-	@GetMapping("/register")  //  /board/register 주소가 jsp파일명으로 사용한다.  "/WEB-INF/views/" + "/board/register" + ".jsp"
+	@GetMapping("/register") 
 	public void register() {
 		
 	}
 	
 	// 게시판 글쓰기 저장.  BoardVO클래스 : 게시판입력데이타 정보, 파일첨부정보
-	@PostMapping("/register") // /board/register.  사용자가 입력한 데이터는 BoardVO클래스의 setter메서드를 통하여 필드에 저장된다.
+	@PostMapping("/register") 
 	public String register(BoardVO board,HttpSession session, RedirectAttributes rttr) {
 		board.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
 		
 		log.info("BoardVO.... " + board);
 		
+		//파일첨부 정보 담기
 		if(board.getAttachList() != null) {
 			board.getAttachList().forEach(attach -> log.info(attach)); // 람다식 문법유형
 		}
 		
-		//1)
 		service.register(board);
-		
-		
 		
 		return "redirect:/board/list";
 		
 	}
 		
-	// 2번째 파라미터 : Model model -> 스프링에서 자동으로 객체를 생성및대입
-	// 1번째 파라미터 : Criteria cri
-	//  1)/board/list 주소요청 Criteria클래스의 기본생성자 메서드가 자동호출   
-	//  2)http://localhost:8888/board/list?pageNum=1&amount=20.  Criteria setter메서드가 작동됨.
+	//게시판 목록
 	@GetMapping("/list")  
 	public void list(Criteria cri, Model model) {
 		
@@ -107,10 +99,8 @@ public class BoardController {
 
 	}
 	
-	
-	
-	// 게시물읽기, 수정폼.         http://localhost:8888/board/get?pageNum=1&amount=10&type=&keyword=&bno=65541
-	@GetMapping({"/get", "/modify"}) // 목록에서 선택한 게시물번호의 내용보기.  1)get.jsp: /board/get?bno=1  2)modify.jsp:  /board/modify?bno=1
+	// 게시물읽기, 수정폼. 
+	@GetMapping({"/get", "/modify"}) 
 	public void get(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, Model model) {
 		
 		log.info("get...  " + bno);
@@ -119,9 +109,9 @@ public class BoardController {
 		model.addAttribute("board", board);
 	}
 	
-	@PostMapping("/modify")  //   /board/modify  날짜데이터 포맷이 2022/01/05 일 경우는 정상. 2022-01-05 포맷은 에러발생. 오류 400 : 잘못된 요청문법
+	// 게시물 수정 저장
+	@PostMapping("/modify")
 	public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
-		
 		
 		log.info("modify: " + board);
 		
@@ -130,9 +120,9 @@ public class BoardController {
 		return "redirect:/board/list" + cri.getListLink();
 	}
 	
-	@PostMapping("/remove")   //   /board/remove
+	//게시물 삭제
+	@PostMapping("/remove") 
 	public String remove(@RequestParam("bno") Long bno, Criteria cri, RedirectAttributes rttr) {
-		
 		
 		// 파일정보 읽어오기.게시물(파일정보)삭제하기전에 파일첨부정보를 먼저 읽어와야 한다.
 		List<BoardAttachVO> attachList = service.getAttachList(bno);
@@ -150,8 +140,7 @@ public class BoardController {
 		return "redirect:/board/list" + cri.getListLink();
 	}
 	
-	
-	// 내부에서 호출목적으로 사용하는 메서드
+	// 내부에서 호출목적으로 사용하는 메서드 / 파일 삭제
 	private void deleteFiles(List<BoardAttachVO> attachList) {
 		
 		if(attachList == null || attachList.size() == 0) {
@@ -160,36 +149,26 @@ public class BoardController {
 		
 		log.info(attachList);
 		
-		/*
-		for(int i=0; i<attachList.size(); i++) {
-			//attachList.get(i)
-		}
-		*/
-		
 		attachList.forEach(attach -> {
 			// attach를 통하여 파일정보를 구성하고, 삭제하는 작업
 			
 			try {
+				//일반 파일인 경우
 				Path file = Paths.get("D:\\Dev\\bod_upload\\" + attach.getUploadPath() + "\\" + attach.getUuid() + "_" + attach.getFileName());
 				
 				Files.deleteIfExists(file);
 				
 				//이미지 파일인 경우 : 썸네일삭제
-				
 				if(Files.probeContentType(file).startsWith("image")) {
 					
 					Path thumbNail = Paths.get("D:\\Dev\\bod_upload\\" + attach.getUploadPath() + "\\s_" + attach.getUuid() + "_" + attach.getFileName());
 					Files.delete(thumbNail);
 				}
 				
-				
-				
-				
 			}catch(Exception ex) {
 				log.error("delete file ertror: " + ex.getMessage());
 			}
 		});
-		
 	}
 
 	//파일첨부목록
@@ -199,22 +178,17 @@ public class BoardController {
 		
 		ResponseEntity<List<BoardAttachVO>> entity = null;
 		
-		
-		
 		entity = new ResponseEntity<List<BoardAttachVO>>(service.getAttachList(bno), HttpStatus.OK);
 		
 		return entity;
 	}
 	
-
 	//멀티파일 업로드
 	@PostMapping(value = "/uploadAjaxAction", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ResponseBody  // jackson-databind라이브러리에 의하여 json으로 변환되고 @ResponseBody어노테이션이 응답객체의 body영역에 json데이타를 추가하는 기능.
+	@ResponseBody
 	public ResponseEntity<List<AttachFileDTO>> uploadAjaxAction(MultipartFile[] uploadFile) {
 		
-		
 		// AttachFileDTO클래스? 첨부된 파일정보를 객체에 담아서, 클라이언트에게 보내고자 하는 목적
-		
 		ResponseEntity<List<AttachFileDTO>> entity = null;
 
 		//업로드된 파일의 정보를 List컬렉션으로 구성하여, 클라이언트로 보내고자 작업
@@ -230,7 +204,6 @@ public class BoardController {
 		if(uploadPath.exists() == false) {
 			uploadPath.mkdirs(); // 현재폴더명을 기준하여 상위폴더가 존재하지 않으면 모두 생성
 		}
-		
 
 		for(MultipartFile multipartFile : uploadFile) {
 			
@@ -248,8 +221,6 @@ public class BoardController {
 			// 중복되지 않는 문자열을 생성_클라이언트파일명
 			uploadFileName = uuid.toString() + "_" + uploadFileName;
 			
-			
-			
 			try {
 				// "D:\\Dev\\bod_upload" "2022/01/18" + 유일한 파일명
 				File saveFile = new File(uploadPath, uploadFileName);
@@ -258,16 +229,15 @@ public class BoardController {
 				//2)중복되지 않는 고유의 문자열.  2a88f93f-9b56-4791-af27-1ec2a66d59b6
 				attachDTO.setUuid(uuid.toString());
 				//3)파일이 업로드되는날짜폴더경로.  "2022\01\18"
-				
 				//uploadFolderPath = uploadFolderPath.replace("\\", "/");
 				
 				attachDTO.setUploadPath(uploadFolderPath);
+				
 				//업로드 파일이 이미지파일인지 일반파일인지 체크
 				if(UploadFileUtils.checkImageType(saveFile)) {
 					attachDTO.setImage(true);
 					
-					//Thumnail 이미지 생성작업
-					
+					//썸네일이미지 생성작업
 					// 출력스트림객체가 생성됨 - 비워있는 파일생성(0byte)
 					FileOutputStream thumbnail = new FileOutputStream(new File(uploadPath, "s_" + uploadFileName));
 					
@@ -275,8 +245,6 @@ public class BoardController {
 					Thumbnailator.createThumbnail(multipartFile.getInputStream(), thumbnail, 100, 100);
 					
 					thumbnail.close();
-					
-					
 				}
 				
 				list.add(attachDTO);
@@ -285,7 +253,6 @@ public class BoardController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 		}
 		
 		entity = new ResponseEntity<List<AttachFileDTO>>(list, HttpStatus.OK);
@@ -293,8 +260,6 @@ public class BoardController {
 		return entity;
 	}
 	
-	
-	// 파라미터에 유효하지 않은 문자가 존재할 경우에는 에러발생.
 	//클라이언트에서 썸네일 이미지 요청에따른 썸네일이미지 리턴메서드
 	@GetMapping("/display")
 	@ResponseBody
@@ -303,7 +268,6 @@ public class BoardController {
 		log.info("fileName: " + fileName);
 		
 		ResponseEntity<byte[]> entity = null;
-		
 		
 		File file = new File("D:\\Dev\\bod_upload\\" + fileName);
 		
@@ -324,7 +288,7 @@ public class BoardController {
 		
 	}
 	
-	// 다운로드
+	// 파일 다운로드
 	@GetMapping(value = "/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
 	public ResponseEntity<Resource> downloadFile(@RequestHeader("User-Agent") String userAgent, String fileName){
 		
@@ -397,12 +361,4 @@ public class BoardController {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
 }
-//

@@ -40,6 +40,7 @@ import lombok.extern.log4j.Log4j;
 @Controller    // 메서드가 실행시 해당 jsp가 실행이 된 결과를 클라이언트에게 보내는 용도.
 public class ReviewController {
 
+	//리뷰게시판 이미지 업로드 폴더
 	@Resource(name = "rew_uploadFolder")
 	String rew_uploadFolder; // d:\\dev\\rew_upload */
 	
@@ -49,7 +50,7 @@ public class ReviewController {
 	@Inject // 필드주입
 	private UserProductService proservice;
 	
-		
+
 	//상품후기목록, 페이징구현정보
 	@GetMapping("/productReview")
 	public void product_review(@ModelAttribute("cri") Criteria cri,  
@@ -61,26 +62,26 @@ public class ReviewController {
 
 		int total = service.getTotalCount(pro_num);
 		log.info("productReview total: " + total);
-				
 		
+		//상품 후기 페이징 목록
 		List<ReviewVO> list = service.getReviewListWithPaging(cri, pro_num);
 		
-	
 		for(int i=0; i<list.size(); i++) {
 			ReviewVO vo = list.get(i);
 			log.info("vo: " + vo);
 
-			//리뷰에 이미지가 있는 경우에만 *
+			//이미지 리뷰가 있는 경우에만 
 			if(vo.getRew_uploadpath() != null) {
 			vo.setRew_uploadpath(vo.getRew_uploadpath().replace("\\", "/"));
 			}
 		}
 		
-		List<ReviewAllList> a_list = service.getAllReview(pro_num);
+		//모든 리뷰 이미지를 위한 목록
+		List<ReviewAllList> a_list = service.getReviewImg(pro_num);
 			
 		for(int i=0; i<a_list.size(); i++) {
 			ReviewAllList a_vo = a_list.get(i);
-			//리뷰에 이미지가 있는 경우에만 *
+			//이미지 리뷰가 있는 경우에만 
 			if(a_vo.getRew_uploadpath() != null) {
 				a_vo.setRew_uploadpath(a_vo.getRew_uploadpath().replace("\\", "/"));
 			}
@@ -94,26 +95,24 @@ public class ReviewController {
 
 	}
 	
-
 	@GetMapping("/productReviewImg")
 	public void product_review(@ModelAttribute("pro_num") Integer pro_num, @RequestParam(value="rew_num", required=false) Integer rew_num, @ModelAttribute("currentPageUrl") String currentPageUrl, Model model) {
 		
-		
-		
-		List<ReviewAllList> allList = service.getAllReview(pro_num);
+		//List<ReviewAllList> allList = service.getAllReview(pro_num);
+		List<ReviewAllList> allList = service.getReviewImg(pro_num);
 		for(int i=0; i<allList.size(); i++) {
 			ReviewAllList vo = allList.get(i);
 			//리뷰에 이미지가 있는 경우에만 *
 			if(vo.getRew_uploadpath() != null) {
 			vo.setRew_uploadpath(vo.getRew_uploadpath().replace("\\", "/"));
 			}		}
-		log.info("productReview allList: " + allList);
+		//log.info("productReview allList: " + allList);
 
 		ProductVO pro = proservice.productDetail(pro_num);
 		String pro_uploadpath = pro.getPro_uploadpath().replace("\\", "/");
 		pro.setPro_uploadpath(pro_uploadpath);
 		
-		log.info("productReview currentPageUrl: " + currentPageUrl);
+		//log.info("productReview currentPageUrl: " + currentPageUrl);
 		
 		//사진클릭시 , 전체보기 클릭시 구분
 		log.info("리뷰넘: " + rew_num);
@@ -123,16 +122,14 @@ public class ReviewController {
 		}else {
 			rew_num = allList.get(0).getRew_num();
 		}
-		model.addAttribute("isRew_num", isRew_num);
 		
+		model.addAttribute("isRew_num", isRew_num);
 		model.addAttribute("ProductVO",pro );
 		model.addAttribute("reviewAllVO",allList);
 		model.addAttribute("rew_num",rew_num );
 		log.info("productReview model: " + model);
 
 	}
-	
-	
 	
 	//상품후기수정
 	//상품수정 폼
@@ -175,14 +172,10 @@ public class ReviewController {
 			log.info("pro_num: " + vo.getPro_num());
 			
 			rttr.addAttribute("pro_num", vo.getPro_num());
-			//rttr.addAttribute("rewPageMaker", new PageDTO(cri, total));
-			//rttr.addAttribute("rewPageNum", cri.getPageNum()); // 주소에서 호출되는 메서드 파라미터 참조.
-			//rttr.addAttribute("rewAmount", cri.getAmount());
 			return "redirect:/order/orderComplete" + cri.getListLink();
 		}
 	
-	
-	//상품후기삭제 코드수정 파일 삭제 추가*
+	//상품후기,파일 삭제
 	@PostMapping("/reviewDel")
 	public String productDelete(Criteria cri, @RequestParam("rew_num") Integer rew_num, RedirectAttributes rttr ) {
 
@@ -213,7 +206,6 @@ public class ReviewController {
 		return "redirect:/order/orderComplete" + cri.getListLink();
 	}
 	
-	
 	//상품후기목록, 페이징구현정보
 	@GetMapping("/allReview")
 	public void reviewList(@ModelAttribute("con") Condition con, @ModelAttribute("orderby") String orderby, Criteria cri, Model model) {
@@ -229,10 +221,10 @@ public class ReviewController {
     
 		for(int i=0; i<list.size(); i++) {
 			ReviewAllList vo = list.get(i);
-			//리뷰에 이미지가 있는 경우에만 *
+			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
+			//리뷰에 이미지가 있는 경우에만 
 			if(vo.getRew_uploadpath() != null) {
 			vo.setRew_uploadpath(vo.getRew_uploadpath().replace("\\", "/"));
-			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
 			}
 		}
 		
@@ -246,12 +238,11 @@ public class ReviewController {
 	public void productReviewWrite(@ModelAttribute("pro_num") Integer pro_num,
 			@ModelAttribute("ord_code") Integer ord_code, @ModelAttribute("cri") Criteria cri) {
 		
-		
 		log.info("reviewWrite: " +pro_num +"/"+ord_code );
 	
 	}
 	
-			//상품후기등록 04/06 수정*
+			//상품후기등록
 			@PostMapping("/reviewWrite")
 			public String reviewWrite(Criteria cri, ReviewVO vo, HttpSession session, RedirectAttributes rttr) {
 			    vo.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
@@ -271,7 +262,6 @@ public class ReviewController {
 			    return "redirect:/order/orderComplete" + cri.getListLink();
 			}
 			
-			
 			@GetMapping("/oneReview")
 			public void oneReview(@RequestParam("rew_num") Integer rew_num, Model model) {
 				
@@ -288,7 +278,6 @@ public class ReviewController {
 
 			}
 
-			
 			//상품리스트의 이미지출력(썸네일)
 			@ResponseBody
 			@GetMapping("/displayFile")  // 클라이언트에서 보내는 특수문자중에 역슬래시 데이타를 스프링에서 지원하지 않는다. 
@@ -301,7 +290,5 @@ public class ReviewController {
 				log.info("썸네일:2 " + entity);
 
 				return entity;
-			}		
-					
-			
+			}			
 }

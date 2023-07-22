@@ -29,6 +29,7 @@ import lombok.extern.log4j.Log4j;
 @Controller
 public class CartController {
 
+	//상품 이미지 업로드 폴더
 	@Resource(name = "uploadFolder")
 	String uploadFolder; // d:\\dev\\upload */
 	
@@ -36,6 +37,7 @@ public class CartController {
 	private CartService service;
 	
 	//로그인 인증된 경우에만 
+	//장바구니 추가
 	@ResponseBody
 	@PostMapping("/cartAdd")
 	public ResponseEntity<String> cart_add(Integer pro_num, int cart_amount, HttpSession session) {
@@ -59,12 +61,10 @@ public class CartController {
 			entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
 		}
 		
-		
-		
 		return entity;
 	}
 	
-	//인증된 상태에서 호출되는메서드의 파라미터는 HttpSession session 사용.
+	//장바구니 목록
 	@GetMapping("/cartList")
 	public void cart_list(HttpSession session, Model model) {
 		
@@ -78,7 +78,6 @@ public class CartController {
 			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
 		}
 		
-		
 		model.addAttribute("cartList", list);
 	}
 	
@@ -89,7 +88,6 @@ public class CartController {
 		
 		ResponseEntity<Integer> entity = null;
 		log.info("카트어마운트 호출");
-		//String user_id = ((UserVO) session.getAttribute("loginStatus")).getUser_id();
 		
 		UserVO uservo = ((UserVO) session.getAttribute("loginStatus"));
 		String user_id = uservo.getUser_id();
@@ -98,6 +96,7 @@ public class CartController {
 		
 		log.info("카트어마운트id: " + user_id);
 		log.info("카트어마운트 결과값: " + cartTotal);
+		
 		if(user_id != null) {
 			entity = new ResponseEntity<Integer>(cartTotal, HttpStatus.OK);
 		}else {
@@ -106,8 +105,6 @@ public class CartController {
 		
 		return entity;
 	}
-	
-	
 	
 	//상품리스트의 이미지출력(썸네일)
 	@ResponseBody
@@ -121,6 +118,7 @@ public class CartController {
 		return entity;
 	}
 	
+	//장바구니 체크 삭제
 	@ResponseBody  
 	@PostMapping("/checkDelete")
 	public ResponseEntity<String> checkDelete(@RequestParam("cart_codeArr[]") List<Integer> cart_codeArr){
@@ -142,8 +140,6 @@ public class CartController {
 			entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
 		}
 		
-		
-		
 		return entity;
 	}
 	
@@ -155,12 +151,10 @@ public class CartController {
 		
 		service.cartAllDel(user_id);
 		
-		
-		
 	      return "redirect:/cart/cartList";
 	}
 	
-	//로그인 인증된 경우에만 
+	//장바구니 수량 변경
 	@ResponseBody
 	@PostMapping("/cartAmountChange")
 	public ResponseEntity<String> cartAmountChange(Long cart_code, int cart_amount, HttpSession session) {
@@ -170,7 +164,7 @@ public class CartController {
 		vo.setCart_code(cart_code);
 		vo.setCart_amount(cart_amount);
 		log.info("CartVO: " + vo);
-		// 인증된 사용자 정보
+		
 		vo.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
 		
 		try {

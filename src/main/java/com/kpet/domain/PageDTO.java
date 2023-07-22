@@ -48,22 +48,4 @@ public class PageDTO {
 		
 	}
 	
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

@@ -72,8 +72,8 @@
 	 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	 	<property name="host"  value="smtp.gmail.com" />
 		<property name="port" value="587"></property>
-		<property name="username" value="메일"></property>
-		<property name="password" value="비번"></property>
+		<property name="username" value="linker0091@gmail.com"></property>
+		<property name="password" value="aaudwssluwygkize"></property>
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtp.auth">true</prop>
@@ -84,22 +84,22 @@
 	 
 	 <!-- 상품이미지 업로드 폴더 -->
 	 <bean id="uploadFolder" class="java.lang.String">
-	 	<constructor-arg value="d:\\dev\\upload" />
+	 	<constructor-arg value="D:\\Dev\\upload" />
 	 </bean>
 	 
 	 <!-- 문의게시판 이미지 업로드 폴더 -->
 	 <bean id="cstUploadFolder" class="java.lang.String">
-	 	<constructor-arg value="d:\\dev\\cst_upload" />
+	 	<constructor-arg value="D:\\Dev\\cst_upload" />
 	 </bean>
 	 
 	 <!-- 리뷰게시판 이미지 업로드 폴더 -->
 	 <bean id="rew_uploadFolder" class="java.lang.String">
-	 	<constructor-arg value="d:\\dev\\rew_upload" />
+	 	<constructor-arg value="D:\\Dev\\rew_upload" />
 	 </bean>
 	 
-	 <!-- 상품이미지 CKEditor 상품설명이미지 업로드 폴더 -->
+	 <!-- CKEditor 이미지 업로드 폴더 -->
 	 <bean id="ckUploadFolder" class="java.lang.String">
-	 	<constructor-arg value="d:\\dev\\program\\spring\\workspace\\kpet\\src\\main\\webapp" />
-	 </bean>	
+	 	<constructor-arg value="D:\\Dev\\Program\\Spring\\workspace\\kpet\\src\\main\\webapp" />
+	 </bean>	 	
 	 
 </beans>

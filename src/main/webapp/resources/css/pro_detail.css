@@ -577,7 +577,7 @@ color: #9d9d9d; }
 	box-sizing: border-box;
 }
 
-.one_rew_img { width: 96%; height: auto; padding-bottom: 34px;
+.one_rew_img { width: 96%; height: 250px; padding-bottom: 34px;
     border-bottom: 1px solid #ebeff5;}
 .product_review_inline-flex { display:inline-block; padding: 10px 0; min-width: 262px; }
 

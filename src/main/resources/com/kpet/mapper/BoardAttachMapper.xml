@@ -9,6 +9,7 @@
 		values(#{uuid}, #{uploadPath}, #{fileName}, #{fileType}, #{bno})
 	</insert>
 	
+	<!-- 파일 정보 조회  -->
 	<select id="findByBno" resultType="com.kpet.domain.BoardAttachVO">
 		select uuid, uploadpath, filename, filetype, bno from attach_tbl where bno = #{bno}
 	</select>
@@ -21,6 +22,7 @@
 		delete from attach_tbl where bno = #{bno}
 	</delete>
 	
+	<!-- 스케쥴링에서 쓰일 하루 이전 파일 조회-->
 	<select id="getOldFiles" resultType="com.kpet.domain.BoardAttachVO">
 		select uuid, uploadpath, filename, filetype, bno  from attach_tbl where uploadpath = to_char(sysdate -1, 'yyyy\mm\dd')
 	</select>

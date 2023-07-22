@@ -1,18 +1,15 @@
 package com.kpet.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
@@ -23,23 +20,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kpet.domain.AnswerVO;
-import com.kpet.domain.ConsultVO;
-import com.kpet.domain.Criteria;
 import com.kpet.domain.EmailDTO;
-import com.kpet.domain.PageDTO;
 import com.kpet.domain.UserVO;
-import com.kpet.service.AdminCustomerService;
+import com.kpet.service.AdminConsultService;
+import com.kpet.service.OrderService;
 import com.kpet.service.UserService;
-import com.kpet.util.UploadFileUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -60,21 +51,24 @@ public class UserController {
 	private JavaMailSender mailSender;
 	
 	@Inject
-	private AdminCustomerService adService;
+	private AdminConsultService adService;
 	
+	@Inject
+	private OrderService ordService;
+	
+	//문의 상담 CKEditor 이미지 업로드 폴더
 	@Resource(name = "cstUploadFolder")
 	String cstUploadFolder; // d:\\dev\\userupload */
 	
 	// 주요기능 : 회원기능
 	
-	
-	//회원가입 폼 : /user/join -> jsp파일명
+	//회원가입 폼
 	@GetMapping("/join")
 	public void join() {
 		
 	}
 	
-	//회원가입저장  /user/join
+	//회원가입저장
 	@PostMapping("/join")
 	public String joinOk(UserVO vo, RedirectAttributes rttr) throws Exception{
 		
@@ -83,8 +77,7 @@ public class UserController {
 		
 		vo.setUser_pw(cryptPassEnc.encode(vo.getUser_pw()));
 		
-		
-		// StringUtils.isEmpty(매개변수) : 매개변수의 값이 널 또는 빈문자열일 경우를 확인하는 기능. 
+		//메일 수신 여부 체크 확인
 		vo.setUser_emailrec(!StringUtils.isEmpty(vo.getUser_emailrec()) ? "Y" : "N");
 		
 		log.info("UserVO: " + vo);
@@ -93,7 +86,6 @@ public class UserController {
 
 		return "redirect:/user/login";
 	}
-	
 	
 	//아이디중복체크
 	@ResponseBody
@@ -109,7 +101,7 @@ public class UserController {
 		entity = new ResponseEntity<String>(result, HttpStatus.OK);
 		
 		return entity;
-		
+
 	}
 	
 	//메일인증요청
@@ -127,7 +119,6 @@ public class UserController {
 		
 		//메일내용을 구성하는 클래스
 		MimeMessage message = mailSender.createMimeMessage();
-		
 		
 		try {
 			//받는 사람 메일설정
@@ -170,9 +161,6 @@ public class UserController {
 		return entity;
 	}
 	
-	
-	
-	
 	// 회원가입시 메일인증코드 생성. 임시비밀번호 용도로 같이사용.
 	private String makeAuthCode() {
 		
@@ -182,13 +170,12 @@ public class UserController {
 			authCode += String.valueOf((int) (Math.random() * 9) + 1);
 		}
 		
-		
 		return authCode;
+		
 	}
 
 	//회원수정 폼 : 로그인한 사용자의 정보를 폼에 표시.
-	//마이페이지 : 같이 사용.
-	@GetMapping(value = {"/modify", "/mypage"})
+	@GetMapping(value = {"/modify"})
 	public void modify(HttpSession session, Model model) {
 		
 		log.info("s");
@@ -196,59 +183,48 @@ public class UserController {
 		
 		String user_id = vo.getUser_id();
 		
-		// 로그인, 회원수정 동일하게 사용
-		/*
-		UserVO db_vo = service.login(user_id);
-		model.addAttribute("UserVO", db_vo);
-		*/
-		
 		model.addAttribute(service.login(user_id));
 		
 	}
 	
-	
 	//회원수정저장
 	@PostMapping("/modify")
-	public String modify(UserVO vo,  HttpSession session, RedirectAttributes rttr) {
-		
-		/*
-		 StringUtils.isEmpty(vo.getUser_emailrec())
-		 
-		 체크를 하면 널이 아닌상태
-		체크를 안하면 널인 상태
-		 * 
-		 * 
-		 */
+	public String modify(UserVO vo, @RequestParam(name = "user_new_pw", required = false) String user_new_pw, HttpSession session, RedirectAttributes rttr) {
 		
 		String redirectURL = "";
-		
 		
 		vo.setUser_emailrec(!StringUtils.isEmpty(vo.getUser_emailrec()) ? "Y" : "N");
 		
 		log.info("회원수정정보: " + vo);
-		
+		log.info("회원수정user_new_pw: " + user_new_pw);
 		
 		UserVO session_vo = (UserVO) session.getAttribute("loginStatus");
 		
+		//현재 세션의 비밀번호와 입력된 비밀번호가 같을 경우
 		if(cryptPassEnc.matches(vo.getUser_pw(), session_vo.getUser_pw())) {
 			
+			//새로운 비밀번호가 입력 되었을 시
+			if (user_new_pw != null || user_new_pw != "") {
+				//새로운 비밀번호 vo에 담기
+				vo.setUser_pw(cryptPassEnc.encode(user_new_pw));
+				//변경된 정보를 세션으로 저장
+				session.setAttribute("loginStatus", vo);	
+				log.info("회원수정정보: " + vo);
+			}
+			//수정된 정보 업데이트
 			service.modify(vo);
-						
+
 			redirectURL = "/";
 			rttr.addFlashAttribute("msg", "modifyOk"); // "/" 주의 index.jsp에서 msg를 참조해서 사용
-			
 		
 		}else {
 			redirectURL = "/user/modify";
 			rttr.addFlashAttribute("msg", "modifyFail"); // "modify.jsp"에서 msg를 참조해서 사용
 		}
 		
-		
 		return "redirect:" + redirectURL;
 		
 	}
-	
-	
 	
 	//회원삭제
 	@ResponseBody
@@ -256,7 +232,6 @@ public class UserController {
 	public ResponseEntity<String> regDelete(@RequestParam("user_pw") String user_pw, HttpSession session){
 		
 		ResponseEntity<String> entity = null;
-		
 		
 		UserVO vo = (UserVO) session.getAttribute("loginStatus");
 		
@@ -270,10 +245,7 @@ public class UserController {
 		return entity;
 	}
 	
-	
-	
-	
-	//로그인폼  /user/login
+	//로그인폼
 	@GetMapping("/login")
 	public void login() {
 		
@@ -329,8 +301,13 @@ public class UserController {
 			
 			if(cryptPassEnc.matches(user_pw, vo.getUser_pw())) {
 				rttr.addFlashAttribute("result", "success");
-				
+		        
 				session.setAttribute("loginStatus", vo); // 로그인 성공 상태정보를 세션으로 저장
+				
+				Date user_lastlogin = new Date();
+				log.info("user_lastlogin: " + user_lastlogin);
+				// 마지막 로그인 시간 업데이트
+	            service.updateLastlogin(user_lastlogin,user_id); // 사용자 정보 업데이트 메서드 호출
 				
 				String destination = (String) session.getAttribute("dest");
 				url = destination != null ? (String) destination : "/";
@@ -345,7 +322,6 @@ public class UserController {
 		
 	}
 	
-	
 	//로그아웃
 	@GetMapping("/logout")
 	public String logout(HttpSession session, RedirectAttributes rttr) {
@@ -356,16 +332,69 @@ public class UserController {
 	}
 	
 	//비밀번호 찾기 폼
-	@GetMapping("/searchPw")
+	@GetMapping("/searchIdPw")
 	public void searchPwReq() {
 	
+	}
+	
+	//아이디 찾기
+	@ResponseBody
+	@PostMapping("/searchId")
+	public ResponseEntity<String> searchIdAction(@RequestParam("user_email") String user_email) {
+	
+		/*
+		1)email 주소가 가입된 것인지에 따른 회원가입여부체크
+		  - 존재 : 비밀번호를 랜덤으로 생성하여, 메일발송
+		  - 존재안함 : 메세지준다.(가입된 메일주소가 다르거나 미가입된 회원입니다.)
+		*/
+				
+		ResponseEntity<String> entity = null;
 		
+		//메일발송
+		if(!StringUtils.isEmpty(service.searchPwByEmail(user_email))) {
+			
+			String user_id = service.searchIdByEmail(user_email);
+			String msg = "회원님의 아이디는 [ " + user_id + " ] 입니다.";
+			
+			//메일 구성 정보
+			EmailDTO dto = new EmailDTO("kpet", "linker0091@gmail.com", user_email, "kpet 인증메일", msg);
+			
+			//메일내용을 구성하는 클래스
+			MimeMessage message = mailSender.createMimeMessage();
+			
+			try {
+				//받는 사람 메일설정
+				message.addRecipient(RecipientType.TO, new InternetAddress(user_email));
+				//보내는 사람설정(이메일, 이름)
+				message.addFrom(new InternetAddress[] {new InternetAddress(dto.getSenderMail(), dto.getSenderName())});
+				//제목
+				message.setSubject(dto.getSubject(), "utf-8");
+				//본문내용(인증코드)
+				message.setText(dto.getMessage(), "utf-8");
+				
+				mailSender.send(message);															
+				
+				entity = new ResponseEntity<String>("success", HttpStatus.OK);
+				
+			}catch(Exception e) {
+				
+				e.printStackTrace();
+				
+				entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
+			}
+			
+		}else { // 이메일이 존재하지 않은 경우
+			
+			entity = new ResponseEntity<String>("noMail", HttpStatus.OK);
+		}
+		
+		return entity;
 		
 	}
 	
 	//비밀번호 찾기 기능
 	@ResponseBody
-	@PostMapping("/searchPw")
+	@PostMapping("searchPw")
 	public ResponseEntity<String> searchPwAction(@RequestParam("user_email") String user_email) {
 	
 		/*
@@ -379,13 +408,14 @@ public class UserController {
 		//비밀번호 랜덤생성,메일발송
 		if(!StringUtils.isEmpty(service.searchPwByEmail(user_email))) {
 			
-			String tempPw = makeAuthCode();
-			
-			EmailDTO dto = new EmailDTO("kpet", "linker0091@gmail.com", user_email, "kpet 인증메일", tempPw);
+			String tempPw = makeAuthCode();//랜덤번호 생성
+			String msg = "회원님의 임시 비밀번호는 [ " + tempPw + " ] 입니다.";
+
+			//메일 구성 정보
+			EmailDTO dto = new EmailDTO("kpet", "linker0091@gmail.com", user_email, "kpet 인증메일", msg);
 			
 			//메일내용을 구성하는 클래스
 			MimeMessage message = mailSender.createMimeMessage();
-			
 			
 			try {
 				//받는 사람 메일설정
@@ -399,9 +429,7 @@ public class UserController {
 				
 				mailSender.send(message);
 				
-				
-				// 임시비밀번호를 암호화처리하여, 디비에 저장해야 함..
-				
+				// 임시비밀번호를 암호화처리하여, 디비에 저장해야 함.
 				String encryptPw = cryptPassEnc.encode(tempPw);
 				service.changePw(user_email, encryptPw);
 				
@@ -421,285 +449,42 @@ public class UserController {
 		
 		return entity;
 		
-		
 	}
-	
-	//비밀번호 변경하기
-	@ResponseBody
-	@PostMapping("/changePw")
-	public ResponseEntity<String> changePw(@RequestParam("cur_user_pw") String cur_user_pw, @RequestParam("change_user_pw") String change_user_pw, HttpSession session){
-		
-		ResponseEntity<String> entity = null;
-		
-		
-		UserVO vo = (UserVO) session.getAttribute("loginStatus");
-		
-		String user_id = vo.getUser_id();
-		
-		
-		log.info("파라미터: " + user_id);
-		log.info("파라미터: " + cur_user_pw);
-		log.info("파라미터: " + change_user_pw);
-		
-		
-		//String result = service.currentPwConfirm(user_id, cryptPassEnc.encode(cur_user_pw), cryptPassEnc.encode(change_user_pw));
-		
-		
-		String result = service.currentPwConfirm(user_id, cryptPassEnc, cur_user_pw, cryptPassEnc.encode(change_user_pw));
-		
-		entity = new ResponseEntity<String>(result, HttpStatus.OK);
-		
-		
-		return entity;
-	}
-	
-	
 	
 	
 	//마이페이지
-	/*
 	@GetMapping("/mypage")
-	public void mypage() {
-		
-	}
-	*/
-	
-	
-	//아이디 찾기
-	@ResponseBody
-	@PostMapping("/searchId")
-	public ResponseEntity<String> searchIdAction(@RequestParam("user_email") String user_email) {
-	
-		ResponseEntity<String> entity = null;
-		
-		String user_id = service.searchIdByEmail(user_email);
-		
-		//비밀번호 랜덤생성,메일발송
-		if(!StringUtils.isEmpty(user_id)) {
+	public void mypage(Model model,HttpSession session) {
 			
-			EmailDTO dto = new EmailDTO("kpet", "linker0091@gmail.com", user_email, "kpet 인증메일", user_id);
-			
-			//메일내용을 구성하는 클래스
-			MimeMessage message = mailSender.createMimeMessage();
-			
-			
-			try {
-				//받는 사람 메일설정
-				message.addRecipient(RecipientType.TO, new InternetAddress(user_email));
-				//보내는 사람설정(이메일, 이름)
-				message.addFrom(new InternetAddress[] {new InternetAddress(dto.getSenderMail(), dto.getSenderName())});
-				//제목
-				message.setSubject(dto.getSubject(), "utf-8");
-				//본문내용(인증코드)
-				message.setText(dto.getMessage(), "utf-8");
-				
-				mailSender.send(message);
-				
-				entity = new ResponseEntity<String>("success", HttpStatus.OK);
-				
-			}catch(Exception e) {
-				
-				e.printStackTrace();
-				
-				entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
-			}
-			
-		}else { // 이메일이 존재하지 않은 경우
-			
-			entity = new ResponseEntity<String>("noMail", HttpStatus.OK);
-		}
-		
-		
-		return entity;
-	}
-	
-	// 상담페이지
-	@GetMapping("/consult")
-	public void consult(HttpSession session, @ModelAttribute("cri") Criteria cri, Model model) {
-		UserVO vo = (UserVO) session.getAttribute("loginStatus");
-		String user_id = vo.getUser_id();
-		log.info("파라미터: " + user_id);
-		//List<ConsultVO> consult = service.conSultList(user_id);
-		List<ConsultVO> consult = service.getConSultPaging(cri,user_id);
-		log.info("ConsultVO 파라미터: " + consult);
-		int total = service.getTotalCount(cri,user_id);
-		
-		model.addAttribute("conSultList", consult);
-		model.addAttribute("pageMaker", new PageDTO(cri, total));
-	}
-	
-	// 상담글쓰기 페이지
-	@GetMapping("/cstWrite")
-	public void cstWrite(HttpSession session, @ModelAttribute("cri") Criteria cri, Model model) {
-		
-		UserVO vo = (UserVO) session.getAttribute("loginStatus");
-		String user_id = vo.getUser_id();
-		model.addAttribute("user_id", user_id);
-		
-		
-	}
-	
-	//CKEditor 문의게시판 설명 이미지.
-	@PostMapping("/editor/imageUpload")
-	public void imageUpload(HttpServletRequest request, HttpServletResponse response,@RequestParam MultipartFile upload) {
-		
-		/*
-		 CKEditor 파일업로드 1)파일업로드 작업 2) 업로드된 파일정보를 브라우저에게 보내야 한다. 
-		  
-		 */
-		
-		
-		// 클라이언트로부터 전송되어 온 파일을 업로드폴더에 복사(생성)작업
-		OutputStream out = null;
-		
-		// 업로드된 파일정보를 브라우저에게 보내는 작업
-		PrintWriter printWriter = null;
-		
-		response.setCharacterEncoding("utf-8");
-		response.setContentType("text/html;charset=utf-8");
-		
-		try {
-			String fileName = upload.getOriginalFilename();
-			byte[] bytes = upload.getBytes();
-			// 클라이언트에서 전송해 온 파일명을 포함하여, 실제 업로드되는 경로생성
-			String uploadPath = request.getSession().getServletContext().getRealPath("/resources/cst_upload/") + fileName;
-			
-			log.info("업로드폴더 물리적경로: " + uploadPath);
-			
-			out = new FileOutputStream(new File(uploadPath)); // 0byte의 빈 파일생성
-			
-			// 파일에 내용이 채워짐.
-			out.write(bytes);
-			out.flush();
-			
-			/*======================================================================*/
-			
-			
-			String callback = request.getParameter("CKEditorFuncNum");
-			
-			log.info(callback);
-			
-			printWriter = response.getWriter();
-			
-			// <resources mapping="/cst_upload/**" location="/resources/cst_upload/" />
-			String fileUrl = "/cst_upload/" + fileName;
-			
-			printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("
-								+ callback
-								+ ",'"
-								+ fileUrl
-								+ "','이미지를 업로드 하였습니다.'"
-								+ ")</script>");
-			printWriter.flush();
-			
-		
-		
-		}catch(Exception ex) {
-			ex.printStackTrace();
-		}finally {
-			try {
-			if(out != null) out.close();
-			if(printWriter != null) printWriter.close();
-			}catch(Exception ex) {
-				ex.printStackTrace();
-			}
-			
-		}
-		
-		
-	}
-	
+	UserVO vo = (UserVO) session.getAttribute("loginStatus");
 
-		// 문의게시판 글 등록 저장 04/06 수정*
-		@PostMapping("/writeInsert")
-		public String writeInsert(ConsultVO vo, RedirectAttributes rttr) {
-			
-			log.info("상품정보" + vo);
-			 MultipartFile uploadFile = vo.getCst_upload();
-			    if (uploadFile != null && !uploadFile.isEmpty()) {
-				//1)파일업로드. 파일이름을 추출하여 저장
-				vo.setCst_img(UploadFileUtils.uploadFile(cstUploadFolder, vo.getCst_upload()));
-				vo.setCst_uploadpath(UploadFileUtils.getFolder()); // 날짜폴더명
-				log.info("상품정보2" + vo);
-			    } else {
-			        vo.setCst_img("");
-			        vo.setCst_uploadpath("");
-			    }
-			//2)상품정보 저장
-			service.writeIsnert(vo);
-			
-			rttr.addFlashAttribute("msg", "insertOk");
-			
-			return "redirect:/user/consult";
-		}
-			
-			//문의게시판 게시글 보기 페이지 
-			//문의게시판 게시글 수정 페이지
-			@GetMapping(value= {"/cstRead", "/cstModify"})
-			//@GetMapping("cstRead")
-			public void cstRead(Integer cst_num, @ModelAttribute("cri")Criteria cri, Model model) {
-				
-				ConsultVO vo = service.getConSult(cst_num);
-				//log.info("ConsultVO 파라미터: " + vo);
-				AnswerVO cstWrite = adService.getCstWrite(cst_num);
-				
-				log.info("리스에서 오는 데이터vo: " + vo);
-				log.info("엔서에서 오는 데이터cstWrite: " + cstWrite);
-				if(vo.getCst_uploadpath() != null) {
-				vo.setCst_uploadpath(vo.getCst_uploadpath().replace("\\", "/"));
-				}
-				model.addAttribute("cstInner", vo);
-				model.addAttribute("cstWrite", cstWrite);
-			}
-			
-		//문의게시판의 첨부이미지출력(썸네일)
-		@ResponseBody
-		@GetMapping("/displayFile")  // 클라이언트에서 보내는 특수문자중에 역슬래시 데이타를 스프링에서 지원하지 않는다. 
-		public ResponseEntity<byte[]> displayFile(String uploadPath, String fileName) {
-			
-			ResponseEntity<byte[]> entity = null;
-			
-			entity = UploadFileUtils.getFileByte(cstUploadFolder, uploadPath, fileName );
-			
-			return entity;
-		}
+	String user_id = vo.getUser_id();
 	
+	// 현재 날짜 구하기
+	LocalDate currentDate = LocalDate.now();
 
-		//문의게시판 게시글 수정
-		@PostMapping("/cstModify")
-		public String cstModify(ConsultVO vo, HttpSession session) {
-			
-			vo.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
-			
-			//1)이미지가 변경된 경우
-			if(vo.getCst_upload().getSize() > 0) {
-				
-				//1)기존이미지정보 파일삭제
-				UploadFileUtils.deleteFile(cstUploadFolder, vo.getCst_uploadpath(), vo.getCst_img());
-				//2)변경이미지 업로드작업
-				vo.setCst_img(UploadFileUtils.uploadFile(cstUploadFolder, vo.getCst_upload()));
-				vo.setCst_uploadpath(UploadFileUtils.getFolder()); // 날짜폴더명
-			}
-			
-			log.info("수정vo : " + vo);
-			service.cstModify(vo);
-			
-			return "redirect:/user/consult";
-		}
+	// 3개월 이전의 날짜 구하기
+	LocalDate threeMonthsAgo = currentDate.minusMonths(3);
 
-		//문의게시판 게시글 삭제 코드수정 파일 삭제 추가*
-		@GetMapping("/cstRemove")
-		public String cstRemove(@RequestParam("cst_num") Integer cst_num) {
-			
-			//파일 정보 가져오기
-			ConsultVO vo = service.getConSult(cst_num);
-			
-			service.cstRemove(cst_num);
-			
-			//파일 삭제
-			UploadFileUtils.deleteFile(cstUploadFolder,vo.getCst_uploadpath(),vo.getCst_img());
-			
-			return "redirect:/user/consult";
-		}
+	// 날짜 형식 지정 (SQL 날짜 형식에 맞게 설정)
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	// 변수에 담기
+	String threeMonthsDate = threeMonthsAgo.format(formatter);
+	
+	model.addAttribute("user_name",  vo.getUser_name());
+	
+	//주문 상태별 건수
+	model.addAttribute("ordReceived",  ordService.ordStateCount(user_id,"주문접수",threeMonthsDate)); //주문접수
+	model.addAttribute("ordPaid",  ordService.ordStateCount(user_id,"결제완료",threeMonthsDate)); //결제완료
+	model.addAttribute("ordPreparing",  ordService.ordStateCount(user_id,"배송준비중",threeMonthsDate)); //배송준비중
+	model.addAttribute("ordShipping",  ordService.ordStateCount(user_id,"배송중",threeMonthsDate)); //배송중
+	model.addAttribute("ordDelivered",  ordService.ordStateCount(user_id,"배송완료",threeMonthsDate)); //배송완료
+	model.addAttribute("ordCancel",  ordService.ordStateCount(user_id,"취소요청",threeMonthsDate)); //취소요청
+	model.addAttribute("ordExchange",  ordService.ordStateCount(user_id,"교환요청",threeMonthsDate)); //교환요청
+	model.addAttribute("ordReturn",  ordService.ordStateCount(user_id,"반품요청",threeMonthsDate)); //반품요청
+	
+	}
+	
 	
 }

@@ -125,9 +125,6 @@
         	ord_message, 
         	ord_state,
         	ord_regdate 
-        	 
-        	 
-        	
 			
 		FROM (
 		        SELECT 

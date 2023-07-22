@@ -1,194 +1,198 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.88.1">
-    <title>- KPET</title>
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author"
+	content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+<meta name="generator" content="Hugo 0.88.1">
+<title>- KPET</title>
 
-    <!-- Bootstrap core CSS -->
-    
-    <!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
-    <!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/4.6/dist/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
-    
-    <style>
-	.uploadResult {
-	  width:100%;
-	  background-color: gray;
-	}
-	.uploadResult ul{
-	  display:flex;
-	  flex-flow: row;
-	  justify-content: center;
-	  align-items: center;
-	}
-	.uploadResult ul li {
-	  list-style: none;
-	  padding: 10px;
-	  align-content: center;
-	  text-align: center;
-	}
-	.uploadResult ul li img{
-	  width: 100px;
-	}
-	.uploadResult ul li span {
-	  color:white;
-	}
-	.bigPictureWrapper {
-	  position: absolute;
-	  display: none;
-	  justify-content: center;
-	  align-items: center;
-	  top:0%;
-	  width:100%;
-	  height:100%;
-	  background-color: gray; 
-	  z-index: 100;
-	  background:rgba(255,255,255,0.5);
-	}
-	.bigPicture {
-	  position: relative;
-	  display:flex;
-	  justify-content: center;
-	  align-items: center;
-	}
-	
-	.bigPicture img {
-	  width:600px;
-	}
-	.reply_modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1050;
-    display: none;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    outline: 0;
-    opacity: 100 !important;
-    margin-top: 100px;
+<!-- Bootstrap core CSS -->
+
+<!-- <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css"> -->
+<!-- <link rel="stylesheet" href="https://getbootstrap.com/docs/4.6/dist/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="/resources/css/bootstrap.min.css">
+
+<style>
+.uploadResult {
+	width: 100%;
+	background-color: gray;
 }
 
+.uploadResult ul {
+	display: flex;
+	flex-flow: row;
+	justify-content: center;
+	align-items: center;
 }
 
-    </style>
+.uploadResult ul li {
+	list-style: none;
+	padding: 10px;
+	align-content: center;
+	text-align: center;
+}
 
-	
-    
-  </head>
+.uploadResult ul li img {
+	width: 100px;
+}
 
-  <body>
-    
-<%@include file="/WEB-INF/views/user/include/header.jsp" %>
-<div class="container">
+.uploadResult ul li span {
+	color: white;
+}
+
+.bigPictureWrapper {
+	position: absolute;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	top: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: gray;
+	z-index: 100;
+	background: rgba(255, 255, 255, 0.5);
+}
+
+.bigPicture {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.bigPicture img {
+	width: 600px;
+}
+
+.reply_modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1050;
+	display: none;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	outline: 0;
+	opacity: 100 !important;
+	margin-top: 100px;
+}
+</style>
+
+</head>
+<body>
+
+	<%@include file="/WEB-INF/views/user/include/header.jsp"%>
+	<div class="container">
 		<div class="page_title">
 			<h2>펫후 커뮤니티</h2>
 		</div>
 
-              <div class="box-body">
-                <div class="form-group">
-                  <label for="bno">글번호</label>
-                  <input type="text" class="form-control" id="bno" name="bno" value="${board.bno }" readonly="readonly">
-                </div>
-                <div class="form-group">
-                  <label for="title">제목</label>
-                  <input type="text" class="form-control" id="title" name="title" value="${board.title }" readonly="readonly">
-                </div>
-                <div class="form-group">
-                  <label for="content">내용</label>
-                  <%--<textarea class="form-control" rows="3" id="content" name="content" readonly="readonly">${board.content }</textarea> --%>
-                  <div>${ board.content}</div>
-                </div>
-              </div>
-              <!-- /.box-body -->
-              
-                           <!--원본이미지 출력-->
-  <div class='bigPictureWrapper'>
-    <div class='bigPicture'>
-    </div>
-  </div>
-  <!-- 첨부파일목록 출력부분-->
-	<div class="row">
-		<div class="col-md-12">
-			<div class="box box-primary">
-				<div class="box-header with-border">
-				<br><b>첨부파일</b>
-				</div>
-				<div class="box-body">
-					<div class="uploadResult">
-            			<ul></ul>
+		<div class="box-body">
+			<div class="form-group">
+				<label for="bno">글번호</label> <input type="text" class="form-control"
+					id="bno" name="bno" value="${board.bno }" readonly="readonly">
+			</div>
+			<div class="form-group">
+				<label for="title">제목</label> <input type="text"
+					class="form-control" id="title" name="title"
+					value="${board.title }" readonly="readonly">
+			</div>
+			<div class="form-group">
+				<label for="content">내용</label>
+				<%--<textarea class="form-control" rows="3" id="content" name="content" readonly="readonly">${board.content }</textarea> --%>
+				<div>${ board.content}</div>
+			</div>
+		</div>
+		<!-- /.box-body -->
+
+		<!--원본이미지 출력-->
+		<div class='bigPictureWrapper'>
+			<div class='bigPicture'></div>
+		</div>
+		<!-- 첨부파일목록 출력부분-->
+		<div class="row">
+			<div class="col-md-12">
+				<div class="box box-primary">
+					<div class="box-header with-border">
+						<br>
+						<b>첨부파일</b>
+					</div>
+					<div class="box-body">
+						<div class="uploadResult">
+							<ul></ul>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
+
+
+		<div class="form-group box-footer">
+			<button id="btnModify" type="button" data-bno="${board.bno }"
+				class="btn btn-primary">수정</button>
+			<button type="button" id="btnReplyAdd" class="btn btn-primary">댓글
+				작성</button>
+			<button id="btnList" type="button" class="btn btn-info">리스트</button>
+
+			<form id="operForm" action="/board/modify" method="get">
+				<input type="hidden" id="bno" name="bno"
+					value='<c:out value="${ board.bno}" />'> <input
+					type="hidden" name="pageNum"
+					value='<c:out value="${cri.pageNum }" />'> <input
+					type="hidden" name="amount"
+					value='<c:out value="${cri.amount }" />'> <input
+					type="hidden" name="type" value='<c:out value="${cri.type }" />'>
+				<input type="hidden" name="keyword"
+					value='<c:out value="${cri.keyword }" />'>
+			</form>
+		</div>
+
+		<!-- 댓글목록 출력부분 -->
+		<span>댓글목록</span>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="replyList"></div>
+			</div>
+		</div>
+		<!--댓글 페이징 출력-->
+		<div class="row" id="replyPaging"></div>
+
 	</div>
-	
 
-              <div class="form-group box-footer">
-                <button id="btnModify" type="button" data-bno="${board.bno }" class="btn btn-primary">수정</button>
-     			<button type="button" id="btnReplyAdd" class="btn btn-primary">댓글 작성</button>      
-                <button id="btnList" type="button" class="btn btn-info">리스트</button>
+	<%@include file="/WEB-INF/views/user/include/footer.jsp"%>
 
-                <form id="operForm" action="/board/modify" method="get">
-                  <input type="hidden" id="bno" name="bno" value='<c:out value="${ board.bno}" />'>
-                  <input type="hidden" name="pageNum" value='<c:out value="${cri.pageNum }" />'>
-                  <input type="hidden" name="amount" value='<c:out value="${cri.amount }" />'>
-                  <input type="hidden" name="type" value='<c:out value="${cri.type }" />'>
-                  <input type="hidden" name="keyword" value='<c:out value="${cri.keyword }" />'>
-                  
-                </form>
-
-              </div>
-              
-   
-  
-  <!-- 댓글목록 출력부분 -->
-  <span>댓글목록</span>
-  <div class="row">
-    <div class="col-md-12">
-      <div id="replyList">
-        
-      </div>
-    </div>
-  </div>
-  <!--댓글 페이징 출력-->
-  <div class="row" id="replyPaging">
-        
-  </div>
-
-</div>
-      <%@include file="/WEB-INF/views/user/include/footer.jsp" %>
-	
-<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
-<script id="replyTemplate" type="text/x-handlebars-template">
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.1/handlebars.js"></script>
+	<script id="replyTemplate" type="text/x-handlebars-template">
   {{#each .}}
   <div class="modal-body">
-      <div class="form-group">
-        <label for="replyer" class="col-form-label rno"><b>No. <span class="reply-rno" id="rno" >{{rno}}</span></b></label>
-        <input type="text" class="form-control" name="user_id" readonly value="{{user_id}}">
-      </div>
-      <div class="form-group">
-        <label for="reply" class="col-form-label regdate">{{prettifyDate replydate}}</label>
-        <textarea class="form-control" name="reply" readonly>{{reply}}</textarea>
-      </div>
-      <div class="form-group">
-        <button type="button" class="btn btn-link btn-reply-modify">수정</button>
-        <button type="button" class="btn btn-link btn-reply-delete">삭제</button>
-      </div>
+    <div class="form-group">
+      <label for="replyer" class="col-form-label rno"><b>No. <span class="reply-rno" id="rno" >{{rno}}</span></b></label>
+      <input type="text" class="form-control" name="user_id" readonly value="{{user_id}}">
+    </div>
+    <div class="form-group">
+      <label for="reply" class="col-form-label regdate">{{prettifyDate replydate}}</label>
+      <textarea class="form-control" name="reply" readonly>{{reply}}</textarea>
+    </div>
+    <div class="form-group">
+      <button type="button" class="btn btn-link btn-reply-modify">수정</button>
+      <button type="button" class="btn btn-link btn-reply-delete">삭제</button>
+    </div>
   </div>
   
   {{/each}}
 </script>
 
-<script>
+	<script>
   // Handlebars 사용자정의 Helper : 댓글 작성일 밀리세컨드 데이타를 날짜포맷으로 변환하는 작업(2022/01/11)
   Handlebars.registerHelper("prettifyDate", function(timeValue){
     const date = new Date(timeValue);
@@ -266,7 +270,7 @@
 
 
 
-<script>
+	<script>
 
   $(document).ready(function(){
 
@@ -322,18 +326,11 @@
     let rno = $("#rno").text();
     console.log("reply: " + reply);
 
-	//추가*
+	//추가
     if(reply == "" || reply == null){
         alert("내용을 입력하세요.");
         return;
       }    
-    
-    //let str = JSON.stringify({bno:${board.bno}, reply:reply});
-
-   // console.log(str);
-
-
-    //return;
 
     $.ajax({
       type: 'post',
@@ -561,33 +558,36 @@ $(document).ready(function(){
 });
 
 </script>
-<!-- Modal Dialog-->
-<div class="reply_modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">댓글 작성</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="reply" class="col-form-label">댓글내용</label>
-            <textarea class="form-control" id="reply" name="reply"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="btnReplyWrite">작성</button>
-        <button type="button" class="btn btn-primary" id="btnReplyModify">수정</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal Dialog-->
-    
-  </body>
+	<!-- Modal Dialog-->
+	<div class="reply_modal fade" id="exampleModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">댓글 작성</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<form>
+						<div class="form-group">
+							<label for="reply" class="col-form-label">댓글내용</label>
+							<textarea class="form-control" id="reply" name="reply"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="btnReplyWrite">작성</button>
+					<button type="button" class="btn btn-primary" id="btnReplyModify">수정</button>
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Modal Dialog-->
+
+</body>
 </html>

@@ -10,8 +10,6 @@ import com.kpet.domain.OrderVO;
 import com.kpet.domain.UserOrderListInfo;
 
 public interface OrderService {
-
-	public List<OrderInfoVO> orderInfo(String user_id);
 	
 	public void orderInsert(OrderVO vo, DetailOrderList vo2);
 	
@@ -28,4 +26,6 @@ public interface OrderService {
 	
 	public List<OrderVO> userOrderListPaging(Criteria cri, String user_id);
 	
+	public int ordStateCount(String user_id, String ord_state, String threeMonthsDate);
+
 }

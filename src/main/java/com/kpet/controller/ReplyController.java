@@ -75,7 +75,6 @@ public class ReplyController {
 		return entity;
 	}
 	
-	
 	//댓글 수정.   /modify/10
 	@RequestMapping(value = "/modify/{rno}", method = {RequestMethod.PUT, RequestMethod.PATCH})
 	public ResponseEntity<String> update(@PathVariable("rno") Long rno, @RequestBody ReplyVO vo){
@@ -86,7 +85,6 @@ public class ReplyController {
 		
 		log.info(rno);
 		log.info(vo);
-		
 		
 		service.modifyReply(vo);
 		

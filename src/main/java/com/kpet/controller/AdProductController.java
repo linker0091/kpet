@@ -41,9 +41,11 @@ import lombok.extern.log4j.Log4j;
 @Controller
 public class AdProductController {
 	
+	//상품 이미지 업로드 폴더
 	@Resource(name = "uploadFolder")
 	String uploadFolder; // d:\\dev\\upload */
 	
+	//CKEditor 상품설명이미지 업로드 폴더
 	@Resource(name= "ckUploadFolder")
 	String ckUploadFolder;
 	
@@ -79,13 +81,10 @@ public class AdProductController {
 		entity = new ResponseEntity<List<CategoryVO>>(service.lastsubCategory(cate_prtcode, cate_subprtcode), HttpStatus.OK);
 		log.info("받아오는값 cate_prtcode: " + cate_prtcode);
 		log.info("받아오는값 cate_subprtcode: " + cate_subprtcode);
-					
 		log.info("넘기는 데이타 cate_subprtcode: " + entity);
-					
 				
 		return entity;
 	}
-	
 	
 	//CKEditor 상품설명 이미지.
 	@PostMapping("/editor/imageUpload")
@@ -95,7 +94,6 @@ public class AdProductController {
 		 CKEditor 파일업로드 1)파일업로드 작업 2) 업로드된 파일정보를 브라우저에게 보내야 한다. 
 		  
 		 */
-		
 		
 		// 클라이언트로부터 전송되어 온 파일을 업로드폴더에 복사(생성)작업
 		OutputStream out = null;
@@ -112,7 +110,7 @@ public class AdProductController {
 			// 클라이언트에서 전송해 온 파일명을 포함하여, 실제 업로드되는 경로생성. 톰캣에서 관리하는 폴더.
 			//String uploadPath = request.getSession().getServletContext().getRealPath("/resources/upload/") + fileName;
 			
-			//일반 상품이미지 업로드 한 방법으로 갈것.  맨위, @Resource(name = "ckUploadFolder") String ckUploadFolder; 이부분
+			//물리적 경로
 			String uploadPath = ckUploadFolder + "\\WEB-INF\\views\\admin\\product\\upload\\" + fileName;  
 			
 			log.info("업로드폴더 물리적경로: " + uploadPath);
@@ -124,8 +122,7 @@ public class AdProductController {
 			out.flush();
 			
 			/*======================================================================*/
-			
-			
+			//CKEditor의 콜백 함수를 호출하는 JavaScript 코드를 출력
 			String callback = request.getParameter("CKEditorFuncNum");
 			
 			log.info(callback);
@@ -134,7 +131,6 @@ public class AdProductController {
 			
 			// <resources mapping="/upload/**" location="/resources/upload/" />
 			String fileUrl = "/product/upload/" + fileName;
-			//String fileUrl = "product/upload/" + fileName; 
 					
 			printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("
 								+ callback
@@ -143,8 +139,6 @@ public class AdProductController {
 								+ "','이미지를 업로드 하였습니다.'"
 								+ ")</script>");
 			printWriter.flush();
-			
-		
 		
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -157,12 +151,8 @@ public class AdProductController {
 			}
 			
 		}
-		
-		//return;
-		
+				
 	}
-	
-	
 	
 	//상품등록 저장
 	@PostMapping("/productInsert")
@@ -182,7 +172,7 @@ public class AdProductController {
 		return "redirect:/admin/product/productList";
 	}
 	
-	//상품리스트
+	//상품목록
 	@GetMapping("/productList")
 	public void product_list(Criteria cri, Model model) {
 		
@@ -194,7 +184,6 @@ public class AdProductController {
 			ProductVO vo = list.get(i);
 			vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
 		}
-		
 		
 		int total = service.getTotalCount(cri);
 		
@@ -213,9 +202,9 @@ public class AdProductController {
 		
 		//2)1차카테고리 정보
 		model.addAttribute("mainCategory", service.mainCategory());
-		//3)1차카테고리를 참조하는 2차카테고리 정보.
+		//3)2차카테고리를 참조하는 2차카테고리 정보.
 		model.addAttribute("subCategory", service.subCategory(vo.getCate_prtcode()));
-		//3)2차카테고리를 참조하는 3차카테고리 정보.
+		//3)3차카테고리를 참조하는 3차카테고리 정보.
 		model.addAttribute("lastsubCategory", service.lastsubCategory(vo.getCate_prtcode(), vo.getCate_subprtcode()));
 		
 		//4)페이징,검색 파라미터 정보 : @ModelAttribute("cri") Criteria cri
@@ -262,11 +251,7 @@ public class AdProductController {
 		
 		return entity;
 	}
-	
-	
-	
-	//상품삭제
-	
+		
 	//상품선택삭제(ajax호출).pro_uploadpathArr   400에러발생되면. 클라이언트에서 보낸 데이타를 스프링에서 받지 못하는 상태. (중요)ajax로 사용시 파라미터를 [] 로 사용해야 한다.
 	@ResponseBody  
 	@PostMapping("/checkDelete")
@@ -293,8 +278,6 @@ public class AdProductController {
 			e.printStackTrace();
 			entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
 		}
-		
-		
 		
 		return entity;
 	}

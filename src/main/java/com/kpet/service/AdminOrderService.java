@@ -18,14 +18,13 @@ public interface AdminOrderService {
 	
 	public int getOrderStateTotalCount(Criteria cri, String ord_state);
 	
-	
 	public void orderStateChange(Integer ord_code, String ord_state);
 	
 	public void ordDelete(Integer ord_code);
 	
 	public List<DetailOrderInfo> detailOrderInfo(Integer ord_code);
 	
-	public void ordDetailDelete(Integer ord_code, Integer pro_num);
+	public void ordDetailListDelete(Integer ord_code, Integer pro_num);
 	
 	public int getOrderStateCount(String ord_state);
 	

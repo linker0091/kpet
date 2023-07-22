@@ -40,24 +40,6 @@
 		values(#{bno}, #{title}, #{content}, #{user_id})
 	
 	</insert>
-	
-	<select id="getList" resultType="com.kpet.domain.BoardVO">
-		select bno, title, content, user_id, regdate, updateddate from board_tbl
-	</select>
-	
-	<!-- 
-	<select id="getListWithPaging" parameterType="com.doccomsa.domain.Criteria" resultType="com.doccomsa.domain.BoardVO">
-		<![CDATA[ 
-		select bno, title, content,user_id, regdate, updateddate
-		from (
-		    select /*+ index_desc(board_tbl pk_board) */ rownum rn, bno, title, content, user_id, regdate,updateddate
-		    from board_tbl
-		    where rownum <= (#{pageNum} * #{amount})
-		)
-		where rn > ((#{pageNum} - 1) * #{amount} )
-		]]>
-	</select>
-	 -->
 	 
 	<select id="getListWithPaging" parameterType="com.kpet.domain.Criteria" resultType="com.kpet.domain.BoardVO">
 		<![CDATA[ 

@@ -1,92 +1,105 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <c:forEach items="${list}" var="ProductVO">
-	     <div class="col-md-3 parentDetail">
-	       <div class="card mb-4 shadow-sm">
-	         <a href="${ProductVO.pro_num }" class="proDetail">
-				<img name="proudctImage" width="100%" height="225" src="/product/displayFile?fileName=<c:out value="${ProductVO.pro_img }"></c:out>&uploadPath=<c:out value="${ProductVO.pro_uploadpath }"></c:out>">
-			 </a>
-			<input type="hidden" name="cate_code" value="${ProductVO.cate_code }">
-	         <div class="card-body">
-	              <p class="card-text">
-	              	<a href="${ProductVO.pro_num }" class="proDetail2">
-	              		<c:out value="${ProductVO.pro_name }"></c:out>
-	              	</a>
-	              	<span class="product-price"><fmt:formatNumber type="currency" value="${ProductVO.pro_price }" /></span>
-      				<span class="product-discount"><fmt:formatNumber type="currency" value="${ProductVO.pro_discount }" /></span>
-      				<input type="hidden" name="product-price" value="${ ProductVO.pro_price }"/>
-      				<input type="hidden" name="product-discount" value="${ ProductVO.pro_discount}"/>
-	              	<input type="hidden" name="pro_num" value="${ProductVO.pro_num }">
-	              </p>
-	              <div class="d-flex justify-content-between align-items-center">
-	                <div class="btn-group">
-	                  <button type="button" name="btnBuyAdd" id="buy_btn_style" class="btn btn-sm btn-outline-secondary">Buy</button>
-	                  <button type="button" name="btnCartAdd" id="cart_btn_style" class="btn btn-sm btn-outline-secondary">Cart</button>
-	                </div>
-	              </div>
-	            </div>
-	       </div>
-	     </div>
-	     </c:forEach>
+	<div class="col-md-3 parentDetail">
+		<div class="card mb-4 shadow-sm">
+			<a href="${ProductVO.pro_num }" class="proDetail"> <img
+				name="proudctImage" width="100%" height="225"
+				src="/product/displayFile?fileName=<c:out value="${ProductVO.pro_img }"></c:out>&uploadPath=<c:out value="${ProductVO.pro_uploadpath }"></c:out>">
+			</a> <input type="hidden" name="cate_code"
+				value="${ProductVO.cate_code }">
+			<div class="card-body">
+				<p class="card-text">
+					<a href="${ProductVO.pro_num }" class="proDetail2"> <c:out
+							value="${ProductVO.pro_name }"></c:out>
+					</a> <span class="product-price"><fmt:formatNumber
+							type="currency" value="${ProductVO.pro_price }" /></span> <span
+						class="product-discount"><fmt:formatNumber type="currency"
+							value="${ProductVO.pro_discount }" /></span> <input type="hidden"
+						name="product-price" value="${ ProductVO.pro_price }" /> <input
+						type="hidden" name="product-discount"
+						value="${ ProductVO.pro_discount}" /> <input type="hidden"
+						name="pro_num" value="${ProductVO.pro_num }">
+				</p>
+				<div class="d-flex justify-content-between align-items-center">
+					<div class="btn-group">
+						<c:if test="${ProductVO.pro_amount != 0}">
+							<button type="button" name="btnBuyAdd" id="buy_btn_style"
+								class="btn btn-sm btn-outline-secondary">Buy</button>
+							<button type="button" name="btnCartAdd" id="cart_btn_style"
+								class="btn btn-sm btn-outline-secondary">Cart</button>
+						</c:if>
+						<c:if test="${ProductVO.pro_amount == 0}">
+							<button type="button" name="btnSoldout" class="btn btn-secondary">품절</button>
+						</c:if>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</c:forEach>
 
 <style>
-#search_btn { display: inline-block; }
-      
-      #reset_btn { display: inline-block; }
-      
-      
-      .card-text {
-      		margin-bottom: 12px;
-       }
-       
-       #buy_btn_style {     width: 89%;
-    width: 95px;  }
-       
-       #cart_btn_style {    width: 89%;
-    width: 95px;  }
-       
-       
-      
-      .proDetail2 {
-      	display: block;
-      		margin-bottom: 10px
-     	 }
-      
-      
-      .discount-rate {
-	    display: inline-block;
-	    font-size: 24px;
-	    color: #35cde8;
-	    font-weight: 800;
-	    margin-left: 11px;
-	        vertical-align: text-bottom;
-    margin-bottom: -1px;
-	    
-		}
-		
-		.product-price {
-    display: block;
-    text-decoration: line-through;
-    font-size: 16px;
-    font-weight: 600;
-    color: #959595;
+#search_btn {
+	display: inline-block;
+}
+
+#reset_btn {
+	display: inline-block;
+}
+
+.card-text {
+	margin-bottom: 12px;
+}
+
+#buy_btn_style {
+	width: 89%;
+	width: 95px;
+}
+
+#cart_btn_style {
+	width: 89%;
+	width: 95px;
+}
+
+.proDetail2 {
+	display: block;
+	margin-bottom: 10px
+}
+
+.discount-rate {
+	display: inline-block;
+	font-size: 24px;
+	color: #35cde8;
+	font-weight: 800;
+	margin-left: 11px;
+	vertical-align: text-bottom;
+	margin-bottom: -1px;
+}
+
+.product-price {
+	display: block;
+	text-decoration: line-through;
+	font-size: 16px;
+	font-weight: 600;
+	color: #959595;
 }
 
 .product-discount {
-    font-size: 22px;
-    color: #202020;
-    font-weight: 800;
+	font-size: 22px;
+	color: #202020;
+	font-weight: 800;
 }
 </style>
 
- <script>
+<script>
  
 	
 	//장바구니 담기 코드 수정*
- $("button[name='btnCartAdd']").on("click", function(){
+  $("button[name='btnCartAdd']").on("click", function(){
      
      let pro_num = $(this).parents("div.card-body").find("input[name='pro_num']").val();
     // console.log("상품코드" + pro_num);

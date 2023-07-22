@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,6 @@ public class FileCheckTask {
 		
 		log.warn(new Date());
 		
-		
 		/*Stream API 사용*/
 		
 		// 1)하루 이전의 tbl_attach테이블의 파일정보(s_ 썸네일 이미지 정보는 포함되어 있지않다.)
@@ -76,8 +77,6 @@ public class FileCheckTask {
 			.map(vo -> Paths.get("D:\\Dev\\bod_upload", vo.getUploadPath(), "s_" + vo.getUuid() + "_" + vo.getFileName()))
 			.forEach(p -> fileListPaths.add(p));
 				
-		
-		
 		// for문 전환. 위의 3번구문과 동일한 작업이다.
 		/*
 		for(int i=0; i<fileList.size(); i++) {
@@ -90,7 +89,6 @@ public class FileCheckTask {
 		}
 		*/
 		
-		
 		log.warn("=============================================================");
 		
 		fileListPaths.forEach(p -> log.warn(p));
@@ -98,12 +96,11 @@ public class FileCheckTask {
 		// fileListPaths 컬렉션 : tbl_attach테이블의 하루 이전날짜 파일정보. 이미지에 해당하는 썸네일정보추가
 		
 		//4)쓰레기 파일들을 삭제
-		
 		// "2022\01\24"날짜폴더에 대한 정보
 		File targetDir = Paths.get("D:\\Dev\\bod_upload", getFolerYesterDay()).toFile();
 		
 		File[] removeFiles = targetDir.listFiles(file -> fileListPaths.contains(file.toPath()) == false);
-		if (removeFiles != null) {
+		if (removeFiles != null && removeFiles.length > 0) {
 		    log.warn("===================================================================");
 		    for(File file : removeFiles) {
 		        log.warn(file.getAbsolutePath());
@@ -112,12 +109,12 @@ public class FileCheckTask {
 		    }
 		} else {
 		    log.warn("No files to remove");
-		}
-
+		    // 파일을 더 이상 삭제할 것이 없으면 스케쥴링 종료
+		    ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1);
+		    executor.shutdown();
+		    }
 		
 	}
-	
-	
 	
 	// 하루 이전 날짜의 정보를 문자열로 구하기.  예> "2022\01\24"
 	private String getFolerYesterDay() {
@@ -133,30 +130,6 @@ public class FileCheckTask {
 		// 운영체제에 맞는 구분자사용
 		return str.replace("-", File.separator);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

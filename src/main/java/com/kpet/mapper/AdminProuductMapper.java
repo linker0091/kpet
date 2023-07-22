@@ -32,6 +32,7 @@ public interface AdminProuductMapper {
 	public int product_rew_update(Integer pro_num);
 	
 	public int product_rew_dlupdate(Integer rew_num);
-
+	
+	public int product_update_amount(@Param("pro_amount") Integer pro_amount, @Param("pro_num") Integer pro_num);
 	
 }

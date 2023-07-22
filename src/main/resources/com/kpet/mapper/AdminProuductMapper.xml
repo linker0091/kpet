@@ -238,6 +238,7 @@
 			
 	</delete>
 	
+	<!-- 리뷰 추가시 개수와 평점 업데이트-->
 	<update id="product_rew_update">
 	
 		UPDATE 
@@ -260,7 +261,7 @@
 	
 	</update>
 	
-	 
+	 	<!-- 리뷰 삭제시 개수와 평점 업데이트-->
 	 	<update id="product_rew_dlupdate">
 	
 		UPDATE 
@@ -297,6 +298,19 @@
 							rew_num = #{rew_num})
 
 	
+	</update>
+	
+	<!-- 주문시 상품 재고 수량 업데이트 -->
+	<update id="product_update_amount">
+	 
+		UPDATE
+			product_tbl
+		SET
+			pro_amount = pro_amount - #{pro_amount},
+			pro_updatedate = sysdate			
+		WHERE
+			pro_num = #{pro_num}
+
 	</update>
 
 </mapper>

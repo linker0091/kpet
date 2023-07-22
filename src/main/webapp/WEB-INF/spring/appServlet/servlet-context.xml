@@ -14,8 +14,8 @@
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
+
 		<!-- 추가설정 	-->
-	
 	<resources mapping="/css/**" location="/resources/css/" />
 	<resources mapping="/js/**" location="/resources/js/" />
 	<resources mapping="/img/**" location="/resources/img/" />
@@ -30,7 +30,7 @@
 	<!-- ckEditor 상품설명 이미지 접근경로-->
 	<resources mapping="/product/upload/**" location="/WEB-INF/views/admin/product/upload/" />
 	
-	<resources mapping="/cst_upload/**" location="/resources/cst_upload/" />
+	<resources mapping="/cst_upload/**" location="/WEB-INF/views/consult/upload/" />
 	
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -45,9 +45,10 @@
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>
 	
 	 <!--  인터셉터 클래스를 bean설정구문 -->
-   <beans:bean id="loginInterceptor" class="com.kpet.interceptor.LoginInterceptor"></beans:bean>
-   <beans:bean id="authInterceptor" class="com.kpet.interceptor.AuthInterceptor"></beans:bean>
-	
+   	<beans:bean id="loginInterceptor" class="com.kpet.interceptor.LoginInterceptor"></beans:bean>
+  	<beans:bean id="superAdInterceptor" class="com.kpet.interceptor.SuperAdInterceptor"></beans:bean>
+	<beans:bean id="middleAdInterceptor" class="com.kpet.interceptor.MiddleAdInterceptor"></beans:bean>
+	<beans:bean id="underAdInterceptor" class="com.kpet.interceptor.UnderAdInterceptor"></beans:bean>
 	
 	<interceptors>
       <!-- 사용자 로그인 관리 -->
@@ -56,6 +57,7 @@
          <mapping path="/order/*"/>
          <mapping path="/cart/*"/>
          <mapping path="/board/*"/>
+         <mapping path="/consult/*"/>         
          <mapping path="/review/reviewModify"/>
          <mapping path="/review/reviewWrite"/>
          <exclude-mapping path="/user/login"/>
@@ -64,19 +66,41 @@
          <exclude-mapping path="/user/sendMailAuth"/>
          <exclude-mapping path="/user/mailAuthConfirm"/>
          <exclude-mapping path="/user/join"/>
+         <exclude-mapping path="/user/searchId"/>         
          <exclude-mapping path="/user/searchPw"/>
+         <exclude-mapping path="/user/searchIdPw"/>         
          <exclude-mapping path="/board/list"/>
          <beans:ref bean="loginInterceptor"/>
       </interceptor>   
-      <!-- 관리자 로그인 관리 -->
-      <interceptor>
-         <mapping path="/admin/**"/>
-         <exclude-mapping path="/admin/logon"/>
-         <exclude-mapping path="/admin/adminRegister"/>
-         <beans:ref bean="authInterceptor"/>
-      </interceptor>
-      
+
+
+  <!-- 관리자 로그인 관리 -->
+  <!-- super만 접근 가능한 페이지 -->
+  <interceptor>
+    <mapping path="/admin/adManagement"/>  
+    <mapping path="/admin/chart/*"/>   
+    <exclude-mapping path="/admin/logon"/>
+    <exclude-mapping path="/admin/logout"/>    
+    <beans:ref bean="superAdInterceptor"/>
+  </interceptor>
+  
+  <!-- middle만 접근 가능한 페이지 -->
+  <interceptor>
+    <mapping path="/admin/consult/*"/>
+    <mapping path="/admin/order/*"/>
+    <exclude-mapping path="/admin/logon"/>
+    <exclude-mapping path="/admin/logout"/>    
+    <beans:ref bean="middleAdInterceptor"/>
+  </interceptor>
+
+  <!-- under만 접근 가능한 페이지 -->  
+  <interceptor>
+    <mapping path="/admin/main"/>    
+    <mapping path="/admin/product/*"/>
+    <exclude-mapping path="/admin/logon"/>
+    <exclude-mapping path="/admin/logout"/>    
+    <beans:ref bean="underAdInterceptor"/>
+  </interceptor>  
    </interceptors>
-	
 	
 </beans:beans>

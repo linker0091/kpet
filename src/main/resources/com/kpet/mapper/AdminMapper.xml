@@ -10,6 +10,7 @@
 			ad_id, 
 			ad_pw, 
 			ad_name, 
+			ad_position,
 			ad_lastlogin 
 		FROM 
 			admin_tbl 
@@ -28,7 +29,7 @@
 	
 	<select id="getAdminList" resultType="com.kpet.domain.AdminVO">
 		SELECT
-			/*+ index_desc(admin_tbl pk_admin_tbl) */
+			/*+ index_sec(admin_tbl pk_admin_tbl) */
 			ad_id, 
 			ad_pw, 
 			ad_name,
@@ -68,4 +69,14 @@
 			ad_id = #{ad_id}
 	</update>
 
+	<update id="updateLastlogin">
+	
+		UPDATE
+			admin_tbl 
+		SET
+			ad_lastlogin = #{ad_lastlogin} 
+		WHERE
+			ad_id = #{ad_id} 
+	
+	</update>
 </mapper>  

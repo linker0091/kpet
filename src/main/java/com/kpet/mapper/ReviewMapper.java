@@ -15,6 +15,8 @@ public interface ReviewMapper {
 	
 	public int getTotalCount(Integer pro_num);
 	
+	public List<ReviewAllList> getReviewImg(Integer pro_num);
+	
 	public List<ReviewAllList> getAllReview(Integer pro_num);
 	
 	public void reviewInsert(ReviewVO vo);

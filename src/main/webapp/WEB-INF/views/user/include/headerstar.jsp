@@ -1,74 +1,75 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ include file="/WEB-INF/views/user/include/plugin_js.jsp" %>
+<%@ include file="/WEB-INF/views/user/include/plugin_js.jsp"%>
 <link href="/css/reset.css" rel="stylesheet" />
-<link href="/css/main_style.css" rel="stylesheet" /> 
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="/css/main_style.css" rel="stylesheet" />
+<link
+	href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet">
 
-       <div class="wrap_gnb">
-            <div class="container">
-                
-            </div>
-        </div>
- <!-- Header-->
-         <header id="header">
-            <div class="header_top">
-                <div class="container">
-                    <h1>
-                        <a href="/">KPET</a>
-                    </h1>
-                    <div class="side_menu clearfix">
-                        <ul class="clearfix">
-                           
-                           <!-- 로그인 이전상태 표시 -->
-                      <c:if test="${sessionScope.loginStatus == null }">
-                          <li><a href="/user/login">로그인</a></li>
-                               <li><a href="/user/join">회원가입</a></li>
-                      </c:if>
-                      <!-- 로그인 이후상태 표시 -->
-                      <c:if test="${sessionScope.loginStatus != null }">
-                         <li><a href="/user/logout">로그아웃</a></li>
-                               <li><a href="/user/modify">회원정보 수정</a></li>
-                               <li><a href="/user/mypage">마이페이지</a></li>
-                      </c:if>
-                            <li><a href="#">고객센터</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="header_bottom">
-                <div class="container">
-                    <div class="header_gnb">
-                        <ul class="clearfix">
-                            <c:forEach items="${userCategory}" var="categoryVO">
-                              <li class="nav-item">
-                                <a class="nav-link" data-toggle="dropdown" href="${categoryVO.cate_code }" role="button">${categoryVO.cate_name }</a>
-                               <div class="clearfix">
-                                    <div class="depth2 drop clearfix">
-                                        <ul class="subCategory depth2_subbox" id="subCategory_${categoryVO.cate_code }">
-                                           <li>
-                                                <a class="depth3" id="lastsubCategory_${categoryVO.cate_code }"></a>
-                                           </li>
-                                        </ul>
-                                    </div>
-                               
-                                    <div class="depth3 ">
-                                        <ul class="lastsubCategory depth3_subbox" id="lastsubCategory_${categoryVO.cate_code }">
-                                           <li>
-                                           </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                  </li>
-                       </c:forEach>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </header>
- <script>
-   $(function(){
+<div class="wrap_gnb">
+	<div class="container"></div>
+</div>
+
+<!-- Header-->
+<header id="header">
+	<div class="header_top">
+		<div class="container">
+			<h1>
+				<a href="/">KPET</a>
+			</h1>
+			<div class="side_menu clearfix">
+				<ul class="clearfix">
+					<!-- 로그인 이전상태 표시 -->
+					<c:if test="${sessionScope.loginStatus == null }">
+						<li><a href="/user/login">로그인</a></li>
+						<li><a href="/user/join">회원가입</a></li>
+					</c:if>
+					<!-- 로그인 이후상태 표시 -->
+					<c:if test="${sessionScope.loginStatus != null }">
+						<li><a href="/user/logout">로그아웃</a></li>
+						<li><a href="/user/modify">회원정보 수정</a></li>
+						<li><a href="/user/mypage">마이페이지</a></li>
+					</c:if>
+					<li><a href="#">고객센터</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+	<div class="header_bottom">
+		<div class="container">
+			<div class="header_gnb">
+				<ul class="clearfix">
+					<c:forEach items="${userCategory}" var="categoryVO">
+						<li class="nav-item"><a class="nav-link"
+							data-toggle="dropdown" href="${categoryVO.cate_code }"
+							role="button">${categoryVO.cate_name }</a>
+							<div class="clearfix">
+								<div class="depth2 drop clearfix">
+									<ul class="subCategory depth2_subbox"
+										id="subCategory_${categoryVO.cate_code }">
+										<li><a class="depth3"
+											id="lastsubCategory_${categoryVO.cate_code }"></a></li>
+									</ul>
+								</div>
+								<div class="depth3 ">
+									<ul class="lastsubCategory depth3_subbox"
+										id="lastsubCategory_${categoryVO.cate_code }">
+										<li></li>
+									</ul>
+								</div>
+							</div></li>
+					</c:forEach>
+				</ul>
+			</div>
+		</div>
+	</div>
+</header>
+
+<script>
+    $(function(){
      
      //1차 카테고리메뉴 클릭시
      $(".nav-item a.nav-link").on("click", function(){

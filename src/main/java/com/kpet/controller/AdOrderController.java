@@ -8,8 +8,6 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -45,12 +43,14 @@ import lombok.extern.log4j.Log4j;
 @Controller
 public class AdOrderController {
 	
+	//상품 이미지 업로드 폴더
 	@Resource(name = "uploadFolder")
 	String uploadFolder; // d:\\dev\\upload */
 	
 	@Inject
 	private AdminOrderService Service;
 
+	//주문 목록
 	@GetMapping("/orderList")
 	public void orderList(Criteria cri, @ModelAttribute("startDate") String startDate, @ModelAttribute("endDate") String endDate, Model model) {
 		
@@ -60,17 +60,22 @@ public class AdOrderController {
 		cri.setAmount(5);
 		List<OrderVO> list = Service.getListWithPaging(cri, startDate, endDate);
 		
-				
-		
 		int total = Service.getTotalCount(cri, startDate, endDate);
 		model.addAttribute("ord_total", total);
 		
 		//주문상태별 건수
-		model.addAttribute("ord_count",  Service.getOrderStateCount("주문접수")); //주문접수
-		model.addAttribute("ord_pay", Service.getOrderStateCount("결제완료")); //결제완료
-		model.addAttribute("ord_delivery", Service.getOrderStateCount("배송준비중")); //배송준비중
-		model.addAttribute("ord_cancel", Service.getOrderStateCount("취소요청")); //취소요청
-		model.addAttribute("ord_change", Service.getOrderStateCount("교환요청")); //교환요청
+		model.addAttribute("ordReceived",  Service.getOrderStateCount("주문접수")); //주문접수
+		model.addAttribute("ordPaid", Service.getOrderStateCount("결제완료")); //결제완료
+		model.addAttribute("ordPreparing", Service.getOrderStateCount("배송준비중")); //배송준비중
+		model.addAttribute("ordShipping", Service.getOrderStateCount("배송중")); //배송중
+		model.addAttribute("ordDelivered", Service.getOrderStateCount("배송완료")); //배송중
+		model.addAttribute("unpaidCancel", Service.getOrderStateCount("미입금취소")); //미입금취소
+		model.addAttribute("ordCancel", Service.getOrderStateCount("취소요청")); //취소요청
+		model.addAttribute("cancelCompleted", Service.getOrderStateCount("취소완료"));
+		model.addAttribute("ordExchange", Service.getOrderStateCount("교환요청")); //교환요청
+		model.addAttribute("exchangeCompleted", Service.getOrderStateCount("교환완료")); //교환완료
+		model.addAttribute("ordReturn", Service.getOrderStateCount("반품요청")); //반품요청
+		model.addAttribute("returnCompleted", Service.getOrderStateCount("반품완료")); //반품완료
 		
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
 		model.addAttribute("orderList", list);
@@ -81,24 +86,28 @@ public class AdOrderController {
 	@GetMapping("/orderStateList")
 	public String  orderStateList(@ModelAttribute("ord_state") String ord_state, Criteria cri, Model model)  {
 		
-		cri.setAmount(1);
+		cri.setAmount(5);
 		List<OrderVO> list = Service.getOrderStateListWithPaging(cri, ord_state);
-		
-				
 		
 		int total = Service.getOrderStateTotalCount(cri, ord_state);
 		model.addAttribute("ord_total", total);
 		
 		//주문상태별 건수
-		model.addAttribute("ord_count",  Service.getOrderStateCount("주문접수")); //주문접수
-		model.addAttribute("ord_pay", Service.getOrderStateCount("결제완료")); //결제완료
-		model.addAttribute("ord_delivery", Service.getOrderStateCount("배송준비중")); //배송준비중
-		model.addAttribute("ord_cancel", Service.getOrderStateCount("취소요청")); //취소요청
-		model.addAttribute("ord_change", Service.getOrderStateCount("교환요청")); //교환요청
+		model.addAttribute("ordReceived",  Service.getOrderStateCount("주문접수")); //주문접수
+		model.addAttribute("ordPaid", Service.getOrderStateCount("결제완료")); //결제완료
+		model.addAttribute("ordPreparing", Service.getOrderStateCount("배송준비중")); //배송준비중
+		model.addAttribute("ordShipping", Service.getOrderStateCount("배송중")); //배송중
+		model.addAttribute("ordDelivered", Service.getOrderStateCount("배송완료")); //배송중
+		model.addAttribute("unpaidCancel", Service.getOrderStateCount("미입금취소")); //미입금취소
+		model.addAttribute("ordCancel", Service.getOrderStateCount("취소요청")); //취소요청
+		model.addAttribute("cancelCompleted", Service.getOrderStateCount("취소완료"));
+		model.addAttribute("ordExchange", Service.getOrderStateCount("교환요청")); //교환요청
+		model.addAttribute("exchangeCompleted", Service.getOrderStateCount("교환완료")); //교환완료
+		model.addAttribute("ordReturn", Service.getOrderStateCount("반품요청")); //반품요청
+		model.addAttribute("returnCompleted", Service.getOrderStateCount("반품완료")); //반품완료
 		
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
 		model.addAttribute("orderList", list);
-		
 		
 		return "/admin/order/orderList";
 	}
@@ -119,6 +128,7 @@ public class AdOrderController {
 		try {
 			
 			for(int i=0; i < ord_codeArr.size(); i++) {
+				//주문상태 변경
 				Service.orderStateChange(ord_codeArr.get(i), ord_StateArr.get(i));
 			}
 
@@ -133,7 +143,7 @@ public class AdOrderController {
 	}
 	
 	
-	// 주문삭제( 주문테이블, 주무상세테이블)
+	// 주문삭제( 주문테이블, 주문상세테이블)
 	@ResponseBody
 	//@GetMapping("/checkDelete")
 	@PostMapping("/checkDelete")
@@ -157,11 +167,10 @@ public class AdOrderController {
 			entity = new ResponseEntity<String>("fail", HttpStatus.BAD_REQUEST);
 		}
 		
-		
-		
 		return entity;
 	}	
-	//상세보기
+	
+	//주문 상세보기
 	@GetMapping("/detailInfo")
 	public void detailInfo(Integer ord_code, Model model) {
 		
@@ -179,14 +188,15 @@ public class AdOrderController {
 		
 	}
 	
+	//주문 상품만 취소 삭제
 	@ResponseBody
 	@PostMapping("/detailListDelete")
 	public ResponseEntity<String> detailListDelete(Integer ord_code, Integer pro_num) {
 		ResponseEntity<String> entity = null;
 		
-		
 		try {
-			Service.ordDetailDelete(ord_code, pro_num);
+			//선택한 상품만 취소 삭제
+			Service.ordDetailListDelete(ord_code, pro_num);
 			entity = new ResponseEntity<String>("success", HttpStatus.OK);
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -233,8 +243,6 @@ public class AdOrderController {
 				list = Service.getListWithPaging(cri, startDate, endDate);		
 				
 			}
-			
-			
 			
 			// MS-Office 2003년도 버전까지
 			//Workbook wb = new HSSFWorkbook();
@@ -328,7 +336,6 @@ public class AdOrderController {
 				log.info("주문일 확인 : " + dregdate);
 		
 			}
-			
 			
 			//엑셀출력
 			String fileName = "주문데이타.xlsx";

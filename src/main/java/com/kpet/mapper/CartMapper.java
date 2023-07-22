@@ -21,6 +21,7 @@ public interface CartMapper {
 	
 	public void cartAmountChange(CartVO vo);
 	
+	//주문 결제시 장바구니 삭제
 	public void cartCheckDel(@Param("pro_num") Integer pro_num, @Param("cart_amount")  int cart_amount);
 	
 }

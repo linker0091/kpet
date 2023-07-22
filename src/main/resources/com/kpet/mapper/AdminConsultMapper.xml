@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kpet.mapper.AdminConsultMapper">
+
+	<select id="adminConSultList" resultType="com.kpet.domain.ConsultVO">
+			select 
+				cst_num, cst_type, cst_title, user_id, cst_content, cst_answer, cst_regdate, cst_updatedate
+			FROM 
+				consult_tbl
+			WHERE 
+				cst_answer = #{cst_answer}
+			ORDER BY cst_updatedate DESC
+	</select>
+	
+	<select id="admingetConSult" resultType="com.kpet.domain.ConsultVO">
+			select 
+				cst_num, cst_type, cst_title, user_id, cst_content, cst_answer, cst_regdate, cst_updatedate
+			FROM 
+				consult_tbl
+			WHERE 
+				cst_num = #{cst_num}
+	</select>
+	
+	<insert id="writeAnswer" parameterType="com.kpet.domain.AnswerVO">
+		
+			INSERT INTO answer_tbl(
+				ans_num, 
+				cst_num, 
+				ans_title,
+				ad_id,
+				ans_content
+				)
+			VALUES(
+				SEQ_ANS_NUM.nextval,
+				#{cst_num},
+				#{ans_title},
+				#{ad_id},
+				#{ans_content}
+			)
+				
+	</insert>
+	
+	<select id="getCstWrite" resultType="com.kpet.domain.AnswerVO">
+		
+			SELECT 
+				ans_num, cst_num, ans_title, ad_id, ans_content, ans_regdate, ans_updatedate
+			FROM 
+				answer_tbl 
+			WHERE
+				cst_num = #{cst_num}
+	</select>
+	
+	<select id="getConsultAnswerCount" resultType="int">
+		
+			SELECT
+				count(*)
+			FROM
+				consult_tbl
+			WHERE
+				cst_answer = #{cst_answer}
+		
+	</select>
+
+	<delete id="ansRemove">
+		
+		DELETE FROM
+			answer_tbl
+		WHERE
+			cst_num = #{cst_num}
+			
+	</delete>
+
+</mapper>

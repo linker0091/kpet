@@ -29,6 +29,12 @@ public class ReviewServiceImpl implements ReviewService {
 		// TODO Auto-generated method stub
 		return mapper.getReviewListWithPaging(cri, pro_num);
 	}
+	
+	@Override
+	public List<ReviewAllList> getReviewImg(Integer pro_num) {
+		// TODO Auto-generated method stub
+		return mapper.getReviewImg(pro_num);
+	}
 
 	@Override
 	public int getTotalCount(Integer pro_num) {

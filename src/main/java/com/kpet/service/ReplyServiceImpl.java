@@ -60,10 +60,6 @@ public class ReplyServiceImpl implements ReplyService {
 	public int deleteReply(Long bno, Long rno) {
 		// TODO Auto-generated method stub
 		
-		// 가능하면, db연동을 최소화하는 것(권장)
-		//게시판 글번호(bno)?
-		//ReplyVO vo = mapper.read(rno);
-		
 		boardMapper.updateReplyCnt(bno, -1);
 		
 		return mapper.delete(rno);

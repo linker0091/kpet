@@ -19,5 +19,4 @@ public interface CartService {
 
 	public void cartAmountChange(CartVO vo);
 	
-	public void cartCheckDel(Integer pro_num, int cart_amount);
 }

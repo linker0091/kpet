@@ -40,6 +40,7 @@ import lombok.extern.log4j.Log4j;
 @Controller
 public class OrderController {
 
+	//상품 이미지 업로드 폴더
 	@Resource(name = "uploadFolder")
 	String uploadFolder; // d:\\dev\\upload */
 	
@@ -52,10 +53,7 @@ public class OrderController {
 	@Autowired
 	private ReviewService rService;
 	
-	@Autowired
-	private KakaoPayServiceImpl kakaopayService;
-	
-	//주문하기*
+	//주문하기
 	@RequestMapping("/orderInfo")
 	public void orderInfo(@RequestParam(value = "type", required = false, defaultValue = "cart_order") String type, @RequestParam(value = "pro_num", required = false) Integer pro_num, @RequestParam(value = "pro_amount", required = false) Integer pro_amount, @RequestParam(value ="cart_codeArr", required = false) List<Integer> cart_codeArr, HttpSession session, Model model) {
 	
@@ -67,8 +65,7 @@ public class OrderController {
 			// 상품1개
 			list = oService.directOrderInfo(pro_num, pro_amount);  // 1)메인에서 바로구매 2)상품상세 바로구매
 			(list.get(0)).setCart_amount(pro_amount); // 수량변경.
-		}else if(type.equals("cart_order")) {
-			list = oService.orderInfo(user_id);      // 장바구니에서 구매
+			// 장바구니에서 구매
 		}else if (type.equals("check_order")) {  //장바구니 체크 구매 04/10*
 			list = new ArrayList<>();
 		    for (int i = 0; i < cart_codeArr.size(); i++) {
@@ -107,7 +104,7 @@ public class OrderController {
 		log.info("주문정보: " + order);
 		log.info("주문상세정보: " + orderDetail);
 
-	    // order.getOrd_depositor의 값이 없을 경우 order.getOrd_name()의 값으로 대체
+	    // 무통장 입금명 Ord_depositor의 값이 없을 경우 주문자의 이Ord_name()의 값으로 대체
 	    if (order.getOrd_depositor() == null ||  order.getOrd_depositor().trim().isEmpty()) {
 	        order.setOrd_depositor(order.getOrd_name());
 	    }else {//카카오 결제시
@@ -122,86 +119,15 @@ public class OrderController {
 		return "redirect:/order/orderComplete";
 	}
 	
-	//결제 할 때 페이지
-	@GetMapping("/orderPayView")
-	public void orderPayView(@ModelAttribute("order") OrderVO order, @ModelAttribute("pro_name") String pro_name) {
-		
-	}
-	/*
-	 //orderComplete 결제완료후 페이지
-	@GetMapping("/orderComplete")
-	public void orderComplete() {
-		
-	}
-	*/
-	
-	// 카카오페이결제 요청
-	/*
-	@GetMapping("/pay")
-	public @ResponseBody ReadyResponse payReady(@RequestParam(name = "total_amount") int totalAmount) {
-		
-		//log.info("주문정보:"+order);
-		log.info("주문가격:"+totalAmount);
-		// 카카오 결제 준비하기	- 결제요청 service 실행.
-		ReadyResponse readyResponse = kakaopayService.payReady(totalAmount);
-		// 요청처리후 받아온 결재고유 번호(tid)를 모델에 저장
-//		model.addAttribute("tid", readyResponse.getTid());
-		log.info("결재고유 번호: " + readyResponse.getTid());		
-		// Order정보를 모델에 저장
-//		model.addAttribute("order",order);
-		
-		return readyResponse; // 클라이언트에 보냄.(tid,next_redirect_pc_url이 담겨있음.)
-	}
-	*/
-		
-    // 결제승인요청
-	/*
-	@GetMapping("/order/pay/completed")
-	public String payCompleted(@RequestParam("pg_token") String pgToken, @ModelAttribute("tid") String tid, @ModelAttribute("order") Order order,  Model model) {
-		
-		log.info("결제승인 요청을 인증하는 토큰: " + pgToken);
-		log.info("주문정보: " + order);		
-		log.info("결재고유 번호: " + tid);
-		
-		// 카카오 결재 요청하기
-		ApproveResponse approveResponse = kakaopayService.payApprove(tid, pgToken);	
-		
-		// 5. payment 저장
-		//	orderNo, payMathod, 주문명.
-		// - 카카오 페이로 넘겨받은 결재정보값을 저장.
-		Payment payment = Payment.builder() 
-				.paymentClassName(approveResponse.getItem_name())
-				.payMathod(approveResponse.getPayment_method_type())
-				.payCode(tid)
-				.build();
-		
-		orderService.saveOrder(order,payment);
-		
-		return "redirect:/orders";
-	}
-	*/
-	/*
-	// 결제 취소시 실행 url
-	@GetMapping("/order/pay/cancel")
-	public String payCancel() {
-		return "redirect:/carts";
-	}
-    
-	// 결제 실패시 실행 url    	
-	@GetMapping("/order/pay/fail")
-	public String payFail() {
-		return "redirect:/carts";
-	}
-	*/
-	
-	// 주문목록페이지
-	//orderComplete 결제완료후 페이지
+	//결제완료후 페이지
 	@GetMapping("/orderComplete")
 	public void orderList(HttpSession session, @ModelAttribute("cri") Criteria cri, Model model) {
+		
 		String user_id = ((UserVO) session.getAttribute("loginStatus")).getUser_id();
 		
+		cri.setAmount(5);
+		
 		//주문목록
-		//List<OrderVO> list = oService.getUserOrderList(user_id);
 		List<OrderVO> list = oService.userOrderListPaging(cri, user_id);
 		//주문상세
 		List<UserOrderListInfo> detailList = oService.userOrderListInfo(user_id);
@@ -219,7 +145,6 @@ public class OrderController {
 		//페이지
 		model.addAttribute("ord_total", total);
 		model.addAttribute("pageMaker", new PageDTO(cri, total));
-		
 
 		//주문목록 주문상세정보
 		model.addAttribute("list", list);
@@ -227,9 +152,9 @@ public class OrderController {
 		//리뷰 정보
 		model.addAttribute("reviewVO", rlist);
 		
-		
 	}
 	
+	//주문 취소, 교환, 반품 요청
 	@ResponseBody
 	@PostMapping("/orderStateChange")
 	public ResponseEntity<String> stateChange(Integer ord_code, String ord_state, HttpSession session) {
