@@ -366,12 +366,19 @@
 
     // 주문자정보 복사
     $("#orderInfoCopy").on("click", function(){
-        $("#ord_name").val($("#user_name").val());
-        $("#ord_phone").val($("#user_phone").val());
-
-        $("#ord_addr_basic").val($("#user_addr").val());
-        $("#ord_addr_detail").val($("#user_deaddr").val());
-        $("#ord_postcode").val($("#user_postcode").val());
+       if(this.checked){
+           $("#ord_name").val($("#user_name").val());
+           $("#ord_phone").val($("#user_phone").val());
+           $("#ord_addr_basic").val($("#user_addr").val());
+           $("#ord_addr_detail").val($("#user_deaddr").val());
+           $("#ord_postcode").val($("#user_postcode").val());
+       }else{
+          $("#ord_name").val("");
+           $("#ord_phone").val("");
+           $("#ord_addr_basic").val("");
+           $("#ord_addr_detail").val("");
+           $("#ord_postcode").val("");
+       }
     });
     
 
