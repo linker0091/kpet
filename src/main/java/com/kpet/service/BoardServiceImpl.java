@@ -36,18 +36,17 @@ public class BoardServiceImpl implements BoardService {
 	public void register(BoardVO board) {
 		
 		log.info("register...." + board);
-		//2)
-		//mapper.insert(board);
-		mapper.insertSelectKey(board);  // board클래의 bno가 글번호가 존재한다.
+
+		mapper.insertSelectKey(board);  // board클래스의 bno 글번호가 먼저 생성된 후 삽입.
 		
 		log.info("bno: " + board.getBno());
 		
+		//첨부된 파일이 없으면 NullPointerException 예외발생.
 		if(board.getAttachList() == null || board.getAttachList().size() <= 0) {
 			return;
 		}
 		
-		
-		// 첨부파일테이블 bno. 첨부된 파일이 없으면 NullPointerException 예외발생.
+		// 파일 첨부
 		board.getAttachList().forEach(attach -> {
 			
 			attach.setBno(board.getBno());
@@ -78,7 +77,6 @@ public class BoardServiceImpl implements BoardService {
 		//1)기존존재하고 있는 파일정보 모두삭제
 		attachMapper.deleteAll(board.getBno()); 
 		
-		
 		// 기존게시물 수정작업
 		boolean modifyResult = mapper.update(board) == 1;
 		
@@ -96,7 +94,7 @@ public class BoardServiceImpl implements BoardService {
 
 	//게시물삭제.
 	// 테이블관계( 게시판테이블 + 파일첨부테이블 ) 참조키관계 설정.
-	// 데이타 삭제순서 : 1-1)파일첨부테이블 1-2)댓글테이블 2)게시판테이블
+	// 데이타 삭제순서 : 1-1)댓글테이블  1-2)파일첨부테이블 2)게시판테이블
 	@Transactional
 	@Override
 	public boolean delete(Long bno) {

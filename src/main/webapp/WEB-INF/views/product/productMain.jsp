@@ -199,20 +199,17 @@
     // contents 탭버튼메뉴 클릭시
       $(".tab_btn").on("click", function(){
         console.log("클릭");
-        //location.href= "/product/tabclick/"+ $(this).attr("id");
         let tab_num = $(this).attr("id");
         console.log(tab_num);
         $.ajax({
-                url: "/product/tabClick",
+                url: "/product/tabProduct",
                 type: 'post',
                 dataType: 'text',
                 data: {cate_prtcode : tab_num},
                 success: function(data) {
-                  if(data == "success") {
                     console.log(data);
                     
                     getTabProduct(tab_num);
-                  };
                   }
               })
             });    

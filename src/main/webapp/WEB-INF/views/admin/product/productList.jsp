@@ -12,17 +12,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <!-- 절대경로  /WEB-INF/views/include/header_info.jsp -->
 <%@include file="/WEB-INF/views/admin/include/header_info.jsp"%>
 <script>
-
 	let msg = '${msg}';
-	
-	if(msg == "insertOk") {
+
+	if (msg == "insertOk") {
 		alert("상품등록 성공");
-	}else if(msg == "modifyOk") {
+	} else if (msg == "modifyOk") {
 		alert("상품수정 성공");
-	}else if(msg == "deleteOk") {
+	} else if (msg == "deleteOk") {
 		alert("상품삭제성공");
 	}
-
 </script>
 
 <!--
@@ -176,16 +174,6 @@ desired effect
 														<c:out value="${pageMaker.cri.type eq 'N'? 'selected':'' }" />>상품명</option>
 													<option value="P"
 														<c:out value="${pageMaker.cri.type eq 'P'? 'selected':'' }" />>내용</option>
-													<!-- 
-                              <option value="W"
-                                <c:out value="${pageMaker.cri.type eq 'W'? 'selected':'' }" />>작성자</option>
-                              <option value="TC"
-                                <c:out value="${pageMaker.cri.type eq 'TC'? 'selected':'' }" />>제목 or 내용</option>
-                              <option value="TW"
-                                <c:out value="${pageMaker.cri.type eq 'TW'? 'selected':'' }" />>제목 or 작성자</option>
-                              <option value="TWC"
-                                <c:out value="${pageMaker.cri.type eq 'TWC'? 'selected':'' }" />>제목 or 작성자 or 내용</option>
-                              -->
 												</select> <input type="text" name="keyword"
 													value="<c:out value="${ pageMaker.cri.keyword}" />">
 												<input type="hidden" name="pageNum"
@@ -254,131 +242,174 @@ desired effect
 	<%@include file="/WEB-INF/views/admin/include/plugin_js.jsp"%>
 
 	<script>
+		$(document)
+				.ready(
+						function() {
 
-      $(document).ready(function(){
+							let isCheck = true;
+							/*전체선택 체크박스 클릭*/
+							$("#checkAll").on("click", function() {
+								$(".check").prop("checked", this.checked);
 
+								isCheck = this.checked;
+							});
 
-        let isCheck = true;
-        /*전체선택 체크박스 클릭*/
-        $("#checkAll").on("click", function(){
-          $(".check").prop("checked", this.checked);
+							// 데이터행 체크박스 클릭
+							$(".check").on("click", function() {
 
-          isCheck = this.checked;
-        });
+								$("#checkAll").prop("checked", this.checked);
 
-        // 데이터행 체크박스 클릭
-        $(".check").on("click", function(){
-          
-          $("#checkAll").prop("checked", this.checked);
+								$(".check").each(function() {
+									if (!$(this).is(":checked")) { // 체크박스중 하나라도 해제된 상태라면  false
+										$("#checkAll").prop("checked", false);
+									}
 
-            $(".check").each(function(){
-            if(!$(this).is(":checked")) {		// 체크박스중 하나라도 해제된 상태라면  false
-              $("#checkAll").prop("checked", false);
-            }
+								});
+							});
 
-          });
-        });
+							let actionForm = $("#actionForm");
+							//페이지번호 클릭시 : 선택한 페이지번호, 페이징정보, 검색정보
+							$(".paginate_button a").on(
+									"click",
+									function(e) {
+										e.preventDefault(); // <a href="">기능취소
+										//기존 페이지번호를 사용자가 선택한 페이지번호로 변경
+										actionForm
+												.find("input[name='pageNum']")
+												.val($(this).attr("href"));
+										actionForm.submit();
 
+									});
 
+							//상품 체크 삭제
+							$("#btnCheckDelete")
+									.on(
+											"click",
+											function() {
+												if ($(".check:checked").length == 0) {
+													alert("삭제할 상품을 선택하세요.");
+													return;
+												}
 
-        let actionForm = $("#actionForm");
-        //페이지번호 클릭시 : 선택한 페이지번호, 페이징정보, 검색정보
-        $(".paginate_button a").on("click", function(e){
-          e.preventDefault(); // <a href="">기능취소
-          //기존 페이지번호를 사용자가 선택한 페이지번호로 변경
-          actionForm.find("input[name='pageNum']").val($(this).attr("href"));
-          actionForm.submit();
+												let isDel = confirm("선택한 상품을 삭제하겠습까?");
 
+												if (!isDel)
+													return;
 
-        });
+												// 데이터행에서 체크된 상품코드, 상품이미지
 
+												//자바스크립트 배열
+												let pro_numArr = []; //상품코드 배열
+												let pro_imgArr = []; //상품이미지 배열
+												let pro_uploadpathArr = []; //날짜폴더이름 
 
-        $("#btnCheckDelete").on("click", function(){
-          if($(".check:checked").length == 0){
-            alert("삭제할 상품을 선택하세요.");
-            return;
-          }
+												//선택된 체크박스 일 경우
+												$(".check:checked")
+														.each(
+																function() {
+																	let pro_num = $(
+																			this)
+																			.val();
+																	let pro_img = $(
+																			this)
+																			.next()
+																			.val();
+																	let pro_uploadpath = $(
+																			this)
+																			.next()
+																			.next()
+																			.val();
 
-          let isDel = confirm("선택한 상품을 삭제하겠습까?");
+																	pro_numArr
+																			.push(pro_num);
+																	pro_imgArr
+																			.push(pro_img);
+																	pro_uploadpathArr
+																			.push(pro_uploadpath);
+																})
 
-          if(!isDel) return;
+												$
+														.ajax({
+															url : '/admin/product/checkDelete',
+															type : 'post',
+															dataType : 'text',
+															data : {
+																pro_numArr : pro_numArr,
+																pro_imgArr : pro_imgArr,
+																pro_uploadpathArr : pro_uploadpathArr
+															},
+															success : function(
+																	data) {
+																if (data == "success") {
+																	alert("선택된 상품이 삭제됨");
 
-          // 데이터행에서 체크된 상품코드, 상품이미지
+																	// 리스트주소 이동 또는 선택된 행을 동적삭제.
+																	//location.href= "주소";
 
-          //자바스크립트 배열
-          let pro_numArr = []; //상품코드 배열
-          let pro_imgArr = []; //상품이미지 배열
-          let pro_uploadpathArr = []; //날짜폴더이름 
+																	console
+																			.log($(".check:checked").length);
+																	//테이블의 행을 의미하는 <tr>태그 제거.
+																	$(
+																			".check:checked")
+																			.each(
+																					function() {
+																						$(
+																								this)
+																								.parent()
+																								.parent()
+																								.remove();
+																					});
+																}
+															},
+															error : function() {
+																alert("주문 내역이 있는 상품은 삭제가 불가합니다. 판매안함으로 바꾸어주세요.");
+															}
+														});
 
-          //선택된 체크박스 일 경우
-          $(".check:checked").each(function(){
-            let pro_num = $(this).val();
-            let pro_img = $(this).next().val();
-            let pro_uploadpath = $(this).next().next().val();
+											});
 
-            pro_numArr.push(pro_num);
-            pro_imgArr.push(pro_img);
-            pro_uploadpathArr.push(pro_uploadpath);
-          })
+							//수정버튼 클릭시
+							$("input[name='btnProductModify']")
+									.on(
+											"click",
+											function() {
 
-          $.ajax({
-            url: '/admin/product/checkDelete',
-            type:'post',
-            dataType: 'text',
-            data:  {
-              pro_numArr : pro_numArr,
-              pro_imgArr : pro_imgArr,
-              pro_uploadpathArr : pro_uploadpathArr
-            },
-            success: function(data){
-              if(data == "success") {
-                alert("선택된 상품이 삭제됨");
+												let pro_num = $(this).data(
+														"pro_num");
 
-                // 리스트주소 이동 또는 선택된 행을 동적삭제.
-                //location.href= "주소";
-                
-                console.log($(".check:checked").length);
-                //테이블의 행을 의미하는 <tr>태그 제거.
-                $(".check:checked").each(function(){
-                  $(this).parent().parent().remove();
-                });
-              }
-            },
-              error: function() {
-                  alert("주문 내역이 있는 상품은 삭제가 불가합니다. 판매안함으로 바꾸어주세요.");
-              }
-          });
+												actionForm
+														.attr("action",
+																"/admin/product/productModify");
+												actionForm
+														.append("<input type='hidden' name='pro_num' value='" + pro_num + "'>");
+												actionForm.submit();
 
-        });
-        
-        //수정버튼 클릭시
-        $("input[name='btnProductModify']").on("click", function(){
+											});
 
-          let pro_num = $(this).data("pro_num");
-          
-          actionForm.attr("action", "/admin/product/productModify");
-          actionForm.append("<input type='hidden' name='pro_num' value='" + pro_num + "'>");
-          actionForm.submit();
+							//삭제버튼 클릭시
+							$("input[name='btnProductDelete']")
+									.on(
+											"click",
+											function() {
 
-        });
-        
-        //삭제버튼 클릭시
-        $("input[name='btnProductDelete']").on("click", function(){
+												if (!confirm("삭제하겠읍니까?"))
+													return;
 
-          
-          if(!confirm("삭제하겠읍니까?")) return;
+												let pro_num = $(this).data(
+														"pro_num");
 
-          let pro_num = $(this).data("pro_num");
+												actionForm
+														.attr("action",
+																"/admin/product/productDelete");
+												actionForm.attr("method",
+														"post");
+												actionForm
+														.append("<input type='hidden' name='pro_num' value='" + pro_num + "'>");
+												actionForm.submit();
 
-          actionForm.attr("action", "/admin/product/productDelete");
-          actionForm.attr("method", "post");
-          actionForm.append("<input type='hidden' name='pro_num' value='" + pro_num + "'>");
-          actionForm.submit();
+											});
 
-    });
-
-      });
-
-    </script>
+						});
+	</script>
 </body>
 </html>

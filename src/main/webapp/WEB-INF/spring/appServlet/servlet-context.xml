@@ -32,6 +32,8 @@
 	
 	<resources mapping="/cst_upload/**" location="/WEB-INF/views/consult/upload/" />
 	
+	<resources mapping="/board_upload/**" location="/WEB-INF/views/board/upload/" />	
+	
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<beans:property name="prefix" value="/WEB-INF/views/" />
@@ -40,6 +42,8 @@
 	
 	<!-- 빈 생성 스프링 프로젝트 생성시 자동설정 -->
 	<context:component-scan base-package="com.kpet.controller" />
+	<!-- 예외처리 -->
+	<context:component-scan base-package="com.kpet.exception"/>
 	<!-- 파일업로드 설정. 첨부된 파일을 UploadController의  MultipartFile[] uploadFile 에게 전달한다. -->
 	<!-- multipartResolver 지정된 이름이고, 서블릿 3.0이상의 버전에서 제공.  3.0미만에서서는 pom.xml에 업로드 라이브러리를 설정후 사용해야 함. -->
 	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver"></beans:bean>

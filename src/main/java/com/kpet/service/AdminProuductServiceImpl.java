@@ -38,9 +38,9 @@ public class AdminProuductServiceImpl implements AdminProuductService {
 	}
 
 	@Override
-	public List<CategoryVO> subCategory(Integer cate_code) {
+	public List<CategoryVO> subCategory(Integer cate_prtcode) {
 		// TODO Auto-generated method stub
-		return mapper.subCategory(cate_code);
+		return mapper.subCategory(cate_prtcode);
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ public interface AdminProuductService {
 	
 	public List<CategoryVO> mainCategory();
 	
-	public List<CategoryVO> subCategory(Integer cate_code);
+	public List<CategoryVO> subCategory(Integer cate_prtcode);
 	
 	public List<CategoryVO> lastsubCategory(Integer cate_prtcode, Integer cate_subprtcode);
 	

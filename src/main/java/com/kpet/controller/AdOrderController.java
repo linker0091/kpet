@@ -57,10 +57,13 @@ public class AdOrderController {
 		log.info("시작날짜: " + startDate);
 		log.info("종료날짜: " + endDate);
 		
+		//출력 게시물 개수
 		cri.setAmount(5);
 		List<OrderVO> list = Service.getListWithPaging(cri, startDate, endDate);
 		
 		int total = Service.getTotalCount(cri, startDate, endDate);
+		
+		//총 주문건수
 		model.addAttribute("ord_total", total);
 		
 		//주문상태별 건수
@@ -82,14 +85,17 @@ public class AdOrderController {
 		
 	}
 	
-	//주문상태별 목록보기.  jsp파일명은 orderList.jsp파일을 함께 사용한다.
+	//주문상태별 목록보기
 	@GetMapping("/orderStateList")
 	public String  orderStateList(@ModelAttribute("ord_state") String ord_state, Criteria cri, Model model)  {
 		
+		//출력 게시물 개수
 		cri.setAmount(5);
 		List<OrderVO> list = Service.getOrderStateListWithPaging(cri, ord_state);
 		
 		int total = Service.getOrderStateTotalCount(cri, ord_state);
+		
+		//총 주문건수
 		model.addAttribute("ord_total", total);
 		
 		//주문상태별 건수
@@ -126,9 +132,8 @@ public class AdOrderController {
 //		log.info(ord_StateArr);
 		
 		try {
-			
+			//체크 목록 주문상태 변경
 			for(int i=0; i < ord_codeArr.size(); i++) {
-				//주문상태 변경
 				Service.orderStateChange(ord_codeArr.get(i), ord_StateArr.get(i));
 			}
 
@@ -153,9 +158,9 @@ public class AdOrderController {
 		ResponseEntity<String> entity = null;
 		
 		try {
+			//체크 목록 주문, 주문삭제테이블 삭제작업
 			for(int i=0; i<ord_codeArr.size(); i++) {
 								
-				//주문, 주문삭제테이블 삭제작업
 				Service.ordDelete(ord_codeArr.get(i));
 				
 			}
@@ -223,22 +228,20 @@ public class AdOrderController {
 		public void excelDown(HttpServletResponse response,@RequestParam(value="ord_state", required=false)String ord_state, 
 				Criteria cri, @RequestParam(value="startDate", required=false)String startDate, @RequestParam(value="endDate", required=false)String endDate) throws Exception {
 			
-			log.info("시작날짜: " + startDate);
-			log.info("종료날짜: " + endDate);
-			
-			//cri.setAmount(2);
 			List<OrderVO> list;
 			
-			if(ord_state != null) {//주문상태에 따른 데이터갯수
-				//주문상태별 엑셀파일의 데이타(내용)
-				list = Service.getOrderStateListWithPaging(cri, ord_state);
+			if(ord_state != null) {
+				//주문상태에 따른 데이터갯수
 				int stateTotal = Service.getOrderStateTotalCount(cri, ord_state);
 				cri.setAmount(stateTotal);		
-			}else{//총개수 + 검색에 따른 데이터 총개수
-				log.info("state널일떄cri와 startDate: " + cri + "// Date: " + startDate + endDate);
+				//주문상태별 엑셀파일의 데이타(내용)
+				list = Service.getOrderStateListWithPaging(cri, ord_state);
+				log.info("총 데이타 개수 : "+ stateTotal);	
+			}else{
+				//총개수 + 검색에 따른 데이터 총개수
 				int total = Service.getTotalCount(cri, startDate, endDate);
 				cri.setAmount(total);
-				log.info("검색에따른 총 데이타 개수 : "+ total);	
+				log.info("state널일떄cri와 startDate: " + cri + "// Date: " + startDate + endDate);
 				//엑셀파일의 데이타(내용)
 				list = Service.getListWithPaging(cri, startDate, endDate);		
 				

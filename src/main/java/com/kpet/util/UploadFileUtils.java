@@ -50,11 +50,6 @@ public class UploadFileUtils {
 
 		// 클라이언트에서 보낸 파일명
 		String uploadFileName = multipartFile.getOriginalFilename();
-		
-		// 추가- 클라이언트에서 보낸 파일명이 존재하지 않으면
-		if(uploadFileName == null || uploadFileName == "") {
-			return uploadFileName;
-		}
 			
 		// 중복되지 않는 문자열을 생성
 		UUID uuid = UUID.randomUUID();

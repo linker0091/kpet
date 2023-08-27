@@ -25,6 +25,18 @@ public class UserConsultServiceImpl implements UserConsultService {
 	private AdminConsultMapper adMapper;
 
 	@Override
+	public List<ConsultVO> adminConSultList(String cst_answer) {
+		// TODO Auto-generated method stub
+		return mapper.adminConSultList(cst_answer);
+	}
+	
+	@Override
+	public int getConsultAnswerCount(String cst_answer) {
+		// TODO Auto-generated method stub
+		return mapper.getConsultAnswerCount(cst_answer);
+	}
+	
+	@Override
 	public void writeIsnert(ConsultVO vo) {
 		// TODO Auto-generated method stub
 		mapper.writeIsnert(vo);

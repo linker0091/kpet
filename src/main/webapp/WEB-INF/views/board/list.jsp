@@ -163,13 +163,13 @@
 								</tr>
 							</thead>
 							<tbody>
-								<c:if test="${empty conSultList}">
+								<c:if test="${empty list}">
 									<tr>
 										<td colspan="5" style="text-align: center;"><p>검색결과가
 												없습니다.</p></td>
 									</tr>
 								</c:if>
-								<c:if test="${not empty conSultList}">
+								<c:if test="${not empty list}">
 									<c:forEach items="${list }" var="board" varStatus="status">
 										<tr id="<c:out value="${board.bno }"></c:out>"
 											class="<c:if test="${status.count % 2 == 0 }">odd</c:if><c:if test="${status.count % 2 != 0 }">even</c:if> commu_txt">
@@ -232,7 +232,15 @@
 
 	<script>
 		$(document).ready(function() {
-
+	    	  //페이지 파라미터 캐시 문제 해결- 이전 페이지의 캐시를 삭제
+    	    window.onpageshow = function(e) {
+    	    	  if (e.persisted) {
+    	    	    // 페이지가 캐시에서 로드됐을 때
+    	    	    window.location.reload(); // 페이지 새로고침
+    	    	  }
+    	    	};
+    	    	
+    	    	
 			let actionForm = $("#actionForm");
 			
 			// 리스트에서 제목 클릭시 동작

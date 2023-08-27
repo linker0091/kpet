@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.kpet.service.AdminConsultService;
 import com.kpet.service.AdminOrderService;
+import com.kpet.service.UserConsultService;
 import com.kpet.service.UserProductService;
 
 import lombok.extern.log4j.Log4j;
@@ -24,7 +25,7 @@ public class GlobalControllerAdvice {
 	@Inject
 	private AdminOrderService ad_ord_service;
 	@Inject
-	private AdminConsultService ad_con_service;
+	private UserConsultService us_con_service;
 	
 	// 페이지에서 공통으로 보여주는 정보. 예)쇼핑몰 - 카테고리정보
 	
@@ -50,7 +51,7 @@ public class GlobalControllerAdvice {
 		
 		int requestCount = ordPaid + ordCancel + ordExchange + ordReturn;
 		
-		model.addAttribute("cst_requestCount", ad_con_service.getConsultAnswerCount("N")); //상담 요청 개수
+		model.addAttribute("cst_requestCount", us_con_service.getConsultAnswerCount("N")); //상담 요청 개수
 		model.addAttribute("ordPaid", ordPaid); //결제 완료 개수
 		model.addAttribute("ordCancel", ordCancel); //취소 요청 개수
 		model.addAttribute("ordExchange", ordExchange); //교환 요청 개수

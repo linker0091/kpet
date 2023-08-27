@@ -49,20 +49,19 @@
 }
 
 .bigPictureWrapper {
-	position: absolute;
+	position: fixed;
 	display: none;
 	justify-content: center;
 	align-items: center;
 	top: 0%;
 	width: 100%;
 	height: 100%;
-	background-color: gray;
 	z-index: 100;
 	background: rgba(255, 255, 255, 0.5);
 }
 
 .bigPicture {
-	position: relative;
+	position: contents;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -85,87 +84,97 @@
 	opacity: 100 !important;
 	margin-top: 100px;
 }
+
+.row .container {
+	padding: 128px 0 72px;
+}
 </style>
 
 </head>
 <body>
 
 	<%@include file="/WEB-INF/views/user/include/header.jsp"%>
-	<div class="container">
-		<div class="page_title">
-			<h2>펫후 커뮤니티</h2>
-		</div>
+	<div class="row">
+		<div class="container">
+			<div class="page_title">
+				<h2>펫후 커뮤니티</h2>
+			</div>
 
-		<div class="box-body">
-			<div class="form-group">
-				<label for="bno">글번호</label> <input type="text" class="form-control"
-					id="bno" name="bno" value="${board.bno }" readonly="readonly">
-			</div>
-			<div class="form-group">
-				<label for="title">제목</label> <input type="text"
-					class="form-control" id="title" name="title"
-					value="${board.title }" readonly="readonly">
-			</div>
-			<div class="form-group">
-				<label for="content">내용</label>
-				<%--<textarea class="form-control" rows="3" id="content" name="content" readonly="readonly">${board.content }</textarea> --%>
-				<div>${ board.content}</div>
-			</div>
-		</div>
-		<!-- /.box-body -->
-
-		<!--원본이미지 출력-->
-		<div class='bigPictureWrapper'>
-			<div class='bigPicture'></div>
-		</div>
-		<!-- 첨부파일목록 출력부분-->
-		<div class="row">
-			<div class="col-md-12">
-				<div class="box box-primary">
-					<div class="box-header with-border">
-						<br>
-						<b>첨부파일</b>
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-2">
+						<label for="bno"><b>글번호</b></label> <input type="text"
+							class="form-control" id="bno" name="bno" value="${board.bno }"
+							readonly="readonly">
 					</div>
-					<div class="box-body">
-						<div class="uploadResult">
-							<ul></ul>
+					<div class="col-md-10">
+						<label for="title"><b>제목</b></label> <input type="text"
+							class="form-control" id="title" name="title"
+							value="${board.title }" readonly="readonly">
+					</div>
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="content"><b>내용</b></label><br>
+					<c:out value="${board.content}" escapeXml="false" />
+				</div>
+			</div>
+			<!-- /.box-body -->
+
+			<!--원본이미지 출력-->
+			<div class='bigPictureWrapper'>
+				<div class='bigPicture'></div>
+			</div>
+			<!-- 첨부파일목록 출력부분-->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box box-primary">
+						<div class="box-header with-border">
+							<br> <b>첨부파일</b>
+						</div>
+						<div class="box-body">
+							<div class="uploadResult">
+								<ul></ul>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
 
-		<div class="form-group box-footer">
-			<button id="btnModify" type="button" data-bno="${board.bno }"
-				class="btn btn-primary">수정</button>
-			<button type="button" id="btnReplyAdd" class="btn btn-primary">댓글
-				작성</button>
-			<button id="btnList" type="button" class="btn btn-info">리스트</button>
+			<div class="form-group box-footer">
+				<c:if test="${board.user_id eq loginId}">
+					<button id="btnModify" type="button" data-bno="${board.bno }"
+						class="btn btn-primary">수정</button>
+				</c:if>
+				<button type="button" id="btnReplyAdd" class="btn btn-primary">댓글
+					작성</button>
+				<button id="btnList" type="button" class="btn btn-info">리스트</button>
 
-			<form id="operForm" action="/board/modify" method="get">
-				<input type="hidden" id="bno" name="bno"
-					value='<c:out value="${ board.bno}" />'> <input
-					type="hidden" name="pageNum"
-					value='<c:out value="${cri.pageNum }" />'> <input
-					type="hidden" name="amount"
-					value='<c:out value="${cri.amount }" />'> <input
-					type="hidden" name="type" value='<c:out value="${cri.type }" />'>
-				<input type="hidden" name="keyword"
-					value='<c:out value="${cri.keyword }" />'>
-			</form>
-		</div>
-
-		<!-- 댓글목록 출력부분 -->
-		<span>댓글목록</span>
-		<div class="row">
-			<div class="col-md-12">
-				<div id="replyList"></div>
+				<form id="operForm" action="/board/modify" method="get">
+					<input type="hidden" id="bno" name="bno"
+						value='<c:out value="${ board.bno}" />'> <input
+						type="hidden" name="pageNum"
+						value='<c:out value="${cri.pageNum }" />'> <input
+						type="hidden" name="amount"
+						value='<c:out value="${cri.amount }" />'> <input
+						type="hidden" name="type" value='<c:out value="${cri.type }" />'>
+					<input type="hidden" name="keyword"
+						value='<c:out value="${cri.keyword }" />'>
+				</form>
 			</div>
-		</div>
-		<!--댓글 페이징 출력-->
-		<div class="row" id="replyPaging"></div>
 
+			<!-- 댓글목록 출력부분 -->
+			<span><b>댓글목록</b></span>
+			<div class="row">
+				<div class="col-md-12">
+					<div id="replyList"></div>
+				</div>
+			</div>
+			<!--댓글 페이징 출력-->
+			<div class="row" id="replyPaging"></div>
+
+		</div>
 	</div>
 
 	<%@include file="/WEB-INF/views/user/include/footer.jsp"%>
@@ -184,8 +193,10 @@
       <textarea class="form-control" name="reply" readonly>{{reply}}</textarea>
     </div>
     <div class="form-group">
+      {{#if isAuthorized}}
       <button type="button" class="btn btn-link btn-reply-modify">수정</button>
       <button type="button" class="btn btn-link btn-reply-delete">삭제</button>
+      {{/if}}
     </div>
   </div>
   
@@ -197,10 +208,9 @@
   Handlebars.registerHelper("prettifyDate", function(timeValue){
     const date = new Date(timeValue);
 
-    return date.getFullYear() + "/" + date.getMonth() + 1 + "/" + date.getDate();
+    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
 
   });
-
 
 
   //1)댓글목록출력함수
@@ -208,11 +218,17 @@
   let printData = function (replyArr, target, templateObj) {
 
     let template = Handlebars.compile(templateObj.html());
+    
+    // 각 댓글에 대한 user_id와 loginId를 비교하여 버튼 처리
+    replyArr.forEach(function(reply) {
+    // 결과에 따라  {{#if isAuthorized}}에서 버튼 출력 처리 	
+    reply.isAuthorized = (reply.user_id === '${loginId}'); // user_id와 loginId 비교 결과를  reply 객체에 추가
+    });
+    
     let html = template(replyArr); // 댓글 템플릿소스와 데이터가 바인딩되어 결합된 소스
     target.empty();
     target.append(html);
   }
-
 
   //2)댓글페이징기능함수
   // pageMaker : 페이징정보, target : 페이징이 출력될 위치.
@@ -271,7 +287,7 @@
 
 
 	<script>
-
+	
   $(document).ready(function(){
 
     let operForm = $("#operForm");
@@ -544,7 +560,6 @@ $(document).ready(function(){
     $(".bigPicture")
       .html("<img src='/board/display?fileName=" + fileCalPath + "'>")
       .animate({width: '100%', height: '100%'}, 1000);
-
   }
 
   $(".bigPictureWrapper").on("click", function(){

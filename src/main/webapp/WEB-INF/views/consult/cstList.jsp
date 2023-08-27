@@ -39,7 +39,7 @@
 							varStatus="status">
 							<a href="${conSultVO.cst_num }" class="sonsult">
 								<ul>
-									<li><c:out value="${conSultVO.rn}"></c:out></li>
+									<li><c:out value="${conSultVO.cst_num}"></c:out></li>
 									<li><c:out value="${conSultVO.cst_type }"></c:out></li>
 									<li><c:out value="${conSultVO.cst_title }"></c:out></li>
 									<li><c:out value="${conSultVO.user_id }"></c:out></li>

@@ -26,6 +26,7 @@
 						<ul class="clearfix">
 							<li>제목</li>
 							<li><select class="consult_category" name="cst_type">
+									<option value="상품문의">상품문의</option>
 									<option value="배송문의">배송문의</option>
 									<option value="교환/반품">교환/반품</option>
 							</select> <input type="text" name="cst_title" class="inputTypeText"

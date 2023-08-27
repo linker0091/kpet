@@ -33,7 +33,7 @@ public class SuperAdInterceptor extends HandlerInterceptorAdapter{
         if (admin != null) {  // 관리자 객체가 null이 아닌 경우
             String position = admin.getAd_position();
 
-            if (position.equals("super_admin")) {  // 관리자 권한이 있는 경우
+            if (position.equals("총관리자")) {  // 관리자 권한이 있는 경우
                 // 로그인 페이지 로드 전에 요청된 페이지 정보 저장
                 getDestination(request);
                 return true;

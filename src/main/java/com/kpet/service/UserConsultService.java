@@ -6,6 +6,10 @@ import com.kpet.domain.ConsultVO;
 import com.kpet.domain.Criteria;
 
 public interface UserConsultService {
+
+	public List<ConsultVO> adminConSultList(String cst_answer);
+	
+	public int getConsultAnswerCount(String cst_answer);
 	
 	public void writeIsnert(ConsultVO vo);
 	

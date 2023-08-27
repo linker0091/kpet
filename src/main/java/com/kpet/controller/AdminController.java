@@ -95,11 +95,11 @@ public class AdminController {
 			
 				session.setAttribute("adminStatus", vo);
 				
+				//로그인 시간 구하기
 				Date ad_lastlogin = new Date();
 				log.info("user_lastlogin: " + ad_lastlogin);
 				// 마지막 로그인 시간 업데이트
-	            service.updateLastlogin(ad_lastlogin,ad_id); // 사용자 정보 업데이트 메서드 호출
-				
+	            service.updateLastlogin(ad_lastlogin,ad_id);
 				
 				redirectUrl = "/admin/main";
 				
@@ -132,10 +132,12 @@ public class AdminController {
 	@PostMapping("/adRegister")
 	public String adminRegister(AdminVO vo, RedirectAttributes rttr) {
 		
+		//비밀번호 암호화
 		vo.setAd_pw(cryptPassEnc.encode(vo.getAd_pw()));
 		
 		int result = service.adminRegister(vo);
 		
+		//insert 성공시
 		if(result == 1) {
 			rttr.addFlashAttribute("msg", "success");
 		}else {
@@ -158,11 +160,13 @@ public class AdminController {
 	//관리자 관리 페이지
 	@GetMapping("/adManagement")
 	public void adManagement(Model model) {
+		
 		List<AdminVO> AdminList = service.getAdminList();
 		
+		//관리자 인원수
 		int admin_Total = service.getAdminTotalCount();
-		model.addAttribute("admin_total", admin_Total);
 		
+		model.addAttribute("admin_total", admin_Total);
 		model.addAttribute("AdminList", AdminList);
 	}
 	
@@ -176,14 +180,15 @@ public class AdminController {
 		ResponseEntity<String> entity = null;
 		
 		try {
+			//체크 목록 관리자테이블 삭제작업
 			for(int i=0; i<ad_idArr.size(); i++) {
 								
-				//관리자테이블 삭제작업
 				service.adDelete(ad_idArr.get(i));
 				
 			}
 			
 			entity = new ResponseEntity<String>("success", HttpStatus.OK);
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -206,13 +211,14 @@ public class AdminController {
 		log.info(ad_positionArr);
 		
 		try {
-			
+			//체크 목록 관리자 직책 변경
 			for(int i=0; i < ad_idArr.size(); i++) {
-				//관리자 직책 변경
+				
 				service.adPosition_modify(ad_idArr.get(i), ad_positionArr.get(i));
 			}
 
 			entity = new ResponseEntity<String>("success", HttpStatus.OK);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

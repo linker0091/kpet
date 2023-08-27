@@ -29,9 +29,9 @@
 		<div class="product_review_media_sm">
 			<ul>
 				<c:forEach items="${reviewImg }" var="review" varStatus="status">
-					<li><img height="120" name="reviewImage"
+					<li><img width="80" height="80" name="reviewImage"
 						id="${review.rew_num}" data-pronum="${ProductVO.pro_num}"
-						src="/review/displayFile?fileName=s_<c:out value="${review.rew_img }"></c:out>&uploadPath=<c:out value="${review.rew_uploadpath }"></c:out>">
+						src="/review/displayFile?fileName=<c:out value="${review.rew_img }"></c:out>&uploadPath=<c:out value="${review.rew_uploadpath }"></c:out>">
 					</li>
 				</c:forEach>
 			</ul>
@@ -90,9 +90,9 @@
 			<div class="product_review_padding-top">
 				<ul>
 					<li><c:if test="${not empty reviewVO.rew_img}">
-							<img height="150" name="reviewImage" id="${review.rew_num}"
+							<img width="150" height="150" name="reviewImage" id="${review.rew_num}"
 								data-pronum="${ProductVO.pro_num}"
-								src="/review/displayFile?fileName=s_<c:out value="${reviewVO.rew_img }"></c:out>&uploadPath=<c:out value="${reviewVO.rew_uploadpath }"></c:out>">
+								src="/review/displayFile?fileName=<c:out value="${reviewVO.rew_img }"></c:out>&uploadPath=<c:out value="${reviewVO.rew_uploadpath }"></c:out>">
 						</c:if></li>
 				</ul>
 			</div>

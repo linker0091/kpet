@@ -114,20 +114,19 @@ desired effect
 														<c:out value="${AdminVO.ad_position == null? 'selected':'' }" />>관리자
 														직책 선택</option>
 													<option value="총관리자"
-														<c:out value="${AdminVO.ad_position eq 'super_admin'? 'selected':'' }" />>총
+														<c:out value="${AdminVO.ad_position eq '총관리자'? 'selected':'' }" />>총
 														관리자</option>
 													<option value="중간관리자"
-														<c:out value="${AdminVO.ad_position eq 'middle_admin'? 'selected':'' }" />>중간
+														<c:out value="${AdminVO.ad_position eq '중간관리자'? 'selected':'' }" />>중간
 														관리자</option>
 													<option value="하위관리자"
-														<c:out value="${AdminVO.ad_position eq 'under_admin'? 'selected':'' }" />>하위
+														<c:out value="${AdminVO.ad_position eq '하위관리자'? 'selected':'' }" />>하위
 														관리자</option>
 											</select></td>
 											<td><fmt:formatDate value="${AdminVO.ad_lastlogin }"
 													pattern="yyyy-MM-dd hh:mm" /></td>
 											<td><input type="button" name="btnAdPositionChange"
-												value="적용" data-ad_id="${AdminVO.ad_id }"> <%-- <input type="button" name="btnOrderDetail" value="상세보기"
-                          data-ord_code="${AdminVO.ad_id }"></td>--%>
+												value="적용" data-ad_id="${AdminVO.ad_id }">
 										</tr>
 									</c:forEach>
 								</tbody>

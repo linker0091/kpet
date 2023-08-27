@@ -119,7 +119,7 @@
 		<div class="page_title">
 			<h2>${cate_prtcode == 1 ? "고양이" : ""}${cate_prtcode == 2 ? "강아지" : ""}</h2>
 		</div>
-		<div class="row" style="width: 94%;">
+		<div class="row">
 			<c:forEach items="${productList }" var="productVO" varStatus="status">
 				<div class="col-md-3">
 					<div class="card mb-4 shadow-sm">
@@ -210,7 +210,7 @@
 	<script>
 
       $(function(){
-    	  //페이지 파라미터 캐시 문제 해결- 이전 페이지의 캐시를 삭제  04/07*
+    	  //페이지 파라미터 캐시 문제 해결- 이전 페이지의 캐시를 삭제
     	    window.onpageshow = function(e) {
     	    	  if (e.persisted) {
     	    	    // 페이지가 캐시에서 로드됐을 때

@@ -66,7 +66,7 @@ public class OrderController {
 			list = oService.directOrderInfo(pro_num, pro_amount);  // 1)메인에서 바로구매 2)상품상세 바로구매
 			(list.get(0)).setCart_amount(pro_amount); // 수량변경.
 			// 장바구니에서 구매
-		}else if (type.equals("check_order")) {  //장바구니 체크 구매 04/10*
+		}else if (type.equals("check_order")) {  //장바구니 체크 구매
 			list = new ArrayList<>();
 		    for (int i = 0; i < cart_codeArr.size(); i++) {
 	        OrderInfoVO vo = oService.checkOrderInfo(cart_codeArr.get(i), user_id);
@@ -113,9 +113,7 @@ public class OrderController {
 	    
 	    oService.orderInsert(order, orderDetail);
 		
-		// 예> 주문번호:100 [상품 5 건]
-		String pro_name = String.format("주문번호:%d [상품 %d 건]", order.getOrd_code(), orderDetail.getOrderDetailList().size());
-		
+
 		return "redirect:/order/orderComplete";
 	}
 	

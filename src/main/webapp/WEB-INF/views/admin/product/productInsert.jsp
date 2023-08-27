@@ -274,6 +274,7 @@ desired effect
 	<script>
     $(document).ready(function(){
 
+    	//2차 카테고리 선택기
       $("#mainCategory").on("change", function(){
 
         if($(this).val() == "") {alert("카테고리 선택하세요."); return;}
@@ -288,9 +289,9 @@ desired effect
 
       });
 
-      //2차 카테고리 선택기
+      //3차 카테고리 선택기
       $("#subCategory").on("change", function(){
-        
+
           let url = "/admin/product/lastsubCategory/" +$("#mainCategory option:selected").val()+"/"+ $(this).val()
           console.log("2차 url: "+url);
 
@@ -313,7 +314,7 @@ desired effect
         let subCateOptionsResult = templateObj(subCategory);
 
 
-        //누적되는 증상발생. 처리..
+        //누적되는 증상발생 처리. 기존 데이터 삭제 새 데이터로 갱신
         $("#subCategory option").remove();
         target.append(subCateOptionsResult);
 

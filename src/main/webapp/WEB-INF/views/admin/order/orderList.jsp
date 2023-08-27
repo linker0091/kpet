@@ -361,6 +361,7 @@ desired effect
 												if ($(".check:checked").length == 0) {
 													alert("삭제할 상품을 선택하세요.");
 													return;
+
 												}
 
 												let isDel = confirm("선택한 상품을 삭제하겠습까?");
@@ -410,6 +411,7 @@ desired effect
 																	//location.href= "/admin/order/checkDelete";  get방식
 
 																	// post방식
+																	/*
 																	actionForm
 																			.attr(
 																					"action",
@@ -424,12 +426,20 @@ desired effect
 																	console
 																			.log($(".check:checked").length);
 																	location.href = "/admin/order/orderList";
-																	//테이블의 행을 의미하는 <tr>태그 제거.
-																	/*
-																	check:checked").each(function(){
-																		$(this).parent().parent().remove();
-																	});
 																	 */
+																	//테이블의 행을 의미하는 <tr>태그 제거.
+																	// 선택된 행을 동적으로 삭제
+																	$(
+																			".check:checked")
+																			.each(
+																					function() {
+																						$(
+																								this)
+																								.parent()
+																								.parent()
+																								.remove();
+																					});
+
 																}
 															}
 														});
@@ -445,32 +455,34 @@ desired effect
 														.parent();
 												let ord_code = $(this).data(
 														"ord_code");
+												let detailInfo = tr
+														.next(".tr_detail");
 
-												tr.next(".tr_detail").remove();
-												//상품상세내용을 가지고 있는 추가된 tr태그를 화면에서 사라지게 함
+												// 이미 상세 정보가 열려있다면 닫기
+												if (detailInfo.length) {
+													detailInfo.remove();
+													return; // 함수 종료
+												}
+
+												// 기존에 열려있던 상세 정보 닫기
 												$("#orderlist tr.tr_detail")
-														.css("display", "none");
-												// 선택한 주문상세 tr에 화면에 나타나게 함.
-												tr.next(".tr_detail").css(
-														"dispaly", '');
+														.remove();
 
-												// tr태그를 하나추가
+												// tr태그를 하나 추가하고 상세 정보를 넣을 td 태그를 생성
 												tr
 														.after("<tr class='tr_detail'><td colspan='8'></td></tr>");
-
-												//let detailInfo = tr.find(".detailInfo"); 선택자 접근지원 안함.
-												let detailInfo = tr.next()
-														.children("td"); // 생성된 tr태그의 td태그를 가리킴.
-												//console.log("detailInfo: " + detailInfo.html());
-												//detailInfo.html(""); // td태그의 내용을 빈문자열
-												//detailInfo.empty();
+												detailInfo = tr.next()
+														.children("td");
 
 												let url = "/admin/order/detailInfo?ord_code="
 														+ ord_code;
 												detailInfo.load(url);
+
+												// 추가된 tr태그를 화면에 나타나게 함
+												detailInfo.show();
 											});
 
-							//수정버튼 클릭시 -- 이거 나중에 뺴야함.
+							//수정버튼 클릭시 
 							$("input[name='btnProductModify']")
 									.on(
 											"click",
@@ -478,11 +490,7 @@ desired effect
 
 												let pro_num = $(this).data(
 														"pro_num");
-
-												/*
-												let url = "/admin/product/productModify?pro_num=" + pro_num;
-												location.href = url;
-												 */
+												ㅇ
 												actionForm
 														.attr("action",
 																"/admin/product/productModify");

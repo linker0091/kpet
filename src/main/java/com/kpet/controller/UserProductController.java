@@ -82,24 +82,6 @@ public class UserProductController {
 		
 	}
 	
-	//탭 클릭
-	//탭메뉴 클릭시 ajax요청 post ResponseEntity<String>   + get방식  jsp따로 요청주소 필요
-	@ResponseBody
-	@PostMapping("/tabClick")
-	public ResponseEntity<String> tabClick(Integer cate_prtcode) {
-
-		ResponseEntity<String> entity = null;
-		
-		if(cate_prtcode != null) { 
-			entity = new ResponseEntity<String> ("success", HttpStatus.OK);
-		}else {
-			entity = new ResponseEntity<String> ("fail", HttpStatus.BAD_REQUEST);
-		}		
-		
-		return entity;
-		
-	}
-	
 	//메인 탭 상품 리스트
 	@GetMapping("/tabProduct")
 	public String tabProduct(@RequestParam(value="cate_prtcode", required = false)Integer cate_prtcode, Criteria cri, Model model) {
@@ -171,7 +153,7 @@ public class UserProductController {
 	
 	//상품상세설명
 	@GetMapping("/productDetail")
-	public void productDetail(@RequestParam(value = "type", defaultValue = "Y") String type, @RequestParam(value = "cateType", defaultValue = "firstCate") String cateType, @ModelAttribute("cri") Criteria cri, @RequestParam(value="cate_code", required = false) Integer cate_code, @RequestParam("pro_num") Integer pro_num, Model model) {
+	public void productDetail(@RequestParam(value = "cateType", defaultValue = "firstCate") String cateType, @ModelAttribute("cri") Criteria cri, @RequestParam(value="cate_code", required = false) Integer cate_code, @RequestParam("pro_num") Integer pro_num, Model model) {
 
 		ProductVO vo = service.productDetail(pro_num);
 		vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
@@ -179,10 +161,8 @@ public class UserProductController {
 		log.info("받아오는값 cate_code: " + cate_code);
 
 		model.addAttribute("productVO", vo);
-		model.addAttribute("type", type);
 		model.addAttribute("cateType", cateType);
 		log.info("받아오는값 vo: " + vo);
-		log.info("받아오는값 vo: " + type);
 
 	}
 	

@@ -30,7 +30,6 @@
 									<option value="배송문의">배송문의</option>
 									<option value="교환/반품">교환/반품</option>
 							</select> <input type="text" name="cst_title" class="inputTypeText">
-								<input type="hidden" name="user_id" value=${user_id }></li>
 						</ul>
 					</div>
 					<div class="write_inner">

@@ -2,6 +2,8 @@ package com.kpet.controller;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.core.io.FileSystemResource;
@@ -53,20 +57,95 @@ public class BoardController {
 	// 생성자를 이용한 주입 : @AllArgsConstructor
 	private BoardService service;	
 	
+	//CKEditor 이미지 업로드 폴더
+	@javax.annotation.Resource(name = "ckUploadFolder")//(//download core.io.Resource와 명칭 중복)
+	String ckUploadFolder;
+	
 	//게시판 글쓰기 폼
 	@GetMapping("/register") 
 	public void register() {
 		
 	}
 	
+	//CKEditor 문의게시판 설명 이미지.
+		@PostMapping("/editor/imageUpload")
+		public void imageUpload(HttpServletRequest request, HttpServletResponse response,@RequestParam MultipartFile upload) {
+			
+			/*
+			 CKEditor 파일업로드 1)파일업로드 작업 2) 업로드된 파일정보를 브라우저에게 보내야 한다. 
+			  
+			 */
+			
+			// 클라이언트로부터 전송되어 온 파일을 업로드폴더에 복사(생성)작업
+			OutputStream out = null;
+			
+			// 업로드된 파일정보를 브라우저에게 보내는 작업
+			PrintWriter printWriter = null;
+			
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("text/html;charset=utf-8");
+			
+			try {
+				String fileName = upload.getOriginalFilename();
+				byte[] bytes = upload.getBytes();
+				
+				// 클라이언트에서 전송해 온 파일명을 포함하여, 실제 업로드되는 경로생성
+				//String uploadPath = request.getSession().getServletContext().getRealPath("/resources/cst_upload/") + fileName;
+				
+				//물리적 경로
+				String uploadPath = ckUploadFolder + "\\WEB-INF\\views\\board\\upload\\" + fileName;  
+
+				log.info("업로드폴더 물리적경로: " + uploadPath);
+				
+				out = new FileOutputStream(new File(uploadPath)); // 0byte의 빈 파일생성
+				
+				// 파일에 내용이 채워짐.
+				out.write(bytes);
+				out.flush();
+				
+				/*======================================================================*/
+				
+				String callback = request.getParameter("CKEditorFuncNum");
+				
+				log.info(callback);
+				
+				printWriter = response.getWriter();
+				
+				// <resources mapping="/board_upload/**" location="/resources/board_upload/" />
+				String fileUrl = "/board_upload/" + fileName;
+				log.info("fileUrl"+fileUrl);
+				printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("
+									+ callback
+									+ ",'"
+									+ fileUrl
+									+ "','이미지를 업로드 하였습니다.'"
+									+ ")</script>");
+				printWriter.flush();
+			
+			}catch(Exception ex) {
+				ex.printStackTrace();
+			}finally {
+				try {
+				if(out != null) out.close();
+				if(printWriter != null) printWriter.close();
+				}catch(Exception ex) {
+					ex.printStackTrace();
+				}
+				
+			}
+			
+		}
+		
+	
 	// 게시판 글쓰기 저장.  BoardVO클래스 : 게시판입력데이타 정보, 파일첨부정보
 	@PostMapping("/register") 
 	public String register(BoardVO board,HttpSession session, RedirectAttributes rttr) {
+		
 		board.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
 		
 		log.info("BoardVO.... " + board);
 		
-		//파일첨부 정보 담기
+		//첨부된 파일의 정보를 담는 로그
 		if(board.getAttachList() != null) {
 			board.getAttachList().forEach(attach -> log.info(attach)); // 람다식 문법유형
 		}
@@ -76,7 +155,7 @@ public class BoardController {
 		return "redirect:/board/list";
 		
 	}
-		
+
 	//게시판 목록
 	@GetMapping("/list")  
 	public void list(Criteria cri, Model model) {
@@ -86,9 +165,10 @@ public class BoardController {
 		//1) list.jsp(뷰) 목록에 사용될 데이타
 		List<BoardVO> list = service.getListWithPaging(cri); // pageNum=1, amount=10, 검색기능추가 type=검색종류, keyword=검색어
 		model.addAttribute("list", list);
-		
+		log.info("board_list: " + list);
 		//list.jsp(뷰) 의 페이징기능.   prev 1	2	3	4	5 next
 		
+		//총 게시글 수
 		int total = service.getTotalCount(cri);
 		
 		log.info("total: " + total);
@@ -101,20 +181,22 @@ public class BoardController {
 	
 	// 게시물읽기, 수정폼. 
 	@GetMapping({"/get", "/modify"}) 
-	public void get(@RequestParam("bno") Long bno, @ModelAttribute("cri") Criteria cri, Model model) {
+	public void get(@RequestParam("bno") Long bno, HttpSession session, @ModelAttribute("cri") Criteria cri, Model model) {
 		
+		String loginId = ((UserVO) session.getAttribute("loginStatus")).getUser_id();
 		log.info("get...  " + bno);
 		
 		BoardVO board = service.get(bno);
 		model.addAttribute("board", board);
+		model.addAttribute("loginId", loginId);
 	}
 	
 	// 게시물 수정 저장
 	@PostMapping("/modify")
-	public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr) {
+	public String modify(BoardVO board, HttpSession session, Criteria cri, RedirectAttributes rttr) {
 		
 		log.info("modify: " + board);
-		
+		board.setUser_id(((UserVO) session.getAttribute("loginStatus")).getUser_id());
 		service.modify(board);
 
 		return "redirect:/board/list" + cri.getListLink();
@@ -137,7 +219,7 @@ public class BoardController {
 		
 		//  http://localhost:8888/board/list?pageNum=7&amount=10&type=W&keyword=user2
 		// "?pageNum=3&amount=20&type=TC&keyword=%EC%83%88%EB%A1%9C"
-		return "redirect:/board/list" + cri.getListLink();
+		return "redirect:/board/list" + cri.getListLink();//이전 페이지 정보
 	}
 	
 	// 내부에서 호출목적으로 사용하는 메서드 / 파일 삭제
@@ -296,6 +378,7 @@ public class BoardController {
 		
 		Resource resource = new FileSystemResource("D:\\Dev\\bod_upload\\" + fileName);
 		
+		//존재 여부 확인  : 없을 경우
 		if(resource.exists() == false) {
 			return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
 		}

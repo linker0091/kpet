@@ -1,7 +1,6 @@
 package com.kpet.controller;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -28,7 +27,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kpet.domain.EmailDTO;
 import com.kpet.domain.UserVO;
-import com.kpet.service.AdminConsultService;
 import com.kpet.service.OrderService;
 import com.kpet.service.UserService;
 
@@ -49,9 +47,6 @@ public class UserController {
 	
 	@Inject
 	private JavaMailSender mailSender;
-	
-	@Inject
-	private AdminConsultService adService;
 	
 	@Inject
 	private OrderService ordService;
@@ -150,8 +145,10 @@ public class UserController {
 		
 		ResponseEntity<String> entity = null;
 		
+		//인증번호
 		String authCode = (String) session.getAttribute("authCode");
 		
+		//인증번호 비교
 		if(authCode.equals(uAuthCode)) {
 			entity = new ResponseEntity<String>("success", HttpStatus.OK);
 		}else {
@@ -166,8 +163,8 @@ public class UserController {
 		
 		String authCode = "";
 		
-		for(int i=0; i<6; i++) {
-			authCode += String.valueOf((int) (Math.random() * 9) + 1);
+		for(int i=0; i<6; i++) {// 6자리 무작위 인증 코드
+			authCode += String.valueOf((int) (Math.random() * 9) + 1);//1부터 9 사이의 숫자 생성
 		}
 		
 		return authCode;
@@ -178,7 +175,6 @@ public class UserController {
 	@GetMapping(value = {"/modify"})
 	public void modify(HttpSession session, Model model) {
 		
-		log.info("s");
 		UserVO vo = (UserVO) session.getAttribute("loginStatus");
 		
 		String user_id = vo.getUser_id();
@@ -193,12 +189,12 @@ public class UserController {
 		
 		String redirectURL = "";
 		
+		UserVO session_vo = (UserVO) session.getAttribute("loginStatus");
+
 		vo.setUser_emailrec(!StringUtils.isEmpty(vo.getUser_emailrec()) ? "Y" : "N");
 		
 		log.info("회원수정정보: " + vo);
 		log.info("회원수정user_new_pw: " + user_new_pw);
-		
-		UserVO session_vo = (UserVO) session.getAttribute("loginStatus");
 		
 		//현재 세션의 비밀번호와 입력된 비밀번호가 같을 경우
 		if(cryptPassEnc.matches(vo.getUser_pw(), session_vo.getUser_pw())) {
@@ -309,6 +305,7 @@ public class UserController {
 				// 마지막 로그인 시간 업데이트
 	            service.updateLastlogin(user_lastlogin,user_id); // 사용자 정보 업데이트 메서드 호출
 				
+	            //이전페이지
 				String destination = (String) session.getAttribute("dest");
 				url = destination != null ? (String) destination : "/";
 			}else {
@@ -329,12 +326,6 @@ public class UserController {
 		session.invalidate();
 		
 		return "redirect:/";
-	}
-	
-	//비밀번호 찾기 폼
-	@GetMapping("/searchIdPw")
-	public void searchPwReq() {
-	
 	}
 	
 	//아이디 찾기
@@ -391,7 +382,13 @@ public class UserController {
 		return entity;
 		
 	}
-	
+
+	//비밀번호 찾기 폼
+		@GetMapping("/searchIdPw")
+		public void searchPwReq() {
+		
+		}
+
 	//비밀번호 찾기 기능
 	@ResponseBody
 	@PostMapping("searchPw")
@@ -474,7 +471,7 @@ public class UserController {
 	
 	model.addAttribute("user_name",  vo.getUser_name());
 	
-	//주문 상태별 건수
+	//최근 3개월간의 주문 상태별 건수
 	model.addAttribute("ordReceived",  ordService.ordStateCount(user_id,"주문접수",threeMonthsDate)); //주문접수
 	model.addAttribute("ordPaid",  ordService.ordStateCount(user_id,"결제완료",threeMonthsDate)); //결제완료
 	model.addAttribute("ordPreparing",  ordService.ordStateCount(user_id,"배송준비중",threeMonthsDate)); //배송준비중

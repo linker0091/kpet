@@ -14,7 +14,7 @@ public interface AdminProuductMapper {
 	
 	public List<CategoryVO> mainCategory();
 	
-	public List<CategoryVO> subCategory(Integer cate_code);
+	public List<CategoryVO> subCategory(Integer cate_prtcode);
 	
 	public List<CategoryVO> lastsubCategory(@Param("cate_prtcode") Integer cate_prtcode, @Param("cate_subprtcode")Integer cate_subprtcode);
 	

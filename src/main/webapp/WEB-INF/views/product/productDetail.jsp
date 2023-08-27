@@ -144,8 +144,6 @@
 					</c:if>
 				</div>
 			</div>
-			<div class="ck_simple_info">
-				<h2>상품설명</h2>${productVO.pro_content }</div>
 		</div>
 	</div>
 	<!--  내가 만든 탭메뉴 -->
@@ -158,8 +156,7 @@
 			</div>
 		</div>
 		<div id="contents1" class="product_detail content on">
-			<img src="/resources/img/Detail_info_img.png">
-		</div>
+			${productVO.pro_content }</div>
 		<div id="contents2" class="product_review content">컨텐츠 2</div>
 		<div id="contents3" class="product_consult content">
 			<a href="/consult/cstWrite">상품문의 하기</a>
@@ -175,10 +172,8 @@
 	<form id="actionForm" action="" method="get">
 		<!--list.jsp 가 처음 실행되었을 때 pageNum의 값을 사용자가 선택한 번호의 값으로 변경-->
 		<!-- Criteria클래스가 기본생성자에 의하여 기본값으로 파라미터가 사용 -->
-		<c:if test="${type == 'Y' }">
 			<input type="hidden" name="pageNum" value="${cri.pageNum}">
 			<input type="hidden" name="amount" value="${cri.amount}">
-		</c:if>
 		<input type="hidden" name="cate_code" value="${productVO.cate_code}">
 		<input type="hidden" name="cate_subprtcode"
 			value="${productVO.cate_subprtcode}"> <input type="hidden"
@@ -276,7 +271,7 @@
   		  }
   		 });
 
-        //장바구니 담기코드 수정*
+        //장바구니 담기코드
         $("button[name='btnCartAdd']").on("click", function(){
             let pro_num = $('#pro_num').val();
         	let pro_amount = $("#pro_amount").val();

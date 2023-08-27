@@ -57,15 +57,20 @@ public class ReplyController {
 	//2)댓글목록
 	// 리턴되는 데이타타입을 Map컬렉션으로 사용하는 이유? 여러개의 정보를 추가해서 하나의 객체로 클라이언트에게 보내고자 할때.(중요)
 	@GetMapping(value = "/pages/{bno}/{page}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public ResponseEntity<Map<String, Object>> getList(@PathVariable("page") int page, @PathVariable("bno") Long bno){
+	public ResponseEntity<Map<String, Object>> getList(@PathVariable("page") int page, @PathVariable("bno") Long bno, HttpSession session){
 		
 		ResponseEntity<Map<String, Object>> entity = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		
+		String loginId = ((UserVO) session.getAttribute("loginStatus")).getUser_id();
+		map.put("loginId", loginId);
+
 		//1)댓글목록데이타를 Map컬렉션에 추가
 		Criteria cri = new Criteria(page, 5);
 		map.put("list", service.getListPage(cri, bno).getList());
-		
+		log.info("loginId: " + loginId);
+		log.info("list: " + service.getListPage(cri, bno).getList());
+
 		//2)댓글 페이징정보를 Map컬렉션에 추가
 		PageDTO pageDTO = new PageDTO(cri, service.getListPage(cri, bno).getReplyCnt());
 		map.put("pageMaker", pageDTO);

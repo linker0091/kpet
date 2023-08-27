@@ -21,6 +21,11 @@
 <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
 
 <style>
+
+.row .container {
+	padding: 128px 0 72px;
+}
+
 .uploadResult {
 	width: 100%;
 	background-color: gray;
@@ -78,6 +83,7 @@
 <body>
 
 	<%@include file="/WEB-INF/views/user/include/header.jsp"%>
+	<div class="row">
 	<div class="container">
 		<div class="page_title">
 			<h2>펫후 커뮤니티 글작성</h2>
@@ -120,6 +126,7 @@
 			</div>
 		</div>
 	</div>
+	</div>
 
 	<%@include file="/WEB-INF/views/user/include/footer.jsp"%>
 	<!-- REQUIRED JS SCRIPTS(with jquery) -->
@@ -135,7 +142,7 @@
         toolbarCanCollapse : true,
         removePlugins : "elementspath",
         
-        filebrowserUploadUrl : "/editor/imageUpload"  // /editor/imageUpload. 이미지 업로드시 업로드탭 보기
+        filebrowserUploadUrl : "editor/imageUpload"  // /editor/imageUpload. 이미지 업로드시 업로드탭 보기
           
       };
       

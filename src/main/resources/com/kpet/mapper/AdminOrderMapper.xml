@@ -149,7 +149,7 @@
 				AND
 		]]>     
 		    
-		<include refid="ordStateCriteria"></include>
+		<include refid="criteria"></include>
 		
 		<![CDATA[     
 				    rownum <= (#{cri.pageNum} * #{cri.amount}) 
@@ -170,28 +170,11 @@
 			ord_state = #{ord_state}
 		AND
 			
-		<include refid="ordStateCriteria"></include> 
+		<include refid="criteria"></include> 
 		
 		ord_code > 0
 		
 	</select>
-	
-	<sql id="ordStateCriteria">
-		<trim prefix="(" suffix=") AND " prefixOverrides="OR">
-			<foreach item="type" collection="cri.typeArr">
-				<trim prefix="OR">
-					<choose>
-						<when test="type == 'N'.toString()">
-							ord_name like '%' || #{cri.keyword} || '%'
-						</when>
-						<when test="type == 'C'.toString()">
-							ord_code like '%' || #{cri.keyword} || '%'
-						</when>
-					</choose>
-				</trim>
-			</foreach>
-		</trim> 
-	</sql>
 	
 	<update id="orderStateChange">
 	

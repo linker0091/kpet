@@ -9,6 +9,10 @@ import com.kpet.domain.Criteria;
 
 public interface UserConsultMapper {
 
+	public List<ConsultVO> adminConSultList(String cst_answer);
+
+	public int getConsultAnswerCount(String cst_answer);
+	
 	public List<ConsultVO> conSultList(String user_id);
 	
 	public void writeIsnert(ConsultVO vo);

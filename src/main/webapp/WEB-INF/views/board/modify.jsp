@@ -90,32 +90,36 @@
 				name="keyword" value='<c:out value="${cri.keyword }" />'>
 
 			<div class="box-body">
-				<div class="form-group">
-					<label for="bno">글번호</label> <input type="text"
+				<div class="row">
+					<div class="col-md-2">
+					<label for="bno"><b>글번호</b></label> <input type="text"
 						class="form-control" id="bno" name="bno" value="${board.bno }"
 						readonly="readonly">
 				</div>
-				<div class="form-group">
-					<label for="title">제목</label> <input type="text"
+				<div class="col-md-10">
+					<label for="title"><b>제목</b></label> <input type="text"
 						class="form-control" id="title" name="title"
 						value="${board.title }">
 				</div>
-				<div class="form-group">
-					<label for="content">내용</label>
-					<textarea class="form-control" rows="3" id="content" name="content">${board.content }</textarea>
 				</div>
-				<div class="form-group">
-					<label for="regdate">작성일</label>
-					<!-- pattern="yyyy-MM-dd"  날짜포맷이 에러가 발생된다.-->
+				<div class="row">
+				<div class="col-md-6">
+					<label for="regdate"><b>작성일</b></label>
 					<input type="text" class="form-control" id="regdate" name="regdate"
 						value="<fmt:formatDate value="${board.regdate }" pattern="yyyy/MM/dd"/>"
 						readonly="readonly">
 				</div>
-				<div class="form-group">
-					<label for="updatedDate">수정일</label> <input type="text"
+				<div class="col-md-6">
+					<label for="updatedDate"><b>수정일</b></label> <input type="text"
 						class="form-control" id="updatedDate" name="updatedDate"
 						value="<fmt:formatDate value="${board.updatedDate }" pattern="yyyy/MM/dd"/>"
 						readonly="readonly">
+				</div>
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="content"><b>내용</b></label>
+					<textarea class="form-control" rows="3" id="content" name="content">${board.content }</textarea>
 				</div>
 			</div>
 
@@ -185,14 +189,6 @@
 
         formObj.attr("action", "/board/list");
         formObj.attr("method", "get");
-
-        /* 리스트로 보내는 정보
-        <input type="hidden" name="pageNum" value='<c:out value="${cri.pageNum }" />'>
-        <input type="hidden" name="amount" value='<c:out value="${cri.amount }" />'>
-        <input type="hidden" name="type" value='<c:out value="${cri.type }" />'>
-        <input type="hidden" name="keyword" value='<c:out value="${cri.keyword }" />'>
-
-        */
 
         let pageNumTag = $("input[name='pageNum']").clone();
         let amountTag = $("input[name='amount']").clone();

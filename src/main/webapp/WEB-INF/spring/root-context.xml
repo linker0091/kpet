@@ -99,7 +99,8 @@
 	 
 	 <!-- CKEditor 이미지 업로드 폴더 -->
 	 <bean id="ckUploadFolder" class="java.lang.String">
-	 	<constructor-arg value="D:\\Dev\\Program\\Spring\\workspace\\kpet\\src\\main\\webapp" />
-	 </bean>	 	
+	 	<constructor-arg value="C:\\Users\\82103\\git\\kpet\\src\\main\\webapp" />
+	 </bean>
+	 	 	
 	 
 </beans>

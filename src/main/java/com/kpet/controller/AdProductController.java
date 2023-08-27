@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,16 +61,16 @@ public class AdProductController {
 	// 2차카테고리 정보
 	@ResponseBody
 	@GetMapping(value = "/subCategory/{mainCategoryCode}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<List<CategoryVO>> subCategory(@PathVariable("mainCategoryCode") Integer cate_code){
+	public ResponseEntity<List<CategoryVO>> subCategory(@PathVariable("mainCategoryCode") Integer cate_prtcode){
 		
 		ResponseEntity<List<CategoryVO>> entity = null;
 				
-		entity = new ResponseEntity<List<CategoryVO>>(service.subCategory(cate_code), HttpStatus.OK);
+		entity = new ResponseEntity<List<CategoryVO>>(service.subCategory(cate_prtcode), HttpStatus.OK);
 		
 		return entity;
 	}
 	
-	//3차 last카테고리 정보
+	//3차카테고리 정보
 	@ResponseBody
 	@GetMapping(value = "lastsubCategory/{lastmainCategoryCode}/{lastsubCategory}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<CategoryVO>> lastsubCategory(@PathVariable("lastmainCategoryCode") Integer cate_prtcode, @PathVariable("lastsubCategory") Integer cate_subprtcode){
@@ -138,7 +137,7 @@ public class AdProductController {
 								+ fileUrl
 								+ "','이미지를 업로드 하였습니다.'"
 								+ ")</script>");
-			printWriter.flush();
+			printWriter.flush();//데이터 출력
 		
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -193,12 +192,12 @@ public class AdProductController {
 	
 	//상품수정 폼
 	@GetMapping("/productModify")
-	public void product_modify(@RequestParam("pro_num") Integer pro_num, @ModelAttribute("cri") Criteria cri, Model model) {
+	public void product_modify(@RequestParam("pro_num") Integer pro_num, Model model) {
 		
 		//1)상품정보
 		ProductVO vo = service.product_modify(pro_num);
 		vo.setPro_uploadpath(vo.getPro_uploadpath().replace("\\", "/"));
-		model.addAttribute("productVO", vo); //productVO 이름을 jsp에서 참조
+		model.addAttribute("productVO", vo); 
 		
 		//2)1차카테고리 정보
 		model.addAttribute("mainCategory", service.mainCategory());
@@ -206,9 +205,7 @@ public class AdProductController {
 		model.addAttribute("subCategory", service.subCategory(vo.getCate_prtcode()));
 		//3)3차카테고리를 참조하는 3차카테고리 정보.
 		model.addAttribute("lastsubCategory", service.lastsubCategory(vo.getCate_prtcode(), vo.getCate_subprtcode()));
-		
-		//4)페이징,검색 파라미터 정보 : @ModelAttribute("cri") Criteria cri
-		
+				
 	}
 	
 	//상품수정 저장(폼에서 상품정보, 페이징정보(검색포함) 전송)

@@ -9,18 +9,20 @@
 	src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
   
-  google.charts.load('current', {'packages':['corechart']});
+  google.charts.load('current', {'packages':['corechart']});//차트 유형
  
   // 1차카테고리 주문통계차트
-  google.charts.setOnLoadCallback(primeChart);
+  google.charts.setOnLoadCallback(primeChart);//차트 호출
 
   function primeChart() {
+	//차트 데이터
     var data = google.visualization.arrayToDataTable(${prime_chart});
  
     var options = {
       title: '1차 카테고리 주문통계'
     };
 
+    //차트가 들어갈 곳
     var chart = new google.visualization.PieChart(document.getElementById('primePiechart'));
 
     chart.draw(data, options);

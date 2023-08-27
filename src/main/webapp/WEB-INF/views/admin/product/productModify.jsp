@@ -315,8 +315,8 @@ desired effect
 
 	<script>
     $(document).ready(function(){
-
-      $("#mainCategory").on("change", function(){
+		//1차 카테고리 선택시 2차 카테고리 변경
+    	$("#mainCategory").on("change", function(){
 
         if($(this).val() == "") {alert("카테고리 선택하세요."); return;}
 
@@ -361,7 +361,7 @@ desired effect
         target.append(subCateOptionsResult);
 
       }
-      
+      //3차 카테고리
       let lastsubCategoryBindingView = function(lastsubCategory, target, template) {
 
           let templateObj = Handlebars.compile(template.html());
@@ -441,8 +441,8 @@ desired effect
               return false;
             }
 
-          
-          let value = parseInt(removeComma($("#pro_price").val()));
+          //컴마 삭제
+          	let value = parseInt(removeComma($("#pro_price").val()));
             let value2 = parseInt(removeComma($("#pro_discount").val()));
             $("#pro_price").val(value);
             $("#pro_discount").val(value2);

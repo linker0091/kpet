@@ -52,34 +52,33 @@
 </table>
 
 <script>
+	//상세 주문 취소
+	$(document).ready(function() {
+		$("input[name='btnOrderStateChange']").on("click", function() {
 
-    $(document).ready(function(){
-      $("input[name='btnOrderStateChange']").on("click", function(){
-        
-        let tr = $(this).parent().parent();
-        let ord_code = $(this).data("ord_code");
-        let pro_num = $(this).parent().parent().find("a.move").text();
+			let tr = $(this).parent().parent();
+			let ord_code = $(this).data("ord_code");
+			let pro_num = $(this).parent().parent().find("a.move").text();
 
-        console.log(ord_code);
-        console.log(pro_num);
+			console.log(ord_code);
+			console.log(pro_num);
 
-        $.ajax({
-          url: '/admin/order/detailListDelete',
-          type:'post',
-          dataType: 'text',
-          data:  {
-            ord_code : ord_code,
-            pro_num : pro_num
-          },
-          success: function(data){
-            if(data == "success") {
-              alert("주문을 취소하였음.");
+			$.ajax({
+				url : '/admin/order/detailListDelete',
+				type : 'post',
+				dataType : 'text',
+				data : {
+					ord_code : ord_code,
+					pro_num : pro_num
+				},
+				success : function(data) {
+					if (data == "success") {
+						alert("주문을 취소하였음.");
 
-              tr.remove();
-            }
-          }
-        });
-      });
-    });
-
-  </script>
+						tr.remove();
+					}
+				}
+			});
+		});
+	});
+</script>

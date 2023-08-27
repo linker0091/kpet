@@ -5,37 +5,91 @@
 <mapper namespace="com.kpet.mapper.ReplyMapper">
 
 	<insert id="insert">
-		insert into reply_tbl(rno, bno, reply, user_id) values(SEQ_REPLY_NUM.nextval,#{bno}, #{reply}, #{user_id} )
+		insert into 
+			reply_tbl
+			(
+				rno, 
+				bno, 
+				reply, 
+				user_id
+			) 
+			values
+			(
+				SEQ_REPLY_NUM.nextval, 
+				#{bno}, 
+				#{reply}, 
+				#{user_id} 
+			)
 	</insert>
 	
 	<update id="update">
-		update reply_tbl set reply = #{reply}, updatedate = sysdate
-		where rno = #{rno}
+		update 
+			reply_tbl 
+		set 
+			reply = #{reply}, 
+			updatedate = sysdate
+		where 
+			rno = #{rno}
+		and 
+			user_id = #{user_id}
 	</update>
 	
 	<delete id="delete">
-		delete from reply_tbl where rno = #{rno}
+		delete 
+		from 
+			reply_tbl 
+		where 
+			rno = #{rno}
+		and 
+			user_id = #{user_id}
 	</delete>
 	
 	<delete id="deleteAll">
-		delete from reply_tbl where bno = #{bno}
+		delete 
+		from 
+			reply_tbl 
+		where 
+			bno = #{bno}
 	</delete>
 	
 	<select id="getListWithPaging" resultType="com.kpet.domain.ReplyVO">
 		<![CDATA[
-		select rno, bno, reply, user_id, replydate, updatedate
+		select 
+			rno, 
+			bno, 
+			reply, 
+			user_id, 
+			replydate, 
+			updatedate 
 		from (
-		    select /*+ index_desc(reply_tbl PK_REPLY) */ rownum rn, rno, bno, reply, user_id, replydate, updatedate
-		    from reply_tbl
-		    where bno = #{bno}
-		    and rownum <= (#{cri.pageNum} * #{cri.amount})
+		    select 
+		    	/*+ index_desc(reply_tbl PK_REPLY) */ 
+		    	rownum rn, 
+		    	rno, 
+		    	bno, 
+		    	reply, 
+		    	user_id, 
+		    	replydate, 
+		    	updatedate 
+		    from 
+		    	reply_tbl
+		    where 
+		    	bno = #{bno}
+		    and 
+		    	rownum <= (#{cri.pageNum} * #{cri.amount})
 		)
-		where rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
+		where 
+			rn > ((#{cri.pageNum} - 1) * #{cri.amount} )
 		]]>
 	</select>
 	
 	<select id="getCountByBno" resultType="int">
-		select count(rno) from reply_tbl where bno = #{bno}
+		select 
+			count(rno) 
+		from 
+			reply_tbl 
+		where 
+			bno = #{bno}
 	</select>
 
 </mapper>  

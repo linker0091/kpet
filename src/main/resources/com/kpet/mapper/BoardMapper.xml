@@ -26,27 +26,74 @@
 	
 	<!-- 기본게시판 작업(댓글기능, 파일첨부기능 제외 )에서 시퀀스를 insert문에서 직접사용-->
 	<insert id="insert" parameterType="com.kpet.domain.BoardVO">
-		insert into board_tbl(bno, title, content, user_id)
-		values(seq_board_num.nextval, #{title}, #{content}, #{user_id})
+		insert into 
+			board_tbl
+			(
+				bno, 
+				title, 
+				content, 
+				user_id
+			)
+		values
+			(
+				seq_board_num.nextval, 
+				#{title}, 
+				#{content}, 
+				#{user_id}
+			)
 	</insert>
 	
 	<insert id="insertSelectKey" parameterType="com.kpet.domain.BoardVO">
 	
 		<selectKey keyProperty="bno" order="BEFORE" resultType="long">
-			select seq_board_num.nextval from dual
+			select 
+				seq_board_num.nextval 
+			from 
+				dual
 		</selectKey>
 		
-		insert into board_tbl(bno, title, content, user_id)
-		values(#{bno}, #{title}, #{content}, #{user_id})
+		insert into 
+			board_tbl
+			(
+				bno, 
+				title, 
+				content, 
+				user_id
+			)
+			values
+			(
+				#{bno}, 
+				#{title}, 
+				#{content}, 
+				#{user_id}
+			)
 	
 	</insert>
 	 
 	<select id="getListWithPaging" parameterType="com.kpet.domain.Criteria" resultType="com.kpet.domain.BoardVO">
 		<![CDATA[ 
-		select bno, title, content,user_id, regdate, updateddate, replycnt
-		from (
-		    select /*+ index_desc(board_tbl pk_board) */ rownum rn, bno, title, content, user_id, regdate,updateddate, replycnt
-		    from board_tbl
+		select 
+			bno, 
+			title, 
+			content, 
+			user_id, 
+			regdate, 
+			updateddate, 
+			replycnt
+		from
+			(
+		    select 
+		    	/*+ index_desc(board_tbl pk_board) */
+		    	rownum rn, 
+		    	bno, 
+		    	title, 
+		    	content, 
+		    	user_id, 
+		    	regdate, 
+		    	updateddate, 
+		    	replycnt
+		    from 
+		    	board_tbl
 		    where 
 		]]>    
 		
@@ -60,7 +107,10 @@
 	</select>
 	
 	<select id="getTotalCount" resultType="int">
-		select count(*) from board_tbl where
+		select 
+			count(*) 
+		from 
+			board_tbl where
 		
 		<include refid="criteria"></include> 
 		
@@ -69,20 +119,49 @@
 	</select>
 	
 	<select id="get" parameterType="Long" resultType="com.kpet.domain.BoardVO">
-		select bno, title, content, user_id, regdate, updateddate from board_tbl where bno = #{bno}
+		select 
+			bno, 
+			title, 
+			content, 
+			user_id, 
+			regdate, 
+			updateddate 
+		from 
+			board_tbl 
+		where 
+			bno = #{bno}
 	</select>
 	
 	<update id="update">
-		update board_tbl
-		set title = #{title}, content = #{content}, updatedDate = sysdate 
-		where bno = #{bno}
+		update 
+			board_tbl
+		set 
+			title = #{title}, 
+			content = #{content}, 
+			updatedDate = sysdate 
+		where 
+			bno = #{bno}
+		and 
+			user_id = #{user_id}
 	</update>
 	
 	<delete id="delete">
-		delete from board_tbl where bno = #{bno}
+		delete 
+		from 
+			board_tbl 
+		where 
+			bno = #{bno}
+		and 
+			user_id = #{user_id}
 	</delete>
 	
 	<update id="updateReplyCnt">
-		update board_tbl set replycnt = replycnt + #{amount} where bno = #{bno}
+		update 
+			board_tbl 
+		set 
+			replycnt = replycnt + #{amount} 
+		where 
+			bno = #{bno} 
+
 	</update>
 </mapper>  

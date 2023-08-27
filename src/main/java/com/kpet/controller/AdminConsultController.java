@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.kpet.domain.AnswerVO;
 import com.kpet.domain.ConsultVO;
 import com.kpet.service.AdminConsultService;
+import com.kpet.service.UserConsultService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -28,19 +29,19 @@ public class AdminConsultController {
 	@Inject
 	private AdminConsultService service;
 	
+	@Inject
+	private UserConsultService usService;
+	
 	//문의게시판 목록
 	@GetMapping("/cstList")
-	public void consult(@RequestParam(value="cst_answer", required = false) String cst_answer, Model model) {
-		
-		if(cst_answer == null) {
-			cst_answer = "N";
-		}
-		
+	public void consult(@RequestParam(value="cst_answer", defaultValue ="N") String cst_answer, Model model) {
+	
 		log.info("답변상태" + cst_answer);
-		List<ConsultVO> consultList = service.adminConSultList(cst_answer);
 		
-		model.addAttribute("cst_answer_n",  service.getConsultAnswerCount("N")); //상담처리중
-		model.addAttribute("cst_answer_y", service.getConsultAnswerCount("Y")); //상담완료
+		List<ConsultVO> consultList = usService.adminConSultList(cst_answer);
+		
+		model.addAttribute("cst_answer_n",  usService.getConsultAnswerCount("N")); //상담처리중
+		model.addAttribute("cst_answer_y", usService.getConsultAnswerCount("Y")); //상담완료
 		model.addAttribute("conSultList", consultList);
 	}
 	
@@ -48,7 +49,7 @@ public class AdminConsultController {
 	@GetMapping("cstRead")
 	public void cstRead(Integer cst_num, Model model) {
 		
-		ConsultVO vo = service.admingetConSult(cst_num);
+		ConsultVO vo = usService.getConSult(cst_num);
 		//log.info("ConsultVO 파라미터: " + vo);
 		
 		AnswerVO cstWrite = service.getCstWrite(cst_num);
