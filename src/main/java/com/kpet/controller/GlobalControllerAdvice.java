@@ -37,7 +37,7 @@ public class GlobalControllerAdvice {
 		model.addAttribute("userCategory", service.mainCategory());
 	}
 
-	//관리자 페이지 헤더 알림 정보 
+	//관리자 페이지 헤더 알림 정보
 	@ModelAttribute
 	public void adminData(Model model) {
 		
