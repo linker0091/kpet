@@ -8,17 +8,18 @@
 <link rel="canonical"
 	href="https://getbootstrap.com/docs/4.6/examples/pricing/">
 
-<div class="wrap_gnb">
-	<div class="container">
-		<p>
-			첫 구매하고 <strong>0원 체험</strong> 하세요!
-		</p>
-		<button class="topbnr_close">오늘 하루 보지 않기</button>
+<c:if test="${empty cookie.topbnr_hide}">
+	<div class="wrap_gnb">
+		<div class="container">
+			<p>
+				첫 구매하고 <strong>0원 체험</strong> 하세요!
+			</p>
+			<button class="topbnr_close">오늘 하루 보지 않기</button>
+		</div>
 	</div>
-</div>
-
+</c:if>
 <!-- Header-->
-<header id="header">
+	<header id="header" class="${empty cookie.topbnr_hide ? 'default_style' : 'bnr_style'}">
 	<div class="header_top">
 		<div class="container pdt">
 			<h1>
@@ -392,14 +393,14 @@
       
       // .topbnr_close 클릭시
       let topbnr_hide = getCookie("topbnr_hide");
-        let now = new Date();
+      let now = new Date();
       
-      // 쿠키가 있고, 쿠키가 만료되지 않았으면, 오늘하루그만보기 요소를 숨깁니다.
+      // 쿠키가 있고, 쿠키가 만료되지 않았으면, 오늘하루그만보기 요소에 맞게 구조변경
       if (topbnr_hide && now.getTime() < parseInt(topbnr_hide)) {
-          $('.wrap_gnb').addClass('fixed');
-        $('#header').addClass('fixed2');
+          $('#header').addClass('fixed2');
       }
       
+      // top배너 close 클릭시
       $(".wrap_gnb .topbnr_close").on("click", function(){
         // 쿠키 만료 시간을 계산합니다.
         let midnight = new Date();
@@ -408,7 +409,7 @@
         document.cookie = 'topbnr_hide=' + (now.getTime() + (24 * 60 * 60 * 1000)) + ';expires=' + midnight.toUTCString() + ';path=/';
         // 오늘하루그만보기 요소를 숨깁니다.
         $('.wrap_gnb').addClass('fixed');
-      $('#header').addClass('fixed2');
+        $('#header').addClass('fixed2');
       });
       
       // 쿠키 이름으로 쿠키 값을 가져오는 함수

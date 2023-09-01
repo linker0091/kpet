@@ -33,7 +33,9 @@ body {
     
 
 /* header area */
-#header { position:fixed; top: 50px;  width: 100%; height:auto; border-bottom: 1px solid #f2f3f5; background-color: #fff; z-index: 99999; transition: all 0.2s;}
+#header { }
+.default_style { position:fixed; top: 50px;  width: 100%; height:auto; border-bottom: 1px solid #f2f3f5; background-color: #fff; z-index: 99999; transition: all 0.2s; }
+.bnr_style { position:fixed; top: 50px;  width: 100%; height:auto; border-bottom: 1px solid #f2f3f5; background-color: #fff; z-index: 99999; }
 #header.fixed, #header.fixed2 { top: 0px; border-bottom: 1px solid #e5e5e5; }
 
 #header .container { padding-top: 0; }

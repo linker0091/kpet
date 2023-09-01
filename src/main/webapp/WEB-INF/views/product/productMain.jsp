@@ -203,7 +203,7 @@
         console.log(tab_num);
         $.ajax({
                 url: "/product/tabProduct",
-                type: 'post',
+                type: 'get',
                 dataType: 'text',
                 data: {cate_prtcode : tab_num},
                 success: function(data) {
