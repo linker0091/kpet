@@ -2,8 +2,6 @@ package com.kpet.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.kpet.domain.Criteria;
 import com.kpet.domain.DetailOrderInfo;
 import com.kpet.domain.OrderVO;

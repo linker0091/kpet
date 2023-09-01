@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +11,6 @@ import com.kpet.domain.Criteria;
 import com.kpet.domain.DetailOrderInfo;
 import com.kpet.domain.OrderVO;
 import com.kpet.mapper.AdminOrderMapper;
-import com.kpet.mapper.ReviewMapper;
-import com.kpet.mapper.UserMapper;
 
 @Service
 public class AdminOrderServiceImpl implements AdminOrderService {

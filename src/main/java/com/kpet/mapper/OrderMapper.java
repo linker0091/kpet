@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.kpet.domain.Criteria;
 import com.kpet.domain.DetailOrder;
-import com.kpet.domain.DetailOrderInfo;
 import com.kpet.domain.OrderInfoVO;
 import com.kpet.domain.OrderVO;
 import com.kpet.domain.UserOrderListInfo;

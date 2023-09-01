@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
-public class Criteria {
+public class Criteria { 
 
 	private int pageNum; // 선택된 페이지 번호  1	2	3	4	5
 	private int amount; // 페이지마다 출력할 게시물 개수
