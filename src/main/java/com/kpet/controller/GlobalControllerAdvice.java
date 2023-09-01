@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import com.kpet.service.AdminConsultService;
 import com.kpet.service.AdminOrderService;
 import com.kpet.service.UserConsultService;
 import com.kpet.service.UserProductService;
