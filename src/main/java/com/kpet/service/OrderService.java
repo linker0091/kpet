@@ -3,7 +3,6 @@ package com.kpet.service;
 import java.util.List;
 
 import com.kpet.domain.Criteria;
-import com.kpet.domain.DetailOrderInfo;
 import com.kpet.domain.DetailOrderList;
 import com.kpet.domain.OrderInfoVO;
 import com.kpet.domain.OrderVO;
